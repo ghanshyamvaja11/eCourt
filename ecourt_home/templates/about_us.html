@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eCourt - About Us</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts for improved typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .hero-section {
+            background: linear-gradient(to bottom right, #003366, #004080);
+            color: white;
+            padding: 150px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://source.unsplash.com/1600x900/?law,justice') center/cover no-repeat;
+            opacity: 0.5;
+            z-index: 1;
+            filter: blur(10px);
+        }
+        .hero-section .content {
+            position: relative;
+            z-index: 2;
+        }
+        .hero-section h1 {
+            font-size: 4rem;
+            font-family: 'Merriweather', serif;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease-out;
+        }
+        .hero-section p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1.2s ease-out;
+        }
+
+        .content-section {
+            padding: 60px 0;
+            background-color: white;
+        }
+
+        .content-section h2 {
+            font-size: 2.5rem;
+            color: #003366;
+            margin-bottom: 30px;
+            font-family: 'Merriweather', serif;
+            display: flex;
+            align-items: center;
+            animation: fadeInUp 1.4s ease-out;
+        }
+
+        .content-section h2 i {
+            margin-right: 10px;
+            color: #0066cc;
+        }
+
+        .content-section p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 20px;
+            animation: fadeInUp 1.6s ease-out;
+        }
+
+        .team-section {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            animation: fadeInUp 1.8s ease-out;
+        }
+
+        .team-member {
+            text-align: center;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 45%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .team-member:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .team-member img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid #0066cc;
+            transition: transform 0.3s ease;
+        }
+
+        .team-member img:hover {
+            transform: scale(1.1);
+        }
+
+        .cta-btn {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            background-color: #0066cc;
+            color: white;
+            border-radius: 30px;
+            margin-top: 30px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            animation: fadeInUp 2s ease-out;
+        }
+
+        .cta-btn:hover {
+            background-color: #004080;
+        }
+
+        .footer {
+            background-color: #003366;
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .team-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .team-member {
+                width: 80%;
+                margin-bottom: 30px;
+            }
+
+            .hero-section h1 {
+                font-size: 2.5rem;
+            }
+
+            .content-section h2 {
+                font-size: 2rem;
+            }
+
+            .cta-btn {
+                font-size: 1rem;
+                padding: 10px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="content">
+        <h1>About Us</h1>
+        <p>Welcome to eCourt! Our mission is to make justice accessible, transparent, and efficient through technology.</p>
+    </div>
+</section>
+
+<!-- About Us Content -->
+<section class="content-section">
+    <div class="container">
+        <!-- Introduction Section -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i> Introduction
+            </div>
+            <div class="card-body">
+                <p>eCourt is a digital platform designed to bring the court process online, allowing citizens, lawyers, judges, and administrators to engage in legal proceedings efficiently. Our goal is to make the legal process more accessible, transparent, and convenient for everyone.</p>
+            </div>
+        </div>
+
+        <!-- Mission Statement -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-bullseye"></i> Our Mission
+            </div>
+            <div class="card-body">
+                <p>Our mission is to revolutionize the legal system through technology, making it more efficient and accessible for everyone. We believe that by digitizing the court system, we can reduce delays, improve transparency, and increase accessibility to justice for all.</p>
+            </div>
+        </div>
+
+        <!-- Vision Statement -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-eye"></i> Our Vision
+            </div>
+            <div class="card-body">
+                <p>Our vision is to create a fully integrated, user-friendly, and transparent legal ecosystem where technology bridges the gap between citizens, law professionals, and the judiciary. We envision a future where legal processes are faster, clearer, and accessible to everyone, regardless of their background or location.</p>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-history"></i> History
+            </div>
+            <div class="card-body">
+                <p>eCourt was created with the vision to improve the efficiency of legal processes, reducing the time and costs involved in traditional court proceedings. The idea emerged in response to the growing need for a modernized, digital solution in the legal field. The platform was developed by a dedicated team of professionals, combining years of expertise in law and technology.</p>
+            </div>
+        </div>
+
+        <!-- Team Section -->
+        <div class="team-section">
+            <!-- Ghanshyam Vaja -->
+            <div class="team-member">
+                <img src="https://via.placeholder.com/150" alt="Ghanshyam Vaja">
+                <h4>Ghanshyam Vaja</h4>
+                <p>Lead Developer</p>
+                <p>Ghanshyam is the lead developer behind eCourt. With extensive experience in both frontend and backend development, he is responsible for creating the platform's architecture and ensuring its smooth operation. He has worked on various large-scale projects and has a passion for building scalable, user-friendly applications.</p>
+            </div>
+
+            <!-- Selja Chauhan -->
+            <div class="team-member">
+                <img src="https://via.placeholder.com/150" alt="Selja Chauhan">
+                <h4>Selja Chauhan</h4>
+                <p>Project Manager</p>
+                <p>Selja manages the eCourt project, coordinating between the technical team and stakeholders. She brings expertise in project management and is dedicated to delivering the platform on time and within budget. With a background in law and technology, Selja ensures the platform aligns with legal standards and best practices.</p>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="text-center">
+            <a href="contact.html" class="cta-btn">Get in Touch</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<section class="footer">
+    <p>&copy; 2025 eCourt. All rights reserved. <br> Designed with <i class="fas fa-heart"></i> for justice and technology.</p>
+</section>
+
+<!-- Bootstrap JS and Dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
