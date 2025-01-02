@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register for eCourt</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+    /* General Body and Layout */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.container {
+    display: flex;
+    max-width: 900px;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Left Section - Image */
+.image-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f7f7f7;
+}
+
+.image-section img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Right Section - Form */
+.form-section {
+    flex: 1;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.quote {
+    font-size: 1rem;
+    font-style: italic;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+/* Form Styling */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Common Input, Select, and Button Styling */
+input, select, button {
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Button Styling - Changed to Blue */
+button {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #0056b3, #007bff);
+}
+
+/* Conditional Fields for Role Selection (Lawyer/Citizen) */
+.conditional-fields {
+    display: none; /* Initially hidden */
+}
+
+.conditional-fields input {
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+}
+
+</style>
+<body>
+    <div class="container">
+        <!-- Left Side with Image -->
+        <div class="image-section">
+            <img src="https://e-legal.az/uploads/3555e4fbf47a29fa82627e606d1c51f3.gif" alt="Animated Legal Image">
+        </div>
+
+        <!-- Right Side with Form -->
+        <div class="form-section">
+            <h2>Join the Future of Legal Services</h2>
+            <p class="quote">"Bringing justice to the digital age - Register now to access eCourt services"</p>
+            
+            <form id="registerForm">
+                <!-- Common Fields -->
+                <input type="text" id="user_name" placeholder="Full Name" required>
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="text" id="contact_number" placeholder="Contact Number" required>
+                <input type="password" id="password" placeholder="Password" required>
+                
+                <!-- Dropdown for Role Selection -->
+                <select id="register_as" required>
+                    <option value="">Register As</option>
+                    <option value="lawyer">Lawyer</option>
+                    <option value="citizen">Citizen</option>
+                </select>
+
+                <!-- Lawyer-Specific Fields -->
+                <div id="lawyerFields" class="conditional-fields">
+                    <input type="text" id="license_number" placeholder="License Number">
+                    <input type="text" id="law_firm" placeholder="Law Firm">
+                    <input type="text" id="specialization" placeholder="Specialization">
+                </div>
+
+                <!-- Citizen-Specific Fields -->
+                <div id="citizenFields" class="conditional-fields">
+                    <input type="text" id="national_id_type" placeholder="National ID Type">
+                    <input type="text" id="national_id_number" placeholder="National ID Number">
+                    <input type="text" id="case_number" placeholder="Case Number">
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script >
+        document.addEventListener('DOMContentLoaded', () => {
+    const registerAs = document.getElementById('register_as');
+    const lawyerFields = document.getElementById('lawyerFields');
+    const citizenFields = document.getElementById('citizenFields');
+
+    // Initially hide all conditional fields
+    lawyerFields.style.display = 'none';
+    citizenFields.style.display = 'none';
+
+    // Add event listener for dropdown change
+    registerAs.addEventListener('change', () => {
+        const role = registerAs.value;
+
+        // Hide all fields
+        lawyerFields.style.display = 'none';
+        citizenFields.style.display = 'none';
+
+        // Show specific fields based on selected role
+        if (role === 'lawyer') {
+            lawyerFields.style.display = 'block';
+        } else if (role === 'citizen') {
+            citizenFields.style.display = 'block';
+        }
+    });
+});
+
+    </script>
+</body>
+</html>
