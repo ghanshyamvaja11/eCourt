@@ -1,0 +1,37 @@
+{% extends 'admin_header.html' %}
+<style>
+    
+</style>
+{% block content %}
+<!-- User Management Header Section -->
+<div class="dashboard-header">
+    <h1>User Management</h1>
+</div>
+
+<!-- User Management Cards -->
+<div class="dashboard-container">
+    <!-- Citizens Card -->
+    <div class="dashboard-card">
+        <div class="card-icon">👥</div>
+        <h3>Citizens</h3>
+        <p>Manage citizen data and details</p>
+        <a href="{% url 'citizens_management' %}" class="btn">View Citizens</a>
+    </div>
+
+    <!-- Lawyers Card -->
+    <div class="dashboard-card">
+        <div class="card-icon">⚖️</div>
+        <h3>Lawyers</h3>
+        <p>Manage lawyer data and details</p>
+        <a href="{% url 'lawyers_management' %}" class="btn">View Lawyers</a>
+    </div>
+
+    <!-- Judges Card -->
+    <div class="dashboard-card">
+        <div class="card-icon">👨‍⚖️</div>
+        <h3>Judges</h3>
+        <p>Manage judge data and details</p>
+        <a href="{% url 'judges_management' %}" class="btn">View Judges</a>
+    </div>
+</div>
+{% endblock %}
