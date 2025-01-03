@@ -3,20 +3,16 @@ from django.contrib.auth.models import AbstractUser, Group,  Permission
 
 
 class User(AbstractUser):
-    CONTACT_TYPES = [
-        ('PHONE', 'Phone'),
-        ('EMAIL', 'Email'),
-    ]
-
     user_type = models.CharField(
         max_length=20,
         choices=[('ADMIN', 'Admin'), ('LAWYER', 'Lawyer'),
                  ('JUDGE', 'Judge'), ('CITIZEN', 'Citizen')],
         default='CITIZEN'
     )
+    full_name = models.CharField(max_length=100)
     contact_number = models.CharField(max_length=15, blank=True, null=True)
     contact_type = models.CharField(
-        max_length=10, choices=CONTACT_TYPES, default='EMAIL')
+        max_length=10)
     address = models.TextField(blank=True, null=True)
 
     # Add related_name to avoid conflicts
@@ -37,7 +33,8 @@ class Admin(User):
         return f"Admin - {self.username}"
 
 
-class Lawyer(User):
+class Lawyer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     license_number = models.CharField(max_length=50, unique=True)
     law_firm = models.CharField(max_length=100, blank=True, null=True)
 
@@ -45,7 +42,8 @@ class Lawyer(User):
         return f"Lawyer - {self.username}"
 
 
-class Judge(User):
+class Judge(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     court = models.CharField(max_length=100)
     cases_assigned = models.IntegerField(default=0)
 
@@ -53,7 +51,9 @@ class Judge(User):
         return f"Judge - {self.username}"
 
 
-class Citizen(User):
+class Citizen(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    national_id_type = models.CharField(max_length=20)
     national_id = models.CharField(max_length=20, unique=True)
     cases_filed = models.IntegerField(default=0)
 

@@ -1,3 +1,6 @@
+{% extends 'header_footer.html' %}
+
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,30 +18,6 @@
             margin: 0;
             padding: 0;
         }
-        /* Loading Spinner */
-        .loading-spinner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        .loading-spinner img {
-            width: 100px;  /* Set the size of the hammer image */
-            border-radius: 100%;
-            border: 2px solid black;
-        }
-
-        /* Hide the spinner once the page is fully loaded */
-        body.loaded .loading-spinner {
-            display: none;
-        }
-
         /* Hero Section */
         .hero-section {
             background: linear-gradient(to bottom right, #003366, #004080);
@@ -55,7 +34,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://source.unsplash.com/1600x900/?justice,courtroom') center/cover no-repeat;
+            background: url('/media/home_hero.png') center/cover no-repeat;
             opacity: 0.4;
             z-index: 1;
         }
@@ -118,21 +97,17 @@
         .feature-card p {
             color: #555;
         }
-
-        /* About Us Section */
-        .about-us {
-            padding: 60px 0;
-            background-color: #004080;
-            color: white;
+        /* How It Works Section */
+        .how-it-works {
+            background-color: #ffffff;
+            padding: 0px 20px;
             text-align: center;
         }
-        .about-us h2 {
-            margin-bottom: 30px;
-            font-size: 2.5rem;
-        }
-        .about-us p {
-            font-size: 1.2rem;
-            line-height: 1.8;
+
+        .how-it-works h2 {
+            font-size: 36px;
+            margin-bottom: 0px;
+            color: #003366;
         }
 
         /* Testimonials Section */
@@ -166,6 +141,13 @@
             color: #003366;
             margin-top: 20px;
         }
+         .testimonial-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 15px;
+    }
 
         /* FAQ Section */
         .faq-section {
@@ -201,16 +183,40 @@
         .faq-item.active i {
             transform: rotate(180deg);
         }
+        .explore-more-button {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .explore-more-button .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .explore-more-button .btn:hover {
+            background-color: #0056b3;
+        }
 
         /* Contact Us Form */
         .contact-form {
             padding: 60px 0;
             background-color: #004080;
             color: white;
+            margin-left: 80px;
+            margin-right: 80px;
+            margin-bottom: 60px;
+            border-radius: 42px;
         }
         .contact-form h2 {
             margin-bottom: 30px;
             font-size: 2.5rem;
+            text-align: center;
         }
         .contact-form input, .contact-form textarea {
             width: 100%;
@@ -218,31 +224,21 @@
             margin-bottom: 20px;
             border-radius: 5px;
             border: 1px solid #ddd;
+            resize: none;
         }
         .contact-form button {
-            padding: 10px 20px;
-            border-radius: 5px;
-            background-color: #0066cc;
-            color: white;
-            border: none;
-            font-size: 1.2rem;
+         padding: 10px 20px;
+         border-radius: 5px;
+         background-color: #0066cc;
+         color: white;
+         border: none;
+         font-size: 1.2rem;
+         margin: 0 auto; /* Center the button horizontally */
+         display: block; /* Make it a block-level element for easier centering */
         }
         .contact-form button:hover {
-            background-color: #004080;
-        }
-
-        /* Footer */
-        .footer {
-            background-color: #333;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-        }
-        .footer a {
-            color: white;
-        }
-        .footer a:hover {
-            text-decoration: none;
+            background-color:rgb(215, 222, 228);
+            color : #0066cc;
         }
 
         /* Animations */
@@ -260,43 +256,6 @@
     </style>
 </head>
 <body>
-
-<!-- Loading Spinner -->
-<div class="loading-spinner">
-    <img src="/media/loader.gif" alt="Court Hammer">
-</div>
-
-<!-- Header -->
-<header class="navbar navbar-expand-lg navbar-light bg-light shadow-sm fade-in">
-    <div class="container">
-        <a class="navbar-brand" href="#">eCourt</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#about">About Us</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#features">Features</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#testimonials">Testimonials</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#faq">FAQ</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#contact">Contact</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</header>
 
 <!-- Hero Section -->
 <section class="hero-section fade-in">
@@ -328,20 +287,61 @@
             </div>
             <div class="col-md-4">
                 <div class="feature-card">
+                    <i class="fas fa-search"></i>
+                    <h4>Case Insights</h4>
+                    <p>Gain insights into case trends and outcomes.</p>
+                </div>
+            </div>
+            <br />
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-clock"></i>
+                    <h4>24/7 Access</h4>
+                    <p>Access your cases and documents anytime, anywhere.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
                     <i class="fas fa-bell"></i>
-                    <h4>Notifications</h4>
-                    <p>Stay updated with real-time notifications for your cases.</p>
+                    <h4>Real-time Notifications</h4>
+                    <p>"Instant case updates via email "</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-lock"></i>
+                    <h4>Secure Transactions</h4>
+                    <p>Your data is encrypted for privacy and security.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- About Us Section -->
-<section id="about" class="about-us fade-in">
+<!-- How It Works Section -->
+<section id="how-it-works" class="how-it-works">
     <div class="container">
-        <h2>About eCourt</h2>
-        <p>eCourt is designed to revolutionize the way court cases are managed. From filing documents to tracking case progress, our platform provides a seamless experience for all legal professionals and citizens.</p>
+        <h2 class="section-title">How It Works</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <h4>1. Register</h4>
+                    <p>Create your account on eCourt to get started with online legal services.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <h4>2. Submit Documents</h4>
+                    <p>Submit your legal documents securely using our easy-to-use platform.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <h4>3. Track Progress</h4>
+                    <p>Monitor your case and receive real-time updates on your legal proceedings.</p>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -352,6 +352,7 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="testimonial-card">
+                    <img src="john_doe_image.jpg" alt="John Doe" class="testimonial-image">
                     <p>"eCourt has made managing my cases so much easier. The interface is simple, yet powerful!"</p>
                     <h4>John Doe</h4>
                     <p>Lawyer</p>
@@ -359,6 +360,7 @@
             </div>
             <div class="col-md-4">
                 <div class="testimonial-card">
+                    <img src="jane_smith_image.jpg" alt="Jane Smith" class="testimonial-image">
                     <p>"I can file my documents from the comfort of my home. A real game-changer!"</p>
                     <h4>Jane Smith</h4>
                     <p>Citizen</p>
@@ -366,6 +368,7 @@
             </div>
             <div class="col-md-4">
                 <div class="testimonial-card">
+                    <img src="judge_mike_image.jpg" alt="Judge Mike" class="testimonial-image">
                     <p>"As a judge, I can now easily track cases and hearings. The platform saves me so much time!"</p>
                     <h4>Judge Mike</h4>
                     <p>Judge</p>
@@ -399,7 +402,7 @@
             <h4><i class="fas fa-chevron-down"></i> Can I track my case status?</h4>
             <p>Yes, users can track the status of their cases and hearings through their dashboard.</p>
         </div>
-        <div class="faq-item">
+        {% comment %} <div class="faq-item">
             <h4><i class="fas fa-chevron-down"></i> How do I submit legal documents?</h4>
             <p>Lawyers and citizens can submit legal documents via the eFiling system on the platform.</p>
         </div>
@@ -414,6 +417,11 @@
         <div class="faq-item">
             <h4><i class="fas fa-chevron-down"></i> How do I contact support?</h4>
             <p>You can contact our support team through the Contact Us page.</p>
+        </div> {% endcomment %}
+        
+        <!-- Explore More Button -->
+        <div class="explore-more-button">
+            <a href="#more-info" class="btn btn-primary">Explore More</a>
         </div>
     </div>
 </section>
@@ -430,12 +438,6 @@
         </form>
     </div>
 </section>
-
-<!-- Footer -->
-<footer class="footer">
-    <p>&copy; 2024 eCourt. All rights reserved.</p>
-    <p><a href="#">Privacy Policy</a> | <a href="#">Terms & Conditions</a></p>
-</footer>
 
 <!-- Bootstrap JS, Popper.js, and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -460,3 +462,4 @@
 
 </body>
 </html>
+{% endblock %}
