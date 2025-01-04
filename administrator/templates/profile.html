@@ -1,0 +1,184 @@
+{% extends 'admin_header.html' %}
+
+{% block content %}
+    <div class="dashboard-header">
+        <h1>Admin Profile</h1>
+    </div>
+
+    <div style="text-align: center; margin: 20px 0; font-size: 1.2rem; color: #1e3c72; font-style: italic;">
+        "Justice is the foundation of every society. As an Admin, you ensure its integrity."
+    </div>
+
+    <div class="profile-container">
+        <!-- Left Section for Profile Image -->
+        <div class="gif-section">
+            <img src="/media/signup.gif" alt="Admin Profile Illustration">
+        </div>
+
+        <!-- Right Section for Profile Details -->
+        <div class="profile-details-section">
+            <h2 class="form-title">Admin Profile</h2>
+
+            <div class="profile-picture-container">
+                <!-- Circular Profile Image -->
+                <img src="/media/admin-profile.jpg" alt="Admin Profile Picture" class="profile-image">
+            </div>
+
+            <div class="profile-details">
+                <p><strong>Username:</strong> abc</p>
+                <p><strong>Email:</strong> abc@example.com</p>
+                <p><strong>Contact Number:</strong> +1234567890</p>
+                <p><strong>Password:</strong> ********</p>
+            </div>
+
+            <!-- Edit Profile Button -->
+            <div class="edit-profile-btn">
+                <a href="{% url 'edit_profile' %}">
+                    <button>Edit Profile</button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f4f7f9;
+        }
+
+        /* Profile Container */
+        .profile-container {
+            max-width: 900px;
+            margin: auto;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            position: relative;
+            max-height: 70vh; /* Restrict height for scrollability */
+        }
+
+        /* Left Section for GIF */
+        .gif-section {
+            flex: 1;
+            background-color: #f4f7f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .gif-section img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Right Section for Profile Details */
+        .profile-details-section {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: white;
+            overflow-y: auto;
+        }
+
+        /* Profile Title */
+        .form-title {
+            text-align: center;
+            color: #1e3c72;
+            margin-bottom: 20px;
+        }
+
+        .profile-details p {
+            font-size: 1.2rem;
+            margin: 12px 0;
+            color: #333;
+        }
+
+        .profile-details p strong {
+            font-weight: 600;
+            color: #2a5298;
+        }
+
+        /* Circular Profile Image */
+        .profile-picture-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #2a5298; /* Optional border */
+        }
+
+        /* Edit Profile Button */
+        .edit-profile-btn {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .edit-profile-btn button {
+            padding: 16px 32px;
+            background-color: #2a5298;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.4rem;
+            transition: background-color 0.3s ease;
+            font-weight: 600;
+        }
+
+        .edit-profile-btn button:hover {
+            background-color: #1e3c72;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .profile-container {
+                flex-direction: column;
+            }
+
+            .gif-section {
+                display: none;
+            }
+
+            .profile-container::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('/media/signup.gif') no-repeat center center/cover;
+                opacity: 0.1;
+                z-index: -1;
+            }
+
+            .profile-details-section {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-title {
+                font-size: 1.5rem;
+            }
+
+            .edit-profile-btn button {
+                font-size: 1rem;
+                padding: 14px 28px;
+            }
+        }
+    </style>
+{% endblock %}

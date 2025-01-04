@@ -39,4 +39,18 @@ def closed_cases(request):
 def dismissed_cases(request):
     # Your logic for fetching dismissed cases
     return render(request, 'dismissed_cases.html')
+def add_judge(request):
+    # Your logic for fetching dismissed cases
+    return render(request, 'add_judge.html')
+
+def lawyer_approve_reject(request):
+    # Your logic for fetching dismissed cases
+    return render(request, 'lawyer_request.html')
+
+def profile(request):
+    # Your logic for fetching dismissed cases
+    return render(request, 'profile.html')
+def edit_profile(request):
+    # Your logic for fetching dismissed cases
+    return render(request, 'edit_profile.html')
     

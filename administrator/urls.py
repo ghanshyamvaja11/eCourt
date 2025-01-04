@@ -19,4 +19,8 @@ urlpatterns = [
     path('closed-cases', closed_cases, name='closed_cases'),
     path('dismissed-cases', dismissed_cases, name='dismissed_cases'),
     path('all_cases',all_cases,name='all_cases'),
+    path('add-judge',add_judge,name='add_judge'),
+    path('lawyer-approve-reject',lawyer_approve_reject,name='lawyer_approve_reject'),
+    path('profile',profile,name='profile'),
+    path('edit-profile',edit_profile,name='edit_profile')
 ]

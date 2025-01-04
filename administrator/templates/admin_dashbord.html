@@ -113,16 +113,20 @@
 
     <!-- Cards Section -->
     <div class="dashboard-container">
-        <a href="{% url 'user_management' %}"><div class="dashboard-card">
-            <div class="card-icon">👤</div>
-            <h3>User Management</h3>
-            <p>Manage all users</p>
-        </div></a>
-      <a href="{% url 'case_management' %}" > <div class="dashboard-card">
-            <div class="card-icon">⚖️</div>
-            <h3>Case Management</h3>
-            <p>Track and assign cases</p>
-        </div></a>
+        <a href="{% url 'user_management' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">👤</div>
+                <h3>User Management</h3>
+                <p>Manage all users</p>
+            </div>
+        </a>
+        <a href="{% url 'case_management' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">⚖️</div>
+                <h3>Case Management</h3>
+                <p>Track and assign cases</p>
+            </div>
+        </a>
         <div class="dashboard-card">
             <div class="card-icon">🔔</div>
             <h3>Notifications</h3>
@@ -138,16 +142,27 @@
             <h3>Analytics</h3>
             <p>Analyze case trends</p>
         </div>
-        <div class="dashboard-card">
-            <div class="card-icon">✍️</div>
-            <h3>Requested Lawyers</h3>
-            <p>Approve or deny requests</p>
-        </div>
-        <div class="dashboard-card">
-            <div class="card-icon">👨‍⚖️</div>
-            <h3>Add Judge</h3>
-            <p>Add new judges</p>
-        </div>
+        <a href="{% url 'lawyer_approve_reject' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">✍️</div>
+                <h3>Requested Lawyers</h3>
+                <p>Approve or deny requests</p>
+            </div>
+        </a>
+        <a href="{% url 'add_judge' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">👨‍⚖️</div>
+                <h3>Add Judge</h3>
+                <p>Add new judges</p>
+            </div>
+        </a>
+        <a href="{% url 'profile' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">👤</div>
+                <h3>Profile</h3>
+                <p>View and edit your profile</p>
+            </div>
+        </a>
     </div>
 </body>
 </html>
