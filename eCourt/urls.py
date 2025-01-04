@@ -5,7 +5,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', include('ecourt_home.urls')),
-    path('admin/', admin.site.urls),
+    path('admin/', include('administrator.urls')),
+    path('judge/', include('judge.urls')),
+    path('lawyer/', include('lawyer.urls')),
+    path('citizen/', include('citizen.urls')),
     path('users/', include('users.urls')),
     path('cases/', include('cases.urls')),
     path('efiling/', include('efiling.urls')),

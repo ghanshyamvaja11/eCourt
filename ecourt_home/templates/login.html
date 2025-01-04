@@ -113,6 +113,41 @@ button span {
     text-decoration: none;
 }
 
+.error-messages {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #fce4e4; /* Softer red background */
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        color: #a94442; /* Darker red text for better readability */
+        font-size: 1rem;
+    }
+
+    .error-item {
+        margin-bottom: 10px;
+        font-size: 1rem;
+        line-height: 1.5;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .error-item::before {
+        content: '⚠️'; /* Add a warning emoji or icon */
+        color: #a94442;
+        font-size: 1.2rem;
+    }
+
+    .error-messages ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .error-messages li {
+        margin: 5px 0;
+    }
+
 .links a:hover {
     text-decoration: underline;
 }
@@ -148,20 +183,31 @@ button span {
 
 <center>
 <div class="form_container">
+    <!-- Error Messages -->
+{% if messages %}
+<div class="error-messages">
+    <ul>
+        {% for message in messages %}
+            <li class="error-item">{{ message }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
     <div class="form-card">
         <!-- Form Section -->
         <div class="form-section">
             <h2>Welcome to Our Application</h2>
             <p>Please Login to Use the Platform</p>
-            <form>
-                <select name="role" required>
+            <form action="{% url 'login' %}" method="POST">
+                {% csrf_token %}
+                <select name="user_type" required>
                     <option value="" disabled selected>Select Role</option>
                     <option value="judge">Judge</option>
                     <option value="lawyer">Lawyer</option>
                     <option value="citizen">Citizen</option>
                 </select>
-                <input type="email" placeholder="Enter Email" required>
-                <input type="password" placeholder="Enter Password" required>
+                <input type="text" placeholder="Enter Username" name = "username" required>
+                <input type="password" placeholder="Enter Password"  name = "password" required>
                 <button type="submit" class="btn">Sign In</button>
                 <button type="button" class="btn">Login with OTP</button>
             </form>

@@ -39,11 +39,28 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ecourt_home',
     'users',
+    'administrator',
+    'judge',
+    'lawyer',
+    'citizen',
     'cases',
     'efiling',
     'documents',
     'notifications',
 ]
+
+# settings.py
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False  # Use TLS if this is True
+EMAIL_HOST_USER = "ecourtofficially@gmail.com"  # Replace with your email
+EMAIL_HOST_PASSWORD = "lpmyavnmyyxvvwut"  # Replace with your email's app password
+DEFAULT_FROM_EMAIL = "ecourtofficially@gmail.com"
+
+AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
