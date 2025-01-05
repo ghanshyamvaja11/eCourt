@@ -93,7 +93,7 @@
 
         button {
             background: linear-gradient(135deg, #007bff, #0056b3);
-            color: white;
+            color: white; /* Change text color to white */
             border: none;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -101,6 +101,10 @@
 
         button:hover {
             background: linear-gradient(135deg, #0056b3, #007bff);
+        }
+
+        button[type='submit'] {
+            color: white; /* Ensure text color is white */
         }
 
         .error-messages {
@@ -116,6 +120,32 @@
             margin-bottom: 10px;
             font-size: 1rem;
             line-height: 1.5;
+        }
+
+        .messages {
+            margin: 20px auto;
+            max-width: 900px;
+            padding: 10px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
         }
 
         @media (max-width: 768px) {
@@ -154,11 +184,11 @@
 
                 <!-- Error Messages -->
                 {% if messages %}
-                <div class="error-messages">
+                    <div class="messages">
                         {% for message in messages %}
-                            <span class="error-item">{{ message }}</span>
+                            <div class="message {{ message.tags }}">{{ message }}</div>
                         {% endfor %}
-                </div>
+                    </div>
                 {% endif %}
 
                  <form action="{% url 'signup' %}" method="POST">

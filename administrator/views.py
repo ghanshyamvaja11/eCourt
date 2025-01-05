@@ -1,4 +1,8 @@
 from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from users.models import *
+from django.contrib import messages
+from django.http import HttpResponse
 
 # Create your views here.
 def dashbord(request):
@@ -8,7 +12,7 @@ def header(request):
 def user_management(request):
     return render(request,'user_management.html')
    
-def  citizens_management(request):
+def citizens_management(request):
     return render(request,' citizens_management.html')
 def lawyers_management(request):
     return render(request,'lawyers_management.html')
@@ -46,6 +50,41 @@ def add_judge(request):
 def lawyer_approve_reject(request):
     # Your logic for fetching dismissed cases
     return render(request, 'lawyer_request.html')
+
+
+def approve_or_reject_lawyer(request, username):
+    # Fetch the user by username
+    user = get_object_or_404(User, username=username)
+
+    # Check if the user is a Lawyer
+    try:
+        lawyer = Lawyer.objects.get(user=user)
+    except Lawyer.DoesNotExist:
+        messages.error(request, "This user is not a lawyer.")
+        return redirect('admin_dashboard')  # Redirect to the admin dashboard
+
+    # Handle the approve/reject action
+    if request.method == "POST":
+        action = request.POST.get('action')
+
+        if action == 'approve':
+            lawyer.user.user_type = 'LAWYER'  # Approve and change user type to LAWYER
+            lawyer.user.save()
+            messages.success(
+                request, f"Lawyer {user.username} has been approved.")
+        elif action == 'reject':
+            lawyer.delete()  # Remove the lawyer record
+            user.delete()  # Optionally remove the user as well
+            messages.success(
+                request, f"Lawyer {user.username} has been rejected.")
+        else:
+            messages.error(request, "Invalid action.")
+
+        return redirect('admin_dashboard')  # Redirect back to admin dashboard
+
+    return render(request, 'approve_reject_lawyer.html', {
+        'lawyer': lawyer,
+    })
 
 def profile(request):
     # Your logic for fetching dismissed cases

@@ -20,7 +20,9 @@ urlpatterns = [
     path('dismissed-cases', dismissed_cases, name='dismissed_cases'),
     path('all_cases',all_cases,name='all_cases'),
     path('add-judge',add_judge,name='add_judge'),
-    path('lawyer-approve-reject',lawyer_approve_reject,name='lawyer_approve_reject'),
+    path('lawyer-approve-reject', lawyer_approve_reject, name='lawyer_approve_reject')    ,
+    path('approve-reject-lawyer/<str:username>/',
+         approve_or_reject_lawyer, name='approve_or_reject_lawyer'),
     path('profile',profile,name='profile'),
     path('edit-profile',edit_profile,name='edit_profile')
 ]

@@ -100,11 +100,6 @@ button[type='submit'] {
     color: white; /* Ensure text color is white */
 }
 
-button[type='button'] {
-    background: linear-gradient(135deg, #28a745, #218838); /* Slightly different gradient */
-    color: white; /* Ensure text color is white for "Login with OTP" button */
-}
-
 .remember-me {
     display: flex;
     align-items: center;
@@ -122,42 +117,7 @@ button[type='button'] {
     text-decoration: none;
 }
 
-.error-messages {
-        margin-bottom: 20px;
-        padding: 15px;
-        background-color: #fce4e4; /* Softer red background */
-        border: 1px solid #f5c6cb;
-        border-radius: 5px;
-        color: #a94442; /* Darker red text for better readability */
-        font-size: 1rem;
-    }
-
-    .error-item {
-        margin-bottom: 10px;
-        font-size: 1rem;
-        line-height: 1.5;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .error-item::before {
-        content: '⚠️'; /* Add a warning emoji or icon */
-        color: #a94442;
-        font-size: 1.2rem;
-    }
-
-    .error-messages ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .error-messages li {
-        margin: 5px 0;
-    }
-
-.links a:hover {
+links a:hover {
     text-decoration: underline;
 }
 
@@ -218,35 +178,23 @@ button[type='button'] {
 
 <center>
 <div class="form_container">
-    {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="message {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
     <div class="form-card">
         <!-- Form Section -->
         <div class="form-section">
-            <h2>Welcome to Our Application</h2>
-            <p>Please Login to Use the Platform</p>
-            <form action="{% url 'login' %}" method="POST">
+            <h2>Login with OTP</h2>
+            <p>Enter your registered email address</p>
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <form method="POST" action="{% url 'login_with_otp' %}">
                 {% csrf_token %}
-                <select name="user_type" required>
-                    <option value="" disabled selected>Select Role</option>
-                    <option value="judge">Judge</option>
-                    <option value="lawyer">Lawyer</option>
-                    <option value="citizen">Citizen</option>
-                </select>
-                <input type="text" placeholder="Enter Username" name="username" required>
-                <input type="password" placeholder="Enter Password" name="password" required>
-                <button type="submit" class="btn">Sign In</button>
-                <a href="/login-with-otp/"><button type="button" class="btn">Login with OTP</button></a>
+                <input type="email" name="email" placeholder="Enter Email" required>
+                <button type="submit" class="btn">Submit</button>
             </form>
-            <div class="links">
-                <a href="/forgot-password/">Forgot Password?</a>
-                <a href="/signup/">Sign Up</a>
-            </div>
         </div>
 
         <!-- Image Section (Hidden on Mobile) -->

@@ -10,4 +10,10 @@ urlpatterns = [
     # path('faq/', faq, name='faq'),
     path('signup/', signup, name='signup'),
     path('login/', login_view, name='login'),
+    path('login-with-otp/', login_with_otp, name='login_with_otp'),
+    path('login-with-otp/verify-otp/', verify_login_otp, name='verify_login_otp'),
+    path('resend-otp/', resend_otp, name='resend_otp'),
+    path('forgot-password/', forgot_password, name='forgot-password'),
+    path('forgot-password/verify-otp/', verify_forgot_password_otp, name='verify_forgot_password_otp'),
+    path('forgot-password/change-password/', change_password, name='change_password'),
 ]

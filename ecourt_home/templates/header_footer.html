@@ -14,7 +14,68 @@
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f5f5f5;
         }
+
+        /* Header */
+        .navbar {
+            background-color: #343a40;
+        }
+
+        .navbar-brand {
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .navbar-nav .nav-link {
+            color: #fff;
+            margin-right: 15px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #ffc107;
+        }
+
+        .navbar-toggler {
+            border: none;
+        }
+
+        .navbar-toggler-icon {
+            color: #fff;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #ffc107;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
         /* Loading Spinner */
         .loading-spinner {
             position: fixed;
@@ -28,8 +89,9 @@
             align-items: center;
             z-index: 9999;
         }
+
         .loading-spinner img {
-            width: 100px;  /* Set the size of the hammer image */
+            width: 100px;
             border-radius: 100%;
             border: 2px solid black;
         }
@@ -37,32 +99,6 @@
         /* Hide the spinner once the page is fully loaded */
         body.loaded .loading-spinner {
             display: none;
-        }
-        /* Footer */
-        .footer {
-            background-color: #333;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-        }
-        .footer a {
-            color: white;
-        }
-        .footer a:hover {
-            text-decoration: none;
-        }
-
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 1.5s ease-out;
-        }
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
         }
 
         /* Hamburger Menu */
@@ -77,7 +113,7 @@
 
         .hamburger div {
             height: 4px;
-            background-color: #000;
+            background-color: #fff;
             border-radius: 2px;
         }
 
@@ -98,8 +134,12 @@
                 top: 60px;
                 left: 0;
                 width: 100%;
-                background-color: #fff;
+                background-color: #343a40;
                 z-index: 1000;
+            }
+            .navbar-nav .nav-link {
+                color: #fff;
+                margin: 10px 0;
             }
         }
     </style>
@@ -112,7 +152,7 @@
 </div>
 
 <!-- Header -->
-<header class="navbar navbar-expand-lg navbar-light bg-light shadow-sm fade-in">
+<header class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fade-in">
     <div class="container">
         <a class="navbar-brand" href="#">eCourt</a>
         
