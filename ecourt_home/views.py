@@ -229,3 +229,6 @@ def login_view(request):
             messages.error(request, "Invalid username or password.")
 
     return render(request, 'login.html')
+
+def faq(request):
+    return render(request,'faq.html')

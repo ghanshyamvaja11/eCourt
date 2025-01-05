@@ -1,6 +1,7 @@
-{% extends 'admin_header.html' %}
+{% extends 'judge_header.html' %}
 
 {% block content %}
+
 <div class="dashboard-header">
     <h1>Edit Profile</h1>
 </div>
@@ -47,6 +48,11 @@
 
             <div class="input-container">
                 <textarea name="address" placeholder="Address" rows="3" required>{{ user.address }}</textarea>
+            </div>
+
+            <!-- New Field: Court Name -->
+            <div class="input-container">
+                <input type="text" name="court_name" placeholder="Court Name" value="{{ user.court_name }}" required>
             </div>
 
             <div class="input-container">
@@ -201,4 +207,5 @@ button:hover {
     }
 }
 </style>
+
 {% endblock %}

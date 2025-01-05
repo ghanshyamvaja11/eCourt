@@ -1,0 +1,321 @@
+{% extends 'judge_header.html' %}
+
+{% block content %}
+<!-- Verdicts and Outcomes Page -->
+<div class="dashboard-header">
+    <h1>Verdicts and Outcomes</h1>
+</div>
+
+<!-- Inspirational Quote -->
+<div style="text-align: center; margin: 20px 0; font-size: 1.2rem; color: #1e3c72; font-style: italic;">
+    "Justice is the constant and perpetual will to allot every man his due." – Domitius Ulpian
+</div>
+
+<div class="formcontainer">
+    <!-- Case Verdicts and Outcome Summary (Plaintiff Name and Case Type) -->
+    <div class="form-section">
+        <h2 class="form-title">Verdict Information</h2>
+
+        <!-- Static Outcome Data (Loop through each case's outcome details) -->
+
+        <div class="outcome-summary">
+            <div class="summary-item">
+                <strong>Plaintiff:</strong> John Doe
+            </div>
+            <div class="summary-item">
+                <strong>Case Type:</strong> Civil Case
+            </div>
+            <div class="view-btn-container">
+                <button class="view-btn" onclick="toggleVerdictDetails('case1')">View Outcome</button>
+            </div>
+        </div>
+
+        <div class="outcome-summary">
+            <div class="summary-item">
+                <strong>Plaintiff:</strong> Jane Smith
+            </div>
+            <div class="summary-item">
+                <strong>Case Type:</strong> Criminal Case
+            </div>
+            <div class="view-btn-container">
+                <button class="view-btn" onclick="toggleVerdictDetails('case2')">View Outcome</button>
+            </div>
+        </div>
+
+        <!-- Add more case records here as needed -->
+    </div>
+</div>
+
+<!-- Full Outcome Details Card (Hidden Initially) -->
+<div id="outcome-details-card" class="outcome-details-card">
+    <div class="outcome-details-container">
+        <div class="form-section">
+            <h2 class="form-title">Verdict Details</h2>
+
+            <!-- Verdict Detailed Information -->
+            <div id="outcome-info-details" class="outcome-info">
+                <!-- Content will be populated dynamically -->
+            </div>
+
+            <!-- Dropdown for Outcome (Adjourned, Verdict) -->
+            <div class="status-update-container">
+                <label for="outcome-status">Update Case Outcome:</label>
+                <div class="status-update-options">
+                    <select id="outcome-status" class="status-select">
+                        <option value="Adjourned">Adjourned</option>
+                        <option value="Verdict Delivered">Verdict Delivered</option>
+                    </select>
+                    <button onclick="updateOutcomeStatus()" class="update-status-btn">Update Outcome</button>
+                </div>
+            </div>
+
+            <button onclick="closeOutcomeDetails()" class="close-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* General Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #f4f7f9;
+}
+
+/* Form Container */
+.formcontainer {
+    max-width: 900px;
+    margin: auto;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+}
+
+/* Form Title */
+.form-title {
+    text-align: center;
+    color: #1e3c72;
+    margin-bottom: 20px;
+}
+
+/* Outcome Summary Info (One Row) */
+.outcome-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.summary-item {
+    font-size: 1rem;
+    margin-right: 20px;
+}
+
+.view-btn-container {
+    text-align: right;
+}
+
+.view-btn {
+    background: linear-gradient(to right, #1e3c72, #2a5298);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.view-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Outcome Details Card (Initially Hidden) */
+.outcome-details-card {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Outcome Details Container */
+.outcome-details-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    width: 80%;
+    max-width: 900px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Outcome Detailed Info */
+.outcome-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.info-item {
+    flex: 1 1 calc(33% - 20px); /* Each item takes up one-third of the width */
+    min-width: 200px;
+    margin-bottom: 10px;
+}
+
+/* Status Update Container */
+.status-update-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Status Update Options (Row Layout for Dropdown & Button) */
+.status-update-options {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+/* Status Select */
+.status-select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 200px;
+    font-size: 1rem;
+}
+
+/* Update Status Button */
+.update-status-btn {
+    background: linear-gradient(to right, #1e3c72, #2a5298);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.update-status-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Close Button */
+.close-btn {
+    background: #e74c3c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    display: block;
+    width: 100%;
+}
+
+.close-btn:hover {
+    background: #c0392b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .formcontainer {
+        padding: 20px;
+    }
+
+    .info-item {
+        flex: 1 1 calc(50% - 20px); /* Stacks two items per row on smaller screens */
+    }
+
+    .view-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .button-container {
+        flex-direction: column;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-title {
+        font-size: 1.5rem;
+    }
+
+    button {
+        font-size: 0.9rem;
+        padding: 12px;
+    }
+
+    .info-item {
+        flex: 1 1 100%; /* Stacks all items vertically on very small screens */
+    }
+}
+</style>
+
+<script>
+    // Function to toggle the outcome details card and populate information dynamically
+    function toggleVerdictDetails(caseId) {
+        var outcomeData = {
+            "case1": {
+                "judgeName": "Judge John",
+                "location": "Courtroom 1",
+                "date": "2025-01-10",
+                "time": "10:00 AM",
+                "outcome": "Verdict Delivered"
+            },
+            "case2": {
+                "judgeName": "Judge Emily",
+                "location": "Courtroom 3",
+                "date": "2025-02-15",
+                "time": "2:00 PM",
+                "outcome": "Adjourned"
+            }
+        };
+
+        var outcome = outcomeData[caseId];
+        var outcomeDetailsCard = document.getElementById('outcome-info-details');
+        outcomeDetailsCard.innerHTML = ` 
+            <div class="info-item"><strong>Judge:</strong> ${outcome.judgeName}</div>
+            <div class="info-item"><strong>Location:</strong> ${outcome.location}</div>
+            <div class="info-item"><strong>Date:</strong> ${outcome.date}</div>
+            <div class="info-item"><strong>Time:</strong> ${outcome.time}</div>
+            <div class="info-item"><strong>Outcome:</strong> ${outcome.outcome}</div>
+        `;
+        
+        document.getElementById('outcome-details-card').style.display = 'flex';
+    }
+
+    // Function to close the outcome details card
+    function closeOutcomeDetails() {
+        document.getElementById('outcome-details-card').style.display = 'none';
+    }
+
+    // Function to update the case outcome status
+    function updateOutcomeStatus() {
+        var status = document.getElementById('outcome-status').value;
+        alert("Case outcome updated to: " + status);
+    }
+</script>
+
+{% endblock %}

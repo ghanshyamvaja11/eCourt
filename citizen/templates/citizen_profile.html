@@ -1,10 +1,10 @@
-{% extends 'admin_header.html' %}
+{% extends 'citizen_header.html' %}
 
 {% block content %}
 <!-- Profile Header Section -->
 <div class="dashboard-header">
-    <h1 class="dashboard-title">Admin Profile</h1>
-    <p class="dashboard-subtitle">Manage your details and keep them up-to-date</p>
+    <h1 class="dashboard-title">Citizen Profile</h1>
+    <p class="dashboard-subtitle">Manage your personal details and keep them up-to-date</p>
 </div>
 
 <div class="profile-container">
@@ -20,19 +20,19 @@
                 <table class="profile-table">
                     <tr>
                         <th><i class="fas fa-user-circle"></i> Username:</th>
-                        <td>admin123</td>
+                        <td>citizen123</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-id-card"></i> Full Name:</th>
-                        <td>John Doe</td>
+                        <td>Jane Smith</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-envelope"></i> Email:</th>
-                        <td>admin@example.com</td>
+                        <td>citizen@example.com</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-phone"></i> Contact Number:</th>
-                        <td>+1234567890</td>
+                        <td>+9876543210</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-lock"></i> Password:</th>
@@ -40,14 +40,14 @@
                     </tr>
                     <tr>
                         <th><i class="fas fa-map-marker-alt"></i> Address:</th>
-                        <td>123 Legal Street, Justice City</td>
+                        <td>456 Freedom Rd, Cityville</td>
                     </tr>
                 </table>
             </div>
         </div>
         <!-- Edit Profile Button Below Details -->
         <div class="edit-profile">
-            <a href="{% url 'edit_profile' %}">
+            <a href="{% url 'citizen_edit_profile' %}">
                 <button class="edit-btn">
                     Edit Profile
                 </button>
