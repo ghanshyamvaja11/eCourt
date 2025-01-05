@@ -192,6 +192,10 @@ def login_view(request):
             messages.error(request, "Invalid username or password.")
 
     return render(request, 'login.html')
+
+def faq(request):
+    return render(request,'faq.html')
+
     
 def login_with_otp(request):
     if request.method == 'POST':

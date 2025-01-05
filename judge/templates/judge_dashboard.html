@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judge Dashboard</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f4f7f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header Section */
+        .dashboard-header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .dashboard-header h1 {
+            font-size: 3rem;
+            margin: 0;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .dashboard-header p {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            opacity: 0.9;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dashboard-card {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #ffd700; /* Consistent golden color for all icons */
+        }
+
+        h3 {
+            margin: 10px 0;
+        }
+
+        p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="dashboard-header">
+        <h1>Judge Dashboard</h1>
+        <p>Manage cases, hearings, and outcomes efficiently</p>
+    </div>
+
+    <!-- Cards Section -->
+    <div class="dashboard-container">
+        <a href="{% url 'judge_assigned_cases' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">⚖️</div>
+                <h3>Assigned Cases</h3>
+                <p>View and manage your assigned cases</p>
+            </div>
+        </a>
+        <a href="{% url 'judge_hearing' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">📅</div>
+                <h3>Hearings</h3>
+                <p>Track upcoming and past hearings</p>
+            </div>
+        </a>
+        <a href="{% url 'outcome' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">✔️</div>
+                <h3>Verdicts & Outcomes</h3>
+                <p>Manage and record case outcomes</p>
+            </div>
+        </a>
+        <a href="{% url 'case_doc' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">📄</div>
+                <h3>Case Documents</h3>
+                <p>View and manage case documents</p>
+            </div>
+        </a>
+        <a href="{% url 'judge_profile' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">👤</div>
+                <h3>Your Profile</h3>
+                <p>View and update your profile information</p>
+            </div>
+        </a>
+    </div>
+</body>
+</html>

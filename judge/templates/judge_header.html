@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judge Dashboard</title>
+</head>
+<style>
+    /* General Layout Styles */
+    body {
+        font-family: 'Roboto', sans-serif;
+        display: flex;
+        height: 100vh;
+        margin: 0;
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 250px;
+        background-color: #1e3c72;
+        color: white;
+        padding: 20px;
+        position: fixed;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        transition: 0.3s;
+    }
+
+    .sidebar h2 {
+        text-align: center;
+        font-size: 1.5rem;
+        color: #ffd700;
+    }
+
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 20px;
+    }
+
+    .sidebar ul li {
+        margin-bottom: 10px;
+    }
+
+    .sidebar ul li a {
+        color: white;
+        text-decoration: none;
+        font-size: 1rem;
+        padding: 10px;
+        display: block;
+        border-radius: 5px;
+        transition: background 0.3s;
+    }
+
+    .sidebar ul li a:hover {
+        background-color: #2a5298;
+    }
+
+    /* Main Content Area */
+    .main-content {
+        margin-left: 270px;
+        padding: 20px;
+        flex-grow: 1;
+        background-color: #f4f7f9;
+        transition: margin-left 0.3s;
+    }
+
+    /* Header Section */
+    .dashboard-header {
+        background-color: #1e3c72;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-header h1 {
+        margin: 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .sidebar {
+            width: 200px;
+        }
+
+        .main-content {
+            margin-left: 220px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 100%;
+            position: fixed;
+            height: 100%;
+            top: 0;
+            left: -100%;
+            z-index: 1;
+            transition: 0.3s;
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+
+        .hamburger {
+            display: block;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+        }
+
+        .hamburger div {
+            width: 30px;
+            height: 4px;
+            background-color: white;
+            margin: 6px 0;
+            transition: 0.3s;
+        }
+    }
+</style>
+<body>
+    <!-- Hamburger Menu (visible on mobile) -->
+    <div class="hamburger" onclick="toggleSidebar()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h2>Judge Menu</h2>
+        <ul>
+            <li><a href="{% url 'judge_dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'judge_assigned_cases' %}">Assigned Cases</a></li>
+            <li><a href="{% url 'judge_hearing' %}">Hearings</a></li>
+            <li><a href="{% url 'outcome' %}">Verdict & Outcome</a></li>
+            <li><a href="{% url 'case_doc' %}">Case Documents</a></li>
+            <li><a href="{% url 'judge_profile' %}">Profile</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- JavaScript to toggle the sidebar -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.style.left === "0px") {
+                sidebar.style.left = "-100%";
+            } else {
+                sidebar.style.left = "0";
+            }
+        }
+    </script>
+</body>
+</html>

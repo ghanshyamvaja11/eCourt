@@ -1,0 +1,295 @@
+{% extends 'judge_header.html' %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Assigned Cases</h1>
+</div>
+
+<!-- Inspirational Quote -->
+<div style="text-align: center; margin: 20px 0; font-size: 1.2rem; color: #1e3c72; font-style: italic;">
+    "Injustice anywhere is a threat to justice everywhere." – Martin Luther King Jr.
+</div>
+
+<div class="formcontainer">
+    <!-- Case Summary (Judge's Assigned Cases) -->
+    <div class="form-section">
+        <h2 class="form-title">Assigned Cases</h2>
+
+        <!-- Static Case Data (Loop through each case's information) -->
+        <div class="case-summary">
+            <div class="summary-item">
+                <strong>Case Title:</strong> Johnson vs Lee
+            </div>
+            <div class="summary-item">
+                <strong>Case Type:</strong> Civil
+            </div>
+            <div class="view-btn-container">
+                <button class="view-btn" onclick="toggleCaseDetails('case1')">View</button>
+            </div>
+        </div>
+
+        <div class="case-summary">
+            <div class="summary-item">
+                <strong>Case Title:</strong> Green vs Brown
+            </div>
+            <div class="summary-item">
+                <strong>Case Type:</strong> Criminal
+            </div>
+            <div class="view-btn-container">
+                <button class="view-btn" onclick="toggleCaseDetails('case2')">View</button>
+            </div>
+        </div>
+
+        <div class="case-summary">
+            <div class="summary-item">
+                <strong>Case Title:</strong> Wilson vs White
+            </div>
+            <div class="summary-item">
+                <strong>Case Type:</strong> Family
+            </div>
+            <div class="view-btn-container">
+                <button class="view-btn" onclick="toggleCaseDetails('case3')">View</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Full Case Information Card (Hidden Initially) -->
+<div id="case-details-card" class="case-details-card">
+    <div class="formcontainer">
+        <div class="form-section">
+            <h2 class="form-title">Case Information</h2>
+
+            <!-- Case's Detailed Info -->
+            <div id="case-info-details" class="case-info">
+                <!-- Content will be populated dynamically -->
+            </div>
+
+            <!-- Dropdown for Updating Case Status -->
+            <div class="info-item" style="display: flex; align-items: center; gap: 10px;">
+                <label for="case-status-dropdown" style="flex: 1;"><strong>Update Status:</strong></label>
+                <select id="case-status-dropdown" class="status-dropdown" style="flex: 2;" onchange="updateCaseStatusDropdown()">
+                    <option value="Pending">Pending</option>
+                    <option value="Active">Active</option>
+                    <option value="Closed">Closed</option>
+                </select>
+                <button class="update-btn" onclick="updateCaseStatus()" style="flex: 1;">Update Status</button>
+            </div>
+
+            <button onclick="closeCaseDetails()" class="close-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        background-color: #f4f7f9;
+    }
+
+    /* Form Container */
+    .formcontainer {
+        max-width: 900px;
+        margin: auto;
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        padding: 30px;
+    }
+
+    .form-title {
+        text-align: center;
+        color: #1e3c72;
+        margin-bottom: 20px;
+    }
+
+    .case-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .summary-item {
+        font-size: 1rem;
+        margin-right: 20px;
+    }
+
+    .view-btn-container {
+        text-align: right;
+    }
+
+    .view-btn {
+        background: linear-gradient(to right, #1e3c72, #2a5298);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .view-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .case-details-card {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .case-info {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .info-item {
+        flex: 1 1 calc(50% - 20px);
+        margin-bottom: 10px;
+    }
+
+    .status-dropdown {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        margin-top: 5px;
+        transition: border-color 0.3s ease;
+    }
+
+    .status-dropdown:focus {
+        outline: none;
+        border-color: #1e3c72;
+        box-shadow: 0 0 5px rgba(30, 60, 114, 0.5);
+    }
+
+    .close-btn {
+        background: #e74c3c;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 20px;
+        display: block;
+        width: 100%;
+    }
+
+    .close-btn:hover {
+        background: #c0392b;
+    }
+
+    .update-btn {
+        background: linear-gradient(to right, #1e3c72, #2a5298);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .update-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+   
+
+</style>
+
+<script>
+    let currentCaseId;
+
+    function toggleCaseDetails(caseId) {
+        const caseData = {
+            case1: {
+                caseNumber: "20001",
+                caseTitle: "Johnson vs Lee",
+                caseType: "Civil",
+                plaintiff: "Johnson",
+                defendant: "Lee",
+                status: "Ongoing",
+                hearingDate: "2025-01-15"
+            },
+            case2: {
+                caseNumber: "20002",
+                caseTitle: "Green vs Brown",
+                caseType: "Criminal",
+                plaintiff: "Green",
+                defendant: "Brown",
+                status: "Pending",
+                hearingDate: "2025-01-18"
+            },
+            case3: {
+                caseNumber: "20003",
+                caseTitle: "Wilson vs White",
+                caseType: "Family",
+                plaintiff: "Wilson",
+                defendant: "White",
+                status: "Closed",
+                hearingDate: "N/A"
+            }
+        };
+
+        currentCaseId = caseId;
+        const caseInfo = caseData[caseId];
+        const caseDetailsCard = document.getElementById('case-info-details');
+        caseDetailsCard.innerHTML = `
+            <div class="info-item"><strong>Case Number:</strong> ${caseInfo.caseNumber}</div>
+            <div class="info-item"><strong>Case Title:</strong> ${caseInfo.caseTitle}</div>
+            <div class="info-item"><strong>Case Type:</strong> ${caseInfo.caseType}</div>
+            <div class="info-item"><strong>Plaintiff:</strong> ${caseInfo.plaintiff}</div>
+            <div class="info-item"><strong>Defendant:</strong> ${caseInfo.defendant}</div>
+            <div class="info-item"><strong>Status:</strong> <span id="case-status">${caseInfo.status}</span></div>
+            <div class="info-item"><strong>Hearing Date:</strong> ${caseInfo.hearingDate}</div>
+        `;
+
+        // Set the dropdown value to the current status
+        document.getElementById('case-status-dropdown').value = caseInfo.status;
+
+        document.getElementById('case-details-card').style.display = 'flex';
+    }
+
+    function closeCaseDetails() {
+        document.getElementById('case-details-card').style.display = 'none';
+        document.getElementById('case-info-details').innerHTML = '';
+    }
+
+    function updateCaseStatus() {
+        const dropdown = document.getElementById('case-status-dropdown');
+        const newStatus = dropdown.value;
+        const statusElement = document.getElementById('case-status');
+        statusElement.textContent = newStatus;
+
+        console.log(`Status of ${currentCaseId} updated to ${newStatus}`);
+        alert(`Case status updated to ${newStatus}`);
+    }
+
+    function updateCaseStatusDropdown() {
+        const dropdown = document.getElementById('case-status-dropdown');
+        const newStatus = dropdown.value;
+        const statusElement = document.getElementById('case-status');
+        statusElement.textContent = newStatus;
+
+        console.log(`Status of ${currentCaseId} updated to ${newStatus}`);
+    }
+</script>
+{% endblock %}
