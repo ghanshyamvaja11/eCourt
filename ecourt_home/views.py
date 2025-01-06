@@ -10,6 +10,7 @@ from users.models import *
 from django.core.mail import send_mail
 import random
 from django.conf import settings
+from django.http import HttpResponseNotFound, HttpResponseBadRequest
 
 def index(request):
     return render(request, 'index.html')
@@ -40,6 +41,7 @@ def signup(request):
         National_id_number = request.POST.get('National_id_number')
         License_number = request.POST.get('License_number')
         Law_firm = request.POST.get('Law_firm')
+        profile_picture = request.FILES.get('profile_picture')  # Handle profile picture
 
         # Validation
         errors = []
@@ -100,7 +102,8 @@ def signup(request):
                     contact_number=contact_number,
                     address=address,
                     user_type=role.upper(),
-                    is_active=is_active
+                    is_active=is_active,
+                    profile_picture=profile_picture  # Save profile picture
                 )
                 user.set_password(password)
                 user.save()
@@ -172,6 +175,7 @@ def login_view(request):
                 # Log the user in
                 login(request, user)
                 request.session['username'] = username
+                request.session['role'] = user.user_type  # Add role to session
                 print(f"Logged in User: {username}")
 
                 # Redirect based on user type
@@ -226,6 +230,7 @@ def verify_login_otp(request):
         user = User.objects.filter(email=email).first()
         if user and str(request.session.get('otp')) == otp:
             login(request, user)
+            request.session['role'] = user.user_type  # Add role to session
             del request.session['otp']
             messages.success(request, 'Logged in successfully.')
             return redirect('index')
@@ -303,3 +308,9 @@ def resend_otp(request):
     else:
         messages.error(request, 'User not found.')
     return redirect(request.META.get('HTTP_REFERER', 'index'))
+
+def error_404_view(request, exception=None):
+    return render(request, '404.html', status=404)
+
+def error_400_view(request, exception=None):
+    return render(request, '400.html', status=400)

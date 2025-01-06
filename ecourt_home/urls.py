@@ -16,4 +16,7 @@ urlpatterns = [
     path('forgot-password/', forgot_password, name='forgot-password'),
     path('forgot-password/verify-otp/', verify_forgot_password_otp, name='verify_forgot_password_otp'),
     path('forgot-password/change-password/', change_password, name='change_password'),
+    path('page-not-found/', error_404_view, name='error_404_view'),
 ]
+
+handler400 = 'ecourt_home.views.error_400_view'

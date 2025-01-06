@@ -16,44 +16,19 @@
         <h2 class="form-title">Lawyer's Information</h2>
 
         <!-- Static Lawyer Data (Loop through each lawyer's information) -->
-
+        {% for lawyer in lawyers %}
         <div class="lawyer-summary">
             <div class="summary-item">
-                <strong>Username:</strong> abc
+                <strong>Username:</strong> {{ lawyer.user.username }}
             </div>
             <div class="summary-item">
-                <strong>Email:</strong> a@gmail.com
+                <strong>Email:</strong> {{ lawyer.user.email }}
             </div>
             <div class="view-btn-container">
-                <button class="view-btn" onclick="toggleLawyerDetails('abc')">View</button>
+                <button class="view-btn" onclick="toggleLawyerDetails('{{ lawyer.user.username }}')">View</button>
             </div>
         </div>
-
-        <div class="lawyer-summary">
-            <div class="summary-item">
-                <strong>Username:</strong> mno
-            </div>
-            <div class="summary-item">
-                <strong>Email:</strong> m@gmail.com
-            </div>
-            <div class="view-btn-container">
-                <button class="view-btn" onclick="toggleLawyerDetails('mno')">View</button>
-            </div>
-        </div>
-
-        <div class="lawyer-summary">
-            <div class="summary-item">
-                <strong>Username:</strong> xyz
-            </div>
-            <div class="summary-item">
-                <strong>Email:</strong> xyz@gmail.com
-            </div>
-            <div class="view-btn-container">
-                <button class="view-btn" onclick="toggleLawyerDetails('xyz')">View</button>
-            </div>
-        </div>
-
-        <!-- Add more lawyer records here as needed -->
+        {% endfor %}
     </div>
 </div>
 
@@ -70,8 +45,11 @@
 
             <!-- Buttons for Approve/Reject -->
             <div class="button-container">
-                <button type="submit" name="action" value="approve" class="approve-btn">Approve Lawyer</button>
-                <button type="submit" name="action" value="reject" class="reject-btn">Reject Lawyer</button>
+                <form method="post" action="{% url 'approve_or_reject_lawyer' lawyer.user.username %}">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="approve" class="approve-btn">Approve Lawyer</button>
+                    <button type="submit" name="action" value="reject" class="reject-btn">Reject Lawyer</button>
+                </form>
             </div>
             <button onclick="closeLawyerDetails()" class="close-btn">Close</button>
         </div>
@@ -256,33 +234,16 @@ button:hover {
     // Function to toggle the lawyer details card and populate information dynamically
     function toggleLawyerDetails(username) {
         var lawyerData = {
-            "abc": {
-                "fullName": "xyz",
-                "email": "a@gmail.com",
-                "contactNumber": "1234567891",
-                "password": "admin123",
-                "address": "mnop",
-                "licenseNumber": "123456789",
-                "lawFirm": "abcd"
+            {% for lawyer in lawyers %}
+            "{{ lawyer.user.username }}": {
+                "fullName": "{{ lawyer.user.full_name }}",
+                "email": "{{ lawyer.user.email }}",
+                "contactNumber": "{{ lawyer.user.contact_number }}",
+                "address": "{{ lawyer.user.address }}",
+                "licenseNumber": "{{ lawyer.license_number }}",
+                "lawFirm": "{{ lawyer.law_firm }}"
             },
-            "mno": {
-                "fullName": "rst",
-                "email": "m@gmail.com",
-                "contactNumber": "9876543210",
-                "password": "admin1234",
-                "address": "pqrst",
-                "licenseNumber": "987654321",
-                "lawFirm": "efgh"
-            },
-            "xyz": {
-                "fullName": "uvw",
-                "email": "xyz@gmail.com",
-                "contactNumber": "123987654",
-                "password": "password123",
-                "address": "abcd",
-                "licenseNumber": "345678901",
-                "lawFirm": "ijkl"
-            }
+            {% endfor %}
         };
 
         var lawyer = lawyerData[username];
@@ -291,7 +252,6 @@ button:hover {
             <div class="info-item"><strong>Full Name:</strong> ${lawyer.fullName}</div>
             <div class="info-item"><strong>Email:</strong> ${lawyer.email}</div>
             <div class="info-item"><strong>Contact Number:</strong> ${lawyer.contactNumber}</div>
-            <div class="info-item"><strong>Password:</strong> ${lawyer.password}</div>
             <div class="info-item"><strong>Address:</strong> ${lawyer.address}</div>
             <div class="info-item"><strong>License Number:</strong> ${lawyer.licenseNumber}</div>
             <div class="info-item"><strong>Law Firm:</strong> ${lawyer.lawFirm}</div>

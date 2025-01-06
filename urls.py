@@ -1,3 +1,4 @@
+
 """
 Django settings for eCourt project.
 
@@ -79,6 +80,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'eCourt.urls'
+
+handler404 = 'ecourt_home.views.error_404_view'
 
 TEMPLATES = [
     {

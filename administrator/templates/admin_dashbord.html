@@ -113,20 +113,16 @@
 
     <!-- Cards Section -->
     <div class="dashboard-container">
-        <a href="{% url 'user_management' %}">
-            <div class="dashboard-card">
-                <div class="card-icon">👤</div>
-                <h3>User Management</h3>
-                <p>Manage all users</p>
-            </div>
-        </a>
-        <a href="{% url 'case_management' %}">
-            <div class="dashboard-card">
-                <div class="card-icon">⚖️</div>
-                <h3>Case Management</h3>
-                <p>Track and assign cases</p>
-            </div>
-        </a>
+        <div class="dashboard-card">
+            <div class="card-icon">👤</div>
+            <h3>Total Users</h3>
+            <p>{{ total_users }}</p>
+        </div>
+        <div class="dashboard-card">
+            <div class="card-icon">⚖️</div>
+            <h3>Total Cases</h3>
+            <p>{{ total_cases }}</p>
+        </div>
         <div class="dashboard-card">
             <div class="card-icon">🔔</div>
             <h3>Notifications</h3>

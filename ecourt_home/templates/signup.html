@@ -148,6 +148,14 @@
             color: #155724;
         }
 
+        .profile-picture-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 20px;
+        }
+
         @media (max-width: 768px) {
             .formcontainer {
                 flex-direction: column;
@@ -191,7 +199,7 @@
                     </div>
                 {% endif %}
 
-                 <form action="{% url 'signup' %}" method="POST">
+                 <form action="{% url 'signup' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="text" name="username" placeholder="Username" required>
                     <input type="text" name="full_name" placeholder="Full Name" required>
@@ -204,6 +212,10 @@
                         <option value="lawyer">Lawyer</option>
                         <option value="citizen">Citizen</option>
                     </select>
+
+                    <!-- Profile Picture Upload -->
+                    <input type="file" name="profile_picture" accept="image/*" onchange="previewProfilePicture(event)">
+                    <img id="profilePicturePreview" class="profile-picture-preview" src="#" alt="Profile Picture Preview" style="display: none;">
 
                     <!-- Lawyer-Specific Fields -->
                     <div id="lawyerFields" class="conditional-fields">
@@ -244,6 +256,16 @@
                 citizenFields.style.display = role === 'citizen' ? 'block' : 'none';
             });
         });
+
+        function previewProfilePicture(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const preview = document.getElementById('profilePicturePreview');
+                preview.src = reader.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
     </script>
 </body>
 </html>

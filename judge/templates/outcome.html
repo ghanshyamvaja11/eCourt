@@ -16,33 +16,20 @@
     <div class="form-section">
         <h2 class="form-title">Verdict Information</h2>
 
-        <!-- Static Outcome Data (Loop through each case's outcome details) -->
-
+        <!-- Dynamic Outcome Data (Loop through each case's outcome details) -->
+        {% for outcome in outcomes %}
         <div class="outcome-summary">
             <div class="summary-item">
-                <strong>Plaintiff:</strong> John Doe
+                <strong>Plaintiff:</strong> {{ outcome.plaintiff }}
             </div>
             <div class="summary-item">
-                <strong>Case Type:</strong> Civil Case
+                <strong>Case Type:</strong> {{ outcome.case_type }}
             </div>
             <div class="view-btn-container">
-                <button class="view-btn" onclick="toggleVerdictDetails('case1')">View Outcome</button>
+                <button class="view-btn" onclick="toggleVerdictDetails('{{ outcome.id }}')">View Outcome</button>
             </div>
         </div>
-
-        <div class="outcome-summary">
-            <div class="summary-item">
-                <strong>Plaintiff:</strong> Jane Smith
-            </div>
-            <div class="summary-item">
-                <strong>Case Type:</strong> Criminal Case
-            </div>
-            <div class="view-btn-container">
-                <button class="view-btn" onclick="toggleVerdictDetails('case2')">View Outcome</button>
-            </div>
-        </div>
-
-        <!-- Add more case records here as needed -->
+        {% endfor %}
     </div>
 </div>
 

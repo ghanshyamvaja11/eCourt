@@ -152,51 +152,6 @@
                 display: none; /* Hide separate image section */
             }
         }
-
-        .resend-otp {
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            color: white; /* Change text color to white */
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            position: relative;
-            overflow: hidden;
-            padding: 10px;
-            font-size: 1rem;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-
-        .resend-otp:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .messages {
-            margin: 20px auto;
-            max-width: 900px;
-            padding: 10px;
-        }
-
-        .message {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-
-        .message.error {
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            color: #721c24;
-        }
-
-        .message.success {
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-        }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -213,16 +168,6 @@
                     resendButton.disabled = false;
                 }
             }, 1000);
-
-            const otpInput = document.getElementById('otp');
-            const submitButton = document.getElementById('submit-btn');
-            otpInput.addEventListener('input', function() {
-                if (otpInput.value.length === 6) {
-                    submitButton.disabled = false;
-                } else {
-                    submitButton.disabled = true;
-                }
-            });
         });
     </script>
 </head>
@@ -234,23 +179,13 @@
             <div class="form-section">
                 <h2>Verify OTP</h2>
                 <p>Enter your OTP to proceed</p>
-                {% if messages %}
-                    <div class="messages">
-                        {% for message in messages %}
-                            <div class="message {{ message.tags }}">{{ message }}</div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
                 <form method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="email" placeholder="Enter Email" required>
-                    <input type="text" id="otp" name="otp" placeholder="Enter OTP" maxlength="6" required>
-                    <button type="submit" id="submit-btn" class="btn" disabled>Verify</button>
+                    <input type="text" name="otp" placeholder="Enter OTP" required>
+                    <button type="submit" class="btn">Verify</button>
                 </form>
-                <form method="POST" action="{% url 'resend_otp' %}">
-                    {% csrf_token %}
-                    <button id="resend-otp" class="resend-otp" disabled>Resend OTP in 30s</button>
-                </form>
+                <button id="resend-otp" class="btn" disabled>Resend OTP in 30s</button>
             </div>
 
             <!-- Image Section (Hidden on Mobile) -->

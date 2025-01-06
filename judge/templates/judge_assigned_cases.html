@@ -15,42 +15,20 @@
     <div class="form-section">
         <h2 class="form-title">Assigned Cases</h2>
 
-        <!-- Static Case Data (Loop through each case's information) -->
+        <!-- Dynamic Case Data (Loop through each case's information) -->
+        {% for case in cases %}
         <div class="case-summary">
             <div class="summary-item">
-                <strong>Case Title:</strong> Johnson vs Lee
+                <strong>Case Title:</strong> {{ case.title }}
             </div>
             <div class="summary-item">
-                <strong>Case Type:</strong> Civil
+                <strong>Case Type:</strong> {{ case.case_type }}
             </div>
             <div class="view-btn-container">
-                <button class="view-btn" onclick="toggleCaseDetails('case1')">View</button>
+                <button class="view-btn" onclick="toggleCaseDetails('{{ case.id }}')">View</button>
             </div>
         </div>
-
-        <div class="case-summary">
-            <div class="summary-item">
-                <strong>Case Title:</strong> Green vs Brown
-            </div>
-            <div class="summary-item">
-                <strong>Case Type:</strong> Criminal
-            </div>
-            <div class="view-btn-container">
-                <button class="view-btn" onclick="toggleCaseDetails('case2')">View</button>
-            </div>
-        </div>
-
-        <div class="case-summary">
-            <div class="summary-item">
-                <strong>Case Title:</strong> Wilson vs White
-            </div>
-            <div class="summary-item">
-                <strong>Case Type:</strong> Family
-            </div>
-            <div class="view-btn-container">
-                <button class="view-btn" onclick="toggleCaseDetails('case3')">View</button>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 </div>
 
@@ -220,33 +198,7 @@
 
     function toggleCaseDetails(caseId) {
         const caseData = {
-            case1: {
-                caseNumber: "20001",
-                caseTitle: "Johnson vs Lee",
-                caseType: "Civil",
-                plaintiff: "Johnson",
-                defendant: "Lee",
-                status: "Ongoing",
-                hearingDate: "2025-01-15"
-            },
-            case2: {
-                caseNumber: "20002",
-                caseTitle: "Green vs Brown",
-                caseType: "Criminal",
-                plaintiff: "Green",
-                defendant: "Brown",
-                status: "Pending",
-                hearingDate: "2025-01-18"
-            },
-            case3: {
-                caseNumber: "20003",
-                caseTitle: "Wilson vs White",
-                caseType: "Family",
-                plaintiff: "Wilson",
-                defendant: "White",
-                status: "Closed",
-                hearingDate: "N/A"
-            }
+            // ...existing case data...
         };
 
         currentCaseId = caseId;

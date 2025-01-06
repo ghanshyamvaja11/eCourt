@@ -8,30 +8,29 @@
     <h1>User Management</h1>
 </div>
 
-<!-- User Management Cards -->
+<!-- User Management Table -->
 <div class="dashboard-container">
-    <!-- Citizens Card -->
-    <div class="dashboard-card">
-        <div class="card-icon">👥</div>
-        <h3>Citizens</h3>
-        <p>Manage citizen data and details</p>
-        <a href="{% url 'citizens_management' %}" class="btn">View Citizens</a>
-    </div>
-
-    <!-- Lawyers Card -->
-    <div class="dashboard-card">
-        <div class="card-icon">⚖️</div>
-        <h3>Lawyers</h3>
-        <p>Manage lawyer data and details</p>
-        <a href="{% url 'lawyers_management' %}" class="btn">View Lawyers</a>
-    </div>
-
-    <!-- Judges Card -->
-    <div class="dashboard-card">
-        <div class="card-icon">👨‍⚖️</div>
-        <h3>Judges</h3>
-        <p>Manage judge data and details</p>
-        <a href="{% url 'judges_management' %}" class="btn">View Judges</a>
-    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Contact Number</th>
+                <th>User Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.full_name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.contact_number }}</td>
+                <td>{{ user.user_type }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

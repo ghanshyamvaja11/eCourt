@@ -13,26 +13,26 @@
         <div class="profile-content">
             <!-- Profile Image on the Left -->
             <div class="profile-image">
-                <img src="/media/signup.gif" alt="Profile Image" class="profile-img">
+                <img src="{{ user.profile_image.url }}" alt="Profile Image" class="profile-img">
             </div>
             <!-- Profile Details on the Right -->
             <div class="profile-info">
                 <table class="profile-table">
                     <tr>
                         <th><i class="fas fa-user-circle"></i> Username:</th>
-                        <td>admin123</td>
+                        <td>{{ user.username }}</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-id-card"></i> Full Name:</th>
-                        <td>John Doe</td>
+                        <td>{{ user.full_name }}</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-envelope"></i> Email:</th>
-                        <td>admin@example.com</td>
+                        <td>{{ user.email }}</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-phone"></i> Contact Number:</th>
-                        <td>+1234567890</td>
+                        <td>{{ user.contact_number }}</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-lock"></i> Password:</th>
@@ -40,7 +40,7 @@
                     </tr>
                     <tr>
                         <th><i class="fas fa-map-marker-alt"></i> Address:</th>
-                        <td>123 Legal Street, Justice City</td>
+                        <td>{{ user.address }}</td>
                     </tr>
                 </table>
             </div>
