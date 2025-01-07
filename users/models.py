@@ -40,7 +40,7 @@ class Lawyer(models.Model):
     law_firm = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return f"Lawyer - {self.username}"
+        return f"Lawyer - {self.user.username}"
 
 
 class Judge(models.Model):
@@ -49,7 +49,7 @@ class Judge(models.Model):
     cases_assigned = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"Judge - {self.username}"
+        return f"Judge - {self.user.username}"
 
 
 class Citizen(models.Model):
@@ -59,4 +59,4 @@ class Citizen(models.Model):
     cases_filed = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"Citizen - {self.username}"
+        return f"Citizen - {self.user.username}"

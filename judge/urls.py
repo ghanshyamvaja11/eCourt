@@ -9,4 +9,5 @@ urlpatterns = [
     path('case-doc/', case_doc, name='case_doc'),
     path('judge-profile/', judge_profile, name='judge_profile'),
     path('judge-edit-profile/', judge_edit_profile, name='judge_edit_profile'),
+    path('logout/', logout_view, name='logout'),
 ]

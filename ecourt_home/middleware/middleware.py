@@ -13,5 +13,5 @@ class Force404Middleware:
         if response.status_code == 404:
             return redirect('error_404_view')
         if response.status_code == 400:
-            return redirect('error_400_view')
+            return redirect('error_404_view')
         return response

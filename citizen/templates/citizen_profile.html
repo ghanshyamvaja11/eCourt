@@ -1,211 +1,255 @@
 {% extends 'citizen_header.html' %}
 
 {% block content %}
-<!-- Profile Header Section -->
+
 <div class="dashboard-header">
-    <h1 class="dashboard-title">Citizen Profile</h1>
-    <p class="dashboard-subtitle">Manage your personal details and keep them up-to-date</p>
+    <h1>Edit Profile</h1>
 </div>
 
-<div class="profile-container">
-    <!-- Profile Section -->
-    <div class="profile-section">
-        <div class="profile-content">
-            <!-- Profile Image on the Left -->
-            <div class="profile-image">
-                <img src="/media/signup.gif" alt="Profile Image" class="profile-img">
-            </div>
-            <!-- Profile Details on the Right -->
-            <div class="profile-info">
-                <table class="profile-table">
-                    <tr>
-                        <th><i class="fas fa-user-circle"></i> Username:</th>
-                        <td>citizen123</td>
-                    </tr>
-                    <tr>
-                        <th><i class="fas fa-id-card"></i> Full Name:</th>
-                        <td>Jane Smith</td>
-                    </tr>
-                    <tr>
-                        <th><i class="fas fa-envelope"></i> Email:</th>
-                        <td>citizen@example.com</td>
-                    </tr>
-                    <tr>
-                        <th><i class="fas fa-phone"></i> Contact Number:</th>
-                        <td>+9876543210</td>
-                    </tr>
-                    <tr>
-                        <th><i class="fas fa-lock"></i> Password:</th>
-                        <td>********</td>
-                    </tr>
-                    <tr>
-                        <th><i class="fas fa-map-marker-alt"></i> Address:</th>
-                        <td>456 Freedom Rd, Cityville</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <!-- Edit Profile Button Below Details -->
-        <div class="edit-profile">
-            <a href="{% url 'citizen_edit_profile' %}">
-                <button class="edit-btn">
-                    Edit Profile
-                </button>
-            </a>
-        </div>
+<div style="text-align: center; margin: 20px 0; font-size: 1.2rem; color: #1e3c72; font-style: italic;">
+    "Injustice anywhere is a threat to justice everywhere." – Martin Luther King Jr.
+</div>
+
+<div class="formcontainer">
+    <!-- Left Section for GIF -->
+    <div class="gif-section">
+        <img src="/media/edit_profile.gif" alt="Animated edit_profile Illustration">
     </div>
-</div>
 
-<!-- Font Awesome CDN -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Right Section for Form -->
+    <div class="form-section">
+        <!-- Title Above Form -->
+        <h2 class="form-title">Edit Your Profile</h2>
+        <p style="text-align: center; margin-bottom: 30px; color: #333;">Please make sure your information is up-to-date for smooth operations within the eCourt system.</p>
+
+        <form action="{% url 'citizen_edit_profile' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Input Fields -->
+            <div class="input-container">
+                <input type="text" name="username" placeholder="Username" value="{{ user.username }}" required>
+            </div>
+
+            <div class="input-container">
+                <input type="text" name="full_name" placeholder="Full Name" value="{{ user.full_name }}" required>
+            </div>
+
+            <div class="input-container">
+                <input type="email" name="email" placeholder="Email Address" value="{{ user.email }}" required>
+            </div>
+
+            <div class="input-container">
+                <input type="text" name="contact_number" placeholder="Contact Number" value="{{ user.contact_number }}" required>
+            </div>
+
+            <div class="input-container">
+                <input type="text" name="national_id_type" placeholder="National ID Type" value="{{ citizen.national_id_type }}" required>
+            </div>
+
+            <div class="input-container">
+                <input type="text" name="national_id" placeholder="National ID" value="{{ citizen.national_id }}" required>
+            </div>
+
+            <div class="input-container">
+                <textarea name="address" placeholder="Address" rows="3" required>{{ user.address }}</textarea>
+            </div>
+
+            <!-- Profile Picture Section -->
+            <div class="profile-picture-section">
+                {% if user.profile_picture %}
+                <div class="profile-picture-container">
+                    <label for="profile_picture">Current Profile Picture:</label>
+                    <img src="{{ user.profile_picture.url }}" alt="Current Profile Picture" class="profile-picture">
+                </div>
+                {% endif %}
+                <div class="profile-picture-container">
+                    <label for="new_profile_picture">New Profile Picture:</label>
+                    <img id="newProfilePicturePreview" src="#" alt="New Profile Picture Preview" class="profile-picture" style="display: none;">
+                </div>
+            </div>
+
+            <div class="input-container">
+                <input type="file" name="profile_picture" id="profile_picture" accept="image/*" onchange="previewNewProfilePicture(event)">
+            </div>
+
+            <!-- Submit Button -->
+            <div class="button-container">
+                <button type="submit">Update Profile</button>
+            </div>
+        </form>
+    </div>
+</div><br>
 
 <style>
-    /* General Styles */
-    body {
-        font-family: 'Arial', sans-serif;
-        margin: 0;
-        padding: 0;
+/* General Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #f4f7f9;
+}
+
+/* Form Container */
+.formcontainer {
+    max-width: 900px;
+    margin: auto;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    position: relative;
+    min-height: 80vh; /* Ensure enough space for form content */
+    margin-bottom: 30px; /* Prevent overflow */
+}
+
+/* Left Section for GIF */
+.gif-section {
+    flex: 1;
+    background-color: #f4f7f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.gif-section img {
+    max-width: 100%;
+    height: 100%;
+}
+
+/* Right Section for Form */
+.form-section {
+    flex: 1;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Ensure content starts at the top */
+    background-color: white;
+    overflow-y: auto; /* Enable scrolling for form */
+    flex-grow: 1; /* Allow form section to take up available space */
+    max-height: 80vh; /* Constrain the form height */
+}
+
+/* Form Title */
+.form-title {
+    text-align: center;
+    color: #1e3c72;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+/* Profile Picture Section */
+.profile-picture-section {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.profile-picture-container {
+    text-align: center;
+}
+
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
+}
+
+/* Input Fields */
+.input-container {
+    margin-bottom: 15px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: none;
+}
+
+/* Button Styles */
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+button {
+    background: linear-gradient(to right, #1e3c72, #2a5298);
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+button:hover {
+    background: linear-gradient(to right, #2a5298, #1e3c72);
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .formcontainer {
+        flex-direction: column;
     }
 
-    /* Dashboard Header Styles */
-    .dashboard-title {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 5px;
+    .gif-section {
+        display: none;
     }
 
-    .dashboard-subtitle {
-        font-size: 1.2rem;
-        margin: 0;
+    .formcontainer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('/media/signup.gif') no-repeat center center/cover;
+        opacity: 0.1;
+        z-index: -1;
     }
 
-    /* Profile Section Styles */
-    .profile-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #f4f7f9;
-        min-height: calc(100vh - 120px);
+    .form-section {
         padding: 20px;
     }
+}
 
-    .profile-section {
-        background: linear-gradient(145deg, #ffffff, #f0f0f0);
-        padding: 20px;
-        margin-top: -100px;
-        border-radius: 12px;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        max-width: 1000px;
-        width: 100%;
-        display: flex;
-        flex-direction: column; /* Stack profile image and details */
-        gap: 10px; /* Space between sections */
-        align-items: center;
-        animation: zoomIn 0.8s ease-in-out;
+@media (max-width: 480px) {
+    .form-title {
+        font-size: 1.5rem;
     }
 
-    .profile-content {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        gap: 30px;
-        width: 100%;
-    }
-
-    .profile-image {
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .profile-image img {
-        width: 140px;
-        height: 140px;
-        border-radius: 50%;
-        border: 5px solid #2a5298;
-        object-fit: cover;
-        animation: pulse 2s infinite;
-    }
-
-    .profile-info {
-        flex: 2;
-        width: 100%;
-        text-align: left;
-    }
-
-    .profile-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-
-    .profile-table th,
-    .profile-table td {
+    button {
+        font-size: 0.9rem;
         padding: 12px;
-        font-size: 1rem;
     }
-
-    .profile-table th {
-        color: #2a5298;
-        font-weight: bold;
-        width: 40%;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .profile-table td {
-        color: #333;
-        word-wrap: break-word;
-    }
-
-    /* Edit Profile Button */
-    .edit-profile {
-        margin-top: 30px;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-    }
-
-    .edit-profile .edit-btn {
-        background: linear-gradient(to right, #1e3c72, #2a5298);
-        color: white;
-        padding: 15px 40px; /* Adjusted padding */
-        border: none;
-        border-radius: 5px;
-        font-size: 1rem;
-        cursor: pointer;
-        width: 250%; /* Set width to 100% to match the table width */
-        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-    }
-
-    .edit-profile .edit-btn:hover {
-        background: linear-gradient(90deg, #2a5298, #1e3c72);
-        transform: scale(1.05);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Animations */
-    @keyframes zoomIn {
-        from {
-            opacity: 0;
-            transform: scale(0.8);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-
-    @keyframes pulse {
-        0%, 100% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.05);
-        }
-    }
+}
 </style>
+
+<script>
+function previewNewProfilePicture(event) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        const output = document.getElementById('newProfilePicturePreview');
+        output.src = reader.result;
+        output.style.display = 'block';
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+</script>
+
 {% endblock %}

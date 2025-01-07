@@ -56,6 +56,21 @@
             background-color: #2a5298;
         }
 
+        .logout-btn {
+            background-color: #ff4d4d;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #ff1a1a;
+        }
+
         /* Main Content Area */
         .main-content {
             margin-left: 270px;
@@ -150,6 +165,7 @@
             <li><a href="{% url 'outcome' %}">Verdict & Outcome</a></li>
             <li><a href="{% url 'case_doc' %}">Case Documents</a></li>
             <li><a href="{% url 'judge_profile' %}">Profile</a></li>
+            <li><a href="{% url 'logout' %}" class="logout-btn">Logout</a></li>
         </ul>
     </div>
 

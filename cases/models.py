@@ -1,7 +1,6 @@
 from django.db import models
 from users.models import Lawyer, Judge, Citizen
 
-
 class Case(models.Model):
     STATUS_CHOICES = [
         ('PENDING', 'Pending'),
@@ -19,13 +18,15 @@ class Case(models.Model):
     assigned_judge = models.ForeignKey(
         Judge, related_name="cases", on_delete=models.SET_NULL, null=True, blank=True)
     case_title = models.CharField(max_length=255)
+    case_type = models.CharField(max_length=50)
+    case_description = models.TextField(blank=True, null=True)
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    laywer_accepted = models.BooleanField(default=False)
     case_filed_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Case {self.case_number} - {self.case_title}"
-
 
 class Hearing(models.Model):
     case = models.ForeignKey(
@@ -38,12 +39,11 @@ class Hearing(models.Model):
     def __str__(self):
         return f"Hearing for {self.case.case_number} on {self.date} at {self.time}"
 
-
 class Document(models.Model):
     case = models.ForeignKey(Case, related_name="case_documents",
                              on_delete=models.CASCADE)  # Updated related_name
     document_type = models.CharField(max_length=100)
-    file = models.FileField(upload_to='documents/%Y/%m/%d/')
+    file = models.FileField(upload_to='case_documents/%Y/%m/%d/')
     uploaded_by = models.ForeignKey(
         Citizen, related_name="uploaded_documents", on_delete=models.CASCADE)
     uploaded_at = models.DateTimeField(auto_now_add=True)

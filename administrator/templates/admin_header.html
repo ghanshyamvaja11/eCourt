@@ -133,6 +133,21 @@
         background-color: #2a5298;
     }
 
+    .logout-btn {
+        background-color: #ff4d4d;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        transition: background 0.3s;
+    }
+
+    .logout-btn:hover {
+        background-color: #ff1a1a;
+    }
+
     /* Hamburger Menu */
     .hamburger {
         display: none;
@@ -198,7 +213,7 @@
     <div class="sidebar" id="sidebar">
         <h2>Admin Menu</h2>
         <ul>
-            <li><a href="{% url 'dashbord' %}">Dashboard</a></li>
+            <li><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
             <li><a href="{% url 'user_management' %}">User Management</a></li>
             <li><a href="{% url 'case_management' %}">Case Management</a></li>
             <li><a href="">Notifications</a></li>
@@ -207,6 +222,7 @@
             <li><a href="{% url 'lawyer_approve_reject' %}">Requested Lawyers</a></li>
             <li><a href="{% url 'add_judge' %}">Add Judge</a></li>
             <li><a href="{% url 'profile' %}">Profile</a></li>
+            <li><a href="{% url 'logout' %}" class="logout-btn">Logout</a></li>
         </ul>
     </div>
 

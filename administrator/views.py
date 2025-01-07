@@ -4,9 +4,10 @@ from cases.models import *
 from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 
 # Create your views here.
-@login_required
+@login_required(login_url='/login/')
 def admin_dashboard(request):
     # Fetch some data to display on the dashboard
     total_users = User.objects.count()
@@ -16,69 +17,70 @@ def admin_dashboard(request):
         'total_cases': total_cases,
     })
 
+@login_required(login_url='/login/')
 def header(request):
     return render(request, 'admin_header.html')
 
-@login_required
+@login_required(login_url='/login/')
 def user_management(request):
     users = User.objects.all()
     return render(request, 'user_management.html', {'users': users})
 
-@login_required
+@login_required(login_url='/login/')
 def citizens_management(request):
     citizens = User.objects.filter(user_type='CITIZEN')
     return render(request, 'citizens_management.html', {'citizens': citizens})
 
-@login_required
+@login_required(login_url='/login/')
 def lawyers_management(request):
     lawyers = Lawyer.objects.all()
     return render(request, 'lawyers_management.html', {'lawyers': lawyers})
 
-@login_required
+@login_required(login_url='/login/')
 def judges_management(request):
     judges = Judge.objects.all()
     return render(request, 'judges_management.html', {'judges': judges})
 
-@login_required
+@login_required(login_url='/login/')
 def case_management(request):
     cases = Case.objects.all()
     return render(request, 'case_management.html', {'cases': cases})
 
-@login_required
+@login_required(login_url='/login/')
 def case_status(request):
     cases = Case.objects.all()
     return render(request, 'case_status.html', {'cases': cases})
 
-@login_required
+@login_required(login_url='/login/')
 def all_cases(request):
     cases = Case.objects.all()
     return render(request, 'all_cases.html', {'cases': cases})
 
 # Example view for Pending Cases
-@login_required
+@login_required(login_url='/login/')
 def pending_cases(request):
     cases = Case.objects.filter(status='PENDING')
     return render(request, 'pending_cases.html', {'cases': cases})
 
 # Example view for Active Cases
-@login_required
+@login_required(login_url='/login/')
 def active_cases(request):
     cases = Case.objects.filter(status='ACTIVE')
     return render(request, 'active_cases.html', {'cases': cases})
 
 # Example view for Closed Cases
-@login_required
+@login_required(login_url='/login/')
 def closed_cases(request):
     cases = Case.objects.filter(status='CLOSED')
     return render(request, 'closed_cases.html', {'cases': cases})
 
 # Example view for Dismissed Cases
-@login_required
+@login_required(login_url='/login/')
 def dismissed_cases(request):
     cases = Case.objects.filter(status='DISMISSED')
     return render(request, 'dismissed_cases.html', {'cases': cases})
 
-@login_required
+@login_required(login_url='/login/')
 def add_judge(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -95,12 +97,12 @@ def add_judge(request):
         return redirect('add_judge')
     return render(request, 'add_judge.html')
 
-@login_required
+@login_required(login_url='/login/')
 def lawyer_approve_reject(request):
     lawyers = Lawyer.objects.filter(user__user_type='PENDING_LAWYER')
     return render(request, 'lawyer_request.html', {'lawyers': lawyers})
 
-@login_required
+@login_required(login_url='/login/')
 def approve_or_reject_lawyer(request, username):
     user = get_object_or_404(User, username=username)
     try:
@@ -125,15 +127,15 @@ def approve_or_reject_lawyer(request, username):
 
     return render(request, 'approve_reject_lawyer.html', {'lawyer': lawyer})
 
-@login_required
+@login_required(login_url='/login/')
 def profile(request):
     user = request.user
     return render(request, 'profile.html', {'user': user})
 
-@login_required
+@login_required(login_url='/login/')
 def edit_profile(request):
     user = request.user
-    if request.method == 'POST':
+    if request.method == 'POST' and user.role == 'Admin':
         user.username = request.POST['username']
         user.full_name = request.POST['full_name']
         user.email = request.POST['email']
@@ -145,3 +147,8 @@ def edit_profile(request):
         messages.success(request, 'Profile updated successfully.')
         return redirect('profile')
     return render(request, 'edit_profile.html', {'user': user})
+
+@login_required(login_url='/login/')
+def logout_view(request):
+    logout(request)
+    return redirect('login')  # Redirect to the login page after logout

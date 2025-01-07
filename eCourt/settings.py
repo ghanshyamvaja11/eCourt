@@ -80,6 +80,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'eCourt.urls'
 
+LOGIN_URL = '/login/'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
