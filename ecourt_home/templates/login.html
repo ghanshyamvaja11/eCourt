@@ -234,6 +234,7 @@ button[type='button'] {
                 {% csrf_token %}
                 <select name="user_type" required>
                     <option value="" disabled selected>Select Role</option>
+                    <option value="admin">Admin</option>
                     <option value="judge">Judge</option>
                     <option value="lawyer">Lawyer</option>
                     <option value="citizen">Citizen</option>

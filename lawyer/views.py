@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponse
 from django.contrib.auth import logout
 from django.core.mail import send_mail
 from users.models import *  # Import all models from users app
@@ -28,7 +28,29 @@ def hearings(request):
 
 @login_required(login_url='/login/')
 def efilling(request):
-    return render(request, 'efilling.html')
+    lawyer = Lawyer.objects.get(user=request.user)
+    cases = Case.objects.filter(assigned_to=lawyer)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        case_id = request.POST.get('case_id')
+
+        if action == 'upload_document':
+            document_type = request.POST.get('document_type')
+            file = request.FILES.get('file')
+            case = Case.objects.get(id=case_id)
+
+            Document.objects.create(
+                case=case,
+                document_type=document_type,
+                file=file,
+                uploaded_by=lawyer
+            )
+
+            messages.success(request, 'Document uploaded successfully.')
+            return redirect('efilling')
+
+    return render(request, 'efilling.html', {'cases': cases})
 
 @login_required(login_url='/login/')
 def lawyer_profile(request):
@@ -77,6 +99,27 @@ def lawyer_edit_profile(request):
         return redirect('lawyer_profile')
     else:
         return HttpResponseBadRequest("Invalid request method")
+
+@login_required(login_url='/login/')
+def profile(request):
+    user = request.user
+    return render(request, 'profile.html', {'user': user})
+
+@login_required(login_url='/login/')
+def edit_profile(request):
+    user = request.user
+    if request.method == 'POST':
+        user.username = user.username
+        user.full_name = request.POST['full_name']
+        user.email = request.POST['email']
+        user.contact_number = request.POST['contact_number']
+        user.address = request.POST['address']
+        if request.FILES.get('profile_image'):
+            user.profile_picture = request.FILES['profile_image']
+        user.save()
+        messages.success(request, 'Profile updated successfully.')
+        return redirect('profile')
+    return render(request, 'edit_profile.html', {'user': user})
 
 @login_required(login_url='/login/')
 def logout_view(request):

@@ -28,10 +28,11 @@ class User(AbstractUser):
         return self.username
 
 
-class Admin(User):
-    pass
+class Admin(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    is_superuser = models.BooleanField(default=True)
     def __str__(self):
-        return f"Admin - {self.username}"
+        return f"Admin - {self.user.username}"
 
 
 class Lawyer(models.Model):

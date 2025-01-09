@@ -1,0 +1,53 @@
+{% extends 'admin_header.html' %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Active Cases</h1>
+</div>
+
+<div class="formcontainer">
+    <div class="form-section">
+        <h2 class="form-title">Active Cases</h2>
+        <input type="text" id="search-bar" class="search-bar" placeholder="Search cases...based on case title or case type" onkeyup="filterCases()">
+        <table class="cases-table">
+            <thead>
+                <tr>
+                    <th style="text-align: center;">Case Number</th>
+                    <th style="text-align: center;">Case Title</th>
+                    <th style="text-align: center;">Case Type</th>
+                    <th style="text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="cases-table-body">
+                {% for case in cases %}
+                <tr>
+                    <td style="text-align: center;">{{ case.case_number }}</td>
+                    <td style="text-align: center;">{{ case.case_title }}</td>
+                    <td style="text-align: center;">{{ case.case_type }}</td>
+                    <td style="text-align: center;">
+                        <button class="view-btn" onclick="toggleCaseDetails('{{ case.id }}')">View</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="case-details-card" class="case-details-card">
+    <div class="formcontainer">
+        <div class="form-section">
+            <h2 class="form-title">Case Information</h2>
+            <div id="case-info-details" class="case-info"></div>
+            <div class="button-container">
+                <button onclick="viewDocuments()" class="approve-btn">View Documents</button>
+            </div>
+            <button onclick="closeCaseDetails()" class="close-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ...existing JavaScript functions (filterCases, toggleCaseDetails, closeCaseDetails, viewDocuments)...
+</script>
+{% endblock %}

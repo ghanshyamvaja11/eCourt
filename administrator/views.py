@@ -5,6 +5,9 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+import json
+from django.db.models import Count
+from django.db.models.functions import TruncMonth
 
 # Create your views here.
 @login_required(login_url='/login/')
@@ -115,15 +118,28 @@ def approve_or_reject_lawyer(request, username):
         action = request.POST.get('action')
         if action == 'approve':
             lawyer.user.user_type = 'LAWYER'
+            lawyer.user.is_active = True
             lawyer.user.save()
             messages.success(request, f"Lawyer {user.username} has been approved.")
+            # Notify lawyer of approval
+            lawyer.user.email_user(
+                'Approval Notification',
+                'Congratulations, your lawyer account has been approved. now you can login into your account.',
+                'ecourtofficially@gmail.com'
+            )
         elif action == 'reject':
             lawyer.delete()
             user.delete()
             messages.success(request, f"Lawyer {user.username} has been rejected.")
+            # Notify lawyer of rejection
+            user.email_user(
+                'Rejection Notification',
+                'We regret to inform you that your lawyer account has been rejected.',
+                'ecourtofficially@gmail.com'
+            )
         else:
             messages.error(request, "Invalid action.")
-        return redirect('admin_dashboard')
+        return redirect('lawyer_approve_reject')
 
     return render(request, 'approve_reject_lawyer.html', {'lawyer': lawyer})
 
@@ -135,14 +151,15 @@ def profile(request):
 @login_required(login_url='/login/')
 def edit_profile(request):
     user = request.user
-    if request.method == 'POST' and user.role == 'Admin':
-        user.username = request.POST['username']
+    # if request.method == 'POST' and user.user_type == 'ADMIN':
+    if request.method == 'POST':
+        user.username = user.username
         user.full_name = request.POST['full_name']
         user.email = request.POST['email']
         user.contact_number = request.POST['contact_number']
         user.address = request.POST['address']
-        if 'profile_image' in request.FILES:
-            user.profile_image = request.FILES['profile_image']
+        if request.FILES.get('profile_image'):
+            user.profile_picture = request.FILES['profile_image']
         user.save()
         messages.success(request, 'Profile updated successfully.')
         return redirect('profile')
@@ -152,3 +169,171 @@ def edit_profile(request):
 def logout_view(request):
     logout(request)
     return redirect('login')  # Redirect to the login page after logout
+
+@login_required(login_url='/login/')
+def analytics_dashboard(request):
+    # Fetch data for cases
+    cases = Case.objects.all()
+    case_status_counts = cases.values('status').annotate(count=Count('status'))
+    cases_data = {
+        'labels': [status['status'] for status in case_status_counts],
+        'data': [status['count'] for status in case_status_counts],
+        'label': 'Cases'
+    }
+
+    # Fetch data for lawyers
+    lawyers = Lawyer.objects.all()
+    lawyer_case_counts = cases.values('assigned_lawyer__user__full_name').annotate(count=Count('id'))
+    lawyers_data = {
+        'labels': [lawyer['assigned_lawyer__user__full_name'] for lawyer in lawyer_case_counts],
+        'data': [lawyer['count'] for lawyer in lawyer_case_counts],
+        'label': 'Cases per Lawyer'
+    }
+
+    # Fetch data for judges
+    judges = Judge.objects.all()
+    judge_case_counts = cases.values('assigned_judge__user__full_name').annotate(count=Count('id'))
+    judges_data = {
+        'labels': [judge['assigned_judge__user__full_name'] for judge in judge_case_counts],
+        'data': [judge['count'] for judge in judge_case_counts],
+        'label': 'Cases per Judge'
+    }
+
+    # Fetch data for citizens
+    citizens = Citizen.objects.all()
+    citizens_data = {
+        'labels': ['Total Citizens'],
+        'data': [citizens.count()],
+        'label': 'Citizens'
+    }
+
+    # Fetch data for case types
+    case_types = cases.values('case_type').annotate(count=Count('case_type'))
+    case_types_data = {
+        'labels': [case_type['case_type'] for case_type in case_types],
+        'data': [case_type['count'] for case_type in case_types],
+        'label': 'Case Types'
+    }
+
+    # Fetch data for monthly cases
+    monthly_cases = cases.annotate(month=TruncMonth('case_filed_date')).values('month').annotate(count=Count('id')).order_by('month')
+    monthly_cases_data = {
+        'labels': [month['month'].strftime('%B %Y') for month in monthly_cases],
+        'data': [month['count'] for month in monthly_cases],
+        'label': 'Monthly Cases'
+    }
+
+    # Fetch data for hearings
+    hearings = Hearing.objects.all()
+    hearing_counts = hearings.values('date').annotate(count=Count('id'))
+    hearings_data = {
+        'labels': [hearing['date'].strftime('%Y-%m-%d') for hearing in hearing_counts],
+        'data': [hearing['count'] for hearing in hearing_counts],
+        'label': 'Hearings'
+    }
+
+    # Fetch data for documents
+    documents = Document.objects.all()
+    document_counts = documents.values('document_type').annotate(count=Count('id'))
+    documents_data = {
+        'labels': [document['document_type'] for document in document_counts],
+        'data': [document['count'] for document in document_counts],
+        'label': 'Documents'
+    }
+
+    context = {
+        'cases_data': json.dumps(cases_data),
+        'lawyers_data': json.dumps(lawyers_data),
+        'judges_data': json.dumps(judges_data),
+        'citizens_data': json.dumps(citizens_data),
+        'case_types_data': json.dumps(case_types_data),
+        'monthly_cases_data': json.dumps(monthly_cases_data),
+        'hearings_data': json.dumps(hearings_data),
+        'documents_data': json.dumps(documents_data)
+    }
+
+    return render(request, 'analytics.html', context)
+
+@login_required(login_url='/login/')
+def reports_dashboard(request):
+    # Fetch data for cases
+    cases = Case.objects.all()
+    case_status_counts = cases.values('status').annotate(count=Count('status'))
+    cases_data = {
+        'labels': [status['status'] for status in case_status_counts],
+        'data': [status['count'] for status in case_status_counts],
+        'label': 'Cases'
+    }
+
+    # Fetch data for lawyers
+    lawyers = Lawyer.objects.all()
+    lawyer_case_counts = cases.values('assigned_lawyer__user__full_name').annotate(count=Count('id'))
+    lawyers_data = {
+        'labels': [lawyer['assigned_lawyer__user__full_name'] for lawyer in lawyer_case_counts],
+        'data': [lawyer['count'] for lawyer in lawyer_case_counts],
+        'label': 'Cases per Lawyer'
+    }
+
+    # Fetch data for judges
+    judges = Judge.objects.all()
+    judge_case_counts = cases.values('assigned_judge__user__full_name').annotate(count=Count('id'))
+    judges_data = {
+        'labels': [judge['assigned_judge__user__full_name'] for judge in judge_case_counts],
+        'data': [judge['count'] for judge in judge_case_counts],
+        'label': 'Cases per Judge'
+    }
+
+    # Fetch data for citizens
+    citizens = Citizen.objects.all()
+    citizens_data = {
+        'labels': ['Total Citizens'],
+        'data': [citizens.count()],
+        'label': 'Citizens'
+    }
+
+    # Fetch data for case types
+    case_types = cases.values('case_type').annotate(count=Count('case_type'))
+    case_types_data = {
+        'labels': [case_type['case_type'] for case_type in case_types],
+        'data': [case_type['count'] for case_type in case_types],
+        'label': 'Case Types'
+    }
+
+    # Fetch data for monthly cases
+    monthly_cases = cases.annotate(month=TruncMonth('case_filed_date')).values('month').annotate(count=Count('id')).order_by('month')
+    monthly_cases_data = {
+        'labels': [month['month'].strftime('%B %Y') for month in monthly_cases],
+        'data': [month['count'] for month in monthly_cases],
+        'label': 'Monthly Cases'
+    }
+
+    # Fetch data for hearings
+    hearings = Hearing.objects.all()
+    hearing_counts = hearings.values('date').annotate(count=Count('id'))
+    hearings_data = {
+        'labels': [hearing['date'].strftime('%Y-%m-%d') for hearing in hearing_counts],
+        'data': [hearing['count'] for hearing in hearing_counts],
+        'label': 'Hearings'
+    }
+
+    # Fetch data for documents
+    documents = Document.objects.all()
+    document_counts = documents.values('document_type').annotate(count=Count('id'))
+    documents_data = {
+        'labels': [document['document_type'] for document in document_counts],
+        'data': [document['count'] for document in document_counts],
+        'label': 'Documents'
+    }
+
+    context = {
+        'cases_data': json.dumps(cases_data),
+        'lawyers_data': json.dumps(lawyers_data),
+        'judges_data': json.dumps(judges_data),
+        'citizens_data': json.dumps(citizens_data),
+        'case_types_data': json.dumps(case_types_data),
+        'monthly_cases_data': json.dumps(monthly_cases_data),
+        'hearings_data': json.dumps(hearings_data),
+        'documents_data': json.dumps(documents_data)
+    }
+
+    return render(request, 'administrator/reports.html', context)

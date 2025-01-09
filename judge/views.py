@@ -38,7 +38,7 @@ def case_doc(request):
 def judge_profile(request):
     judge = Judge.objects.get(user=request.user)
     user = User.objects.get(id=judge.user.id)
-    return render(request, 'judge_profile.html', {'judge': judge, 'user': user})
+    return render(request, 'profile.html', {'judge': judge, 'user': user})
 
 @login_required(login_url='/login/')
 def judge_edit_profile(request):

@@ -122,62 +122,25 @@ def notification(request):
     return render(request, 'notification.html', {'notifications': notifications})
 
 @login_required(login_url='/login/')
-def citizen_profile(request):
-    citizen = Citizen.objects.get(user=request.user)
-    user = User.objects.get(id=citizen.user.id)
-    return render(request, 'citizen_profile.html', {'citizen': citizen, 'user': user})
+def profile(request):
+    user = request.user
+    return render(request, 'profile.html', {'user': user})
 
 @login_required(login_url='/login/')
-def citizen_edit_profile(request):
-    citizen = Citizen.objects.get(user=request.user)
-    user = User.objects.get(id=citizen.user.id)
+def edit_profile(request):
+    user = request.user
     if request.method == 'POST':
-        username = request.POST.get('username', user.username)
-        full_name = request.POST.get('full_name', user.full_name)
-        email = request.POST.get('email', user.email)
-        contact_number = request.POST.get('contact_number', user.contact_number)
-        national_id_type = request.POST.get('national_id_type', citizen.national_id_type)
-        national_id = request.POST.get('national_id', citizen.national_id)
-        address = request.POST.get('address', user.address)
-
-        if not username:
-            messages.error(request, 'Username is required')
-            return redirect('citizen_edit_profile')
-        if not full_name:
-            messages.error(request, 'Full name is required')
-            return redirect('citizen_edit_profile')
-        if not email:
-            messages.error(request, 'Email is required')
-            return redirect('citizen_edit_profile')
-        if not contact_number:
-            messages.error(request, 'Contact number is required')
-            return redirect('citizen_edit_profile')
-        if not national_id_type:
-            messages.error(request, 'National ID type is required')
-            return redirect('citizen_edit_profile')
-        if not national_id:
-            messages.error(request, 'National ID is required')
-            return redirect('citizen_edit_profile')
-        if not address:
-            messages.error(request, 'Address is required')
-            return redirect('citizen_edit_profile')
-
-        user.username = username
-        user.full_name = full_name
-        user.email = email
-        user.contact_number = contact_number
-        user.address = address
-        citizen.national_id_type = national_id_type
-        citizen.national_id = national_id
-
-        if 'profile_picture' in request.FILES:
-            user.profile_picture = request.FILES['profile_picture']
-
+        user.username = user.username
+        user.full_name = request.POST['full_name']
+        user.email = request.POST['email']
+        user.contact_number = request.POST['contact_number']
+        user.address = request.POST['address']
+        if request.FILES.get('profile_image'):
+            user.profile_picture = request.FILES['profile_image']
         user.save()
-        citizen.save()
-        messages.success(request, 'Profile updated successfully')
-        return redirect('citizen_profile')
-    return render(request, 'edit_profile.html', {'citizen': citizen, 'user': user})
+        messages.success(request, 'Profile updated successfully.')
+        return redirect('profile')
+    return render(request, 'edit_profile.html', {'user': user})
 
 @login_required(login_url='/login/')
 def logout_view(request):
@@ -204,3 +167,29 @@ def case_documents(request):
 def notifications(request):
     notifications = Notification.objects.filter(user=request.user).order_by('-date_sent')
     return render(request, 'notifications.html', {'notifications': notifications})
+
+@login_required(login_url='/login/')
+def against_cases(request):
+    citizen = Citizen.objects.get(user=request.user)
+    cases = Case.objects.filter(defendant=citizen)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        case_id = request.POST.get('case_id')
+
+        if action == 'select_lawyer':
+            assigned_lawyer_name = request.POST.get('assigned_lawyer')
+            try:
+                assigned_lawyer = User.objects.get(full_name=assigned_lawyer_name).lawyer
+                case = Case.objects.get(id=case_id)
+                case.assigned_lawyer = assigned_lawyer
+                case.lawyer_accepted = False
+                case.save()
+                messages.success(request, 'Lawyer assigned successfully.')
+            except User.DoesNotExist:
+                messages.error(request, 'Assigned lawyer not found.')
+            return redirect('against_cases')
+
+    Users = User.objects.filter(user_type='LAWYER', is_active=0)
+    Lawyers = Lawyer.objects.filter(user__in=Users)
+    return render(request, 'against_cases.html', {'cases': cases, 'Lawyers': Lawyers})

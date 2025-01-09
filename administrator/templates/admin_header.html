@@ -215,12 +215,13 @@
         <ul>
             <li><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
             <li><a href="{% url 'user_management' %}">User Management</a></li>
+            <li><a href="{% url 'citizens_management' %}">Citizens Management</a></li>
+            <li><a href="{% url 'lawyers_management' %}">Lawyers Management</a></li>
+            <li><a href="{% url 'judges_management' %}">Judges Management</a></li>
             <li><a href="{% url 'case_management' %}">Case Management</a></li>
-            <li><a href="">Notifications</a></li>
-            <li><a href="">Reports</a></li>
-            <li><a href="">Analytics</a></li>
-            <li><a href="{% url 'lawyer_approve_reject' %}">Requested Lawyers</a></li>
-            <li><a href="{% url 'add_judge' %}">Add Judge</a></li>
+            <li><a href="{% url 'case_status' %}">Case Status</a></li>
+            <li><a href="{% url 'analytics_dashboard' %}">Analytics</a></li>
+            <li><a href="{% url 'reports_dashboard' %}">Reports</a></li>
             <li><a href="{% url 'profile' %}">Profile</a></li>
             <li><a href="{% url 'logout' %}" class="logout-btn">Logout</a></li>
         </ul>

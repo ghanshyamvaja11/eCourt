@@ -1,7 +1,6 @@
-{% extends 'citizen_header.html' %}
+{% extends 'judge_header.html' %}
 
 {% block content %}
-
 <div class="dashboard-header">
     <h1>Edit Profile</h1>
 </div>
@@ -22,54 +21,51 @@
         <h2 class="form-title">Edit Your Profile</h2>
         <p style="text-align: center; margin-bottom: 30px; color: #333;">Please make sure your information is up-to-date for smooth operations within the eCourt system.</p>
 
-        <form action="{% url 'citizen_edit_profile' %}" method="POST" enctype="multipart/form-data">
+        <form action="{% url 'judge_edit_profile' %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
             <!-- Input Fields -->
             <div class="input-container">
-                <input type="text" name="username" placeholder="Username" value="{{ user.username }}" required>
+                <label for="username">Username:</label>
+                <input type="text" id="username" placeholder="Username" value="{{ user.username }}" readonly>
             </div>
 
             <div class="input-container">
-                <input type="text" name="full_name" placeholder="Full Name" value="{{ user.full_name }}" required>
+                <label for="full_name">Full Name:</label>
+                <input type="text" id="full_name" name="full_name" placeholder="Full Name" value="{{ user.full_name }}" required>
             </div>
 
             <div class="input-container">
-                <input type="email" name="email" placeholder="Email Address" value="{{ user.email }}" required>
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" placeholder="Email Address" value="{{ user.email }}" required>
             </div>
 
             <div class="input-container">
-                <input type="text" name="contact_number" placeholder="Contact Number" value="{{ user.contact_number }}" required>
+                <label for="contact_number">Contact Number:</label>
+                <input type="text" id="contact_number" name="contact_number" placeholder="Contact Number" value="{{ user.contact_number }}" required>
             </div>
 
             <div class="input-container">
-                <input type="text" name="national_id_type" placeholder="National ID Type" value="{{ citizen.national_id_type }}" required>
+                <label for="address">Address:</label>
+                <textarea id="address" name="address" placeholder="Address" rows="3" required>{{ user.address }}</textarea>
             </div>
 
             <div class="input-container">
-                <input type="text" name="national_id" placeholder="National ID" value="{{ citizen.national_id }}" required>
+                <label for="profile_image">Profile Image:</label>
+                <input type="file" id="profile_image" name="profile_image" accept="image/*" onchange="previewNewProfilePicture(event)">
             </div>
 
-            <div class="input-container">
-                <textarea name="address" placeholder="Address" rows="3" required>{{ user.address }}</textarea>
-            </div>
-
-            <!-- Profile Picture Section -->
             <div class="profile-picture-section">
                 {% if user.profile_picture %}
                 <div class="profile-picture-container">
-                    <label for="profile_picture">Current Profile Picture:</label>
+                    <label>Current Profile Picture:</label>
                     <img src="{{ user.profile_picture.url }}" alt="Current Profile Picture" class="profile-picture">
                 </div>
                 {% endif %}
                 <div class="profile-picture-container">
-                    <label for="new_profile_picture">New Profile Picture:</label>
+                    <label>New Profile Picture:</label>
                     <img id="newProfilePicturePreview" src="#" alt="New Profile Picture Preview" class="profile-picture" style="display: none;">
                 </div>
-            </div>
-
-            <div class="input-container">
-                <input type="file" name="profile_picture" id="profile_picture" accept="image/*" onchange="previewNewProfilePicture(event)">
             </div>
 
             <!-- Submit Button -->
@@ -140,6 +136,24 @@ body {
     font-size: 2rem;
 }
 
+/* Input Fields */
+.input-container {
+    margin-bottom: 15px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: none;
+}
+
 /* Profile Picture Section */
 .profile-picture-section {
     display: flex;
@@ -157,24 +171,6 @@ body {
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #ccc;
-}
-
-/* Input Fields */
-.input-container {
-    margin-bottom: 15px;
-}
-
-input, textarea {
-    width: 100%;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-    box-sizing: border-box;
-}
-
-textarea {
-    resize: none;
 }
 
 /* Button Styles */
@@ -251,5 +247,4 @@ function previewNewProfilePicture(event) {
     reader.readAsDataURL(event.target.files[0]);
 }
 </script>
-
 {% endblock %}

@@ -1,9 +1,9 @@
-{% extends 'admin_header.html' %}
+{% extends 'lawyer_header.html' %}
 
 {% block content %}
 <!-- Profile Header Section -->
 <div class="dashboard-header">
-    <h1 class="dashboard-title">Admin Profile</h1>
+    <h1 class="dashboard-title">Lawyer Profile</h1>
     <p class="dashboard-subtitle">Manage your details and keep them up-to-date</p>
 </div>
 
@@ -43,7 +43,7 @@
         </div>
         <!-- Edit Profile Button Below Details -->
         <div class="edit-profile">
-            <a href="{% url 'edit_profile' %}">
+            <a href="{% url 'lawyer_edit_profile' %}">
                 <button class="edit-btn">
                     Edit Profile
                 </button>

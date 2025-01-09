@@ -58,9 +58,6 @@ def signup(request):
         if role == 'LAWYER':
             if not all([License_number, Law_firm]):
                 errors.append("License number and law firm are required for lawyers.")
-        elif role == 'JUDGE':
-            if not National_id_type:
-                errors.append("Court name is required for judges.")
         elif role == 'CITIZEN':
             if not National_id_type or not National_id_number:
                 errors.append("National ID type and number are required for citizens.")
@@ -121,11 +118,6 @@ def signup(request):
                         'noreply@ecourt.com',
                         [email],
                         fail_silently=False,
-                    )
-                elif role.lower() == 'judge':
-                    Judge.objects.create(
-                        user=user,
-                        court=National_id_type
                     )
                 elif role.lower() == 'citizen':
                     Citizen.objects.create(
