@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from users.models import *
 from cases.models import *
+from .models import ContactUs
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from django.core.mail import send_mail
+from django.conf import settings
 import json
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
@@ -25,29 +28,81 @@ def header(request):
     return render(request, 'admin_header.html')
 
 @login_required(login_url='/login/')
-def user_management(request):
-    users = User.objects.all()
-    return render(request, 'user_management.html', {'users': users})
-
-@login_required(login_url='/login/')
 def citizens_management(request):
-    citizens = User.objects.filter(user_type='CITIZEN')
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        reason = request.POST.get('reason')
+        citizen = get_object_or_404(Citizen, user_id=user_id)
+        user = citizen.user
+        citizen.delete()
+        user.email_user(
+            'Account Deletion Notification',
+            f'Your account has been deleted for the following reason: {reason}',
+            'ecourtofficially@gmail.com'
+        )
+        messages.success(request, 'Citizen deleted successfully.')
+        return redirect('citizens_management')
+
+    citizens = Citizen.objects.all()
     return render(request, 'citizens_management.html', {'citizens': citizens})
 
 @login_required(login_url='/login/')
 def lawyers_management(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        reason = request.POST.get('reason')
+        lawyer = get_object_or_404(Lawyer, user_id=user_id)
+        user = lawyer.user
+        lawyer.delete()
+        user.email_user(
+            'Account Deletion Notification',
+            f'Your account has been deleted for the following reason: {reason}',
+            'ecourtofficially@gmail.com'
+        )
+        messages.success(request, 'Lawyer deleted successfully.')
+        return redirect('lawyers_management')
+
     lawyers = Lawyer.objects.all()
     return render(request, 'lawyers_management.html', {'lawyers': lawyers})
 
 @login_required(login_url='/login/')
 def judges_management(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        reason = request.POST.get('reason')
+        judge = get_object_or_404(Judge, user_id=user_id)
+        user = judge.user
+        judge.delete()
+        user.email_user(
+            'Account Deletion Notification',
+            f'Your account has been deleted for the following reason: {reason}',
+            'ecourtofficially@gmail.com'
+        )
+        messages.success(request, 'Judge deleted successfully.')
+        return redirect('judges_management')
+
     judges = Judge.objects.all()
     return render(request, 'judges_management.html', {'judges': judges})
 
 @login_required(login_url='/login/')
 def case_management(request):
+    if request.method == 'POST':
+        case_id = request.POST.get('case_id')
+        reason = request.POST.get('reason')
+        case = get_object_or_404(Case, id=case_id)
+        case.delete()
+        # Assuming the case has a related user to notify
+        user = case.user
+        user.email_user(
+            'Case Deletion Notification',
+            f'Your case has been deleted for the following reason: {reason}',
+            'ecourtofficially@gmail.com'
+        )
+        messages.success(request, 'Case deleted successfully.')
+        return redirect('case_management')
+
     cases = Case.objects.all()
-    return render(request, 'case_management.html', {'cases': cases})
+    return render(request, 'cases_management.html', {'cases': cases})
 
 @login_required(login_url='/login/')
 def case_status(request):
@@ -92,56 +147,72 @@ def add_judge(request):
         contact_number = request.POST['contact_number']
         password = request.POST['password']
         address = request.POST['address']
-        allocate_case = request.POST['allocate_case']
+        court = request.POST['court']
 
         user = User.objects.create_user(username=username, password=password, email=email, full_name=full_name, contact_number=contact_number, address=address, user_type='JUDGE')
-        Judge.objects.create(user=user, allocate_case=allocate_case)
+        Judge.objects.create(user=user, court=court)
         messages.success(request, 'Judge added successfully.')
+        send_mail(
+            'Judge Registration',
+            f'You have been registered as a judge with the following details:\n\n'
+            f'Username: {username}\n Password: {password} \n Full Name: {full_name}\n Email: {email} \n Contact Number: {contact_number}\n Address: {address}\n Allocated Court: {court}\n'
+            f'Please log in to your account to start using the system.',
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
+        )
+
         return redirect('add_judge')
     return render(request, 'add_judge.html')
 
 @login_required(login_url='/login/')
 def lawyer_approve_reject(request):
-    lawyers = Lawyer.objects.filter(user__user_type='PENDING_LAWYER')
-    return render(request, 'lawyer_request.html', {'lawyers': lawyers})
+    lawyers = Lawyer.objects.filter(user__is_active=False)
+    return render(request, 'lawyer_requests.html', {'lawyers': lawyers})
 
 @login_required(login_url='/login/')
-def approve_or_reject_lawyer(request, username):
-    user = get_object_or_404(User, username=username)
+def lawyer_approve(request):
+    user = get_object_or_404(User, username=request.GET['username'])
+    try:
+        lawyer = Lawyer.objects.get(user=user)
+    except Lawyer.DoesNotExist:
+        messages.error(request, "This user is not a lawyer.")
+        return redirect('admin_dashboard')
+    lawyer.user.user_type = 'LAWYER'
+    lawyer.user.is_active = True
+    lawyer.user.save()
+    messages.success(request, f"Lawyer {user.username} has been approved.")
+    # Notify lawyer of approval
+    lawyer.user.email_user(
+        'Approval Notification',
+        'Congratulations, your lawyer account has been approved. now you can login into your account.',
+        'ecourtofficially@gmail.com'
+    )
+
+    return render(request, 'lawyer_requests.html', {'lawyer': lawyer})
+
+
+@login_required(login_url='/login/')
+def lawyer_reject(request):
+    user = get_object_or_404(User, username=request.GET['username'])
     try:
         lawyer = Lawyer.objects.get(user=user)
     except Lawyer.DoesNotExist:
         messages.error(request, "This user is not a lawyer.")
         return redirect('admin_dashboard')
 
-    if request.method == "POST":
-        action = request.POST.get('action')
-        if action == 'approve':
-            lawyer.user.user_type = 'LAWYER'
-            lawyer.user.is_active = True
-            lawyer.user.save()
-            messages.success(request, f"Lawyer {user.username} has been approved.")
-            # Notify lawyer of approval
-            lawyer.user.email_user(
-                'Approval Notification',
-                'Congratulations, your lawyer account has been approved. now you can login into your account.',
-                'ecourtofficially@gmail.com'
-            )
-        elif action == 'reject':
-            lawyer.delete()
-            user.delete()
-            messages.success(request, f"Lawyer {user.username} has been rejected.")
-            # Notify lawyer of rejection
-            user.email_user(
-                'Rejection Notification',
-                'We regret to inform you that your lawyer account has been rejected.',
-                'ecourtofficially@gmail.com'
-            )
-        else:
-            messages.error(request, "Invalid action.")
-        return redirect('lawyer_approve_reject')
+        
+    lawyer.delete()
+    messages.success(
+        request, f"Lawyer {user.username} has been rejected.")
+    # Notify lawyer of rejection
+    user.email_user(
+        'Rejection Notification',
+        'We regret to inform you that your lawyer account has been rejected.',
+        'ecourtofficially@gmail.com'
+    )
 
-    return render(request, 'approve_reject_lawyer.html', {'lawyer': lawyer})
+    return render(request, 'lawyer_requests.html', {'lawyer': lawyer})
 
 @login_required(login_url='/login/')
 def profile(request):
@@ -336,4 +407,31 @@ def reports_dashboard(request):
         'documents_data': json.dumps(documents_data)
     }
 
-    return render(request, 'administrator/reports.html', context)
+    return render(request, 'reports.html', context)
+
+@login_required(login_url='/login/')
+def contact_us_reply(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
+    if request.method == 'POST':
+        contact_id = request.POST.get('contact_id')
+        reply_message = request.POST.get('reply_message')
+        contact = get_object_or_404(ContactUs, id=contact_id)
+        contact.delete()
+        
+        # Send email to the user with the reply message
+        send_mail(
+            f'Reply to Your Query: {contact.subject}',
+            reply_message,
+            settings.DEFAULT_FROM_EMAIL,
+            [contact.email],
+            fail_silently=False,
+        )
+        
+        messages.success(request, 'Reply sent successfully.')
+        return redirect('contact_us_reply')
+
+    contacts = ContactUs.objects.all()
+    return render(request, 'contactus_reply.html', {'contacts': contacts})

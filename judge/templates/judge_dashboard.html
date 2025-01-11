@@ -102,6 +102,60 @@
             font-size: 0.9rem;
             opacity: 0.8;
         }
+
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f4f7f9;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            max-width: 900px;
+            margin: auto;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+        }
+
+        /* Dashboard Section */
+        .dashboard-section {
+            margin-bottom: 20px;
+        }
+
+        .dashboard-section h2 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .dashboard-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .dashboard-section ul li a {
+            color: #1e3c72;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .dashboard-section ul li a:hover {
+            color: #2a5298;
+        }
     </style>
 </head>
 <body>
@@ -109,6 +163,11 @@
     <div class="dashboard-header">
         <h1>Judge Dashboard</h1>
         <p>Manage cases, hearings, and outcomes efficiently</p>
+    </div>
+
+    <!-- Inspirational Quote -->
+    <div style="text-align: center; margin: 20px 0; font-size: 1.2rem; color: #1e3c72; font-style: italic;">
+        "Justice delayed is justice denied." – William E. Gladstone
     </div>
 
     <!-- Cards Section -->
@@ -146,6 +205,13 @@
                 <div class="card-icon">👤</div>
                 <h3>Your Profile</h3>
                 <p>View and update your profile information</p>
+            </div>
+        </a>
+        <a href="{% url 'schedule_hearing' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">📅</div>
+                <h3>Schedule Hearing</h3>
+                <p>Schedule a new hearing</p>
             </div>
         </a>
     </div>

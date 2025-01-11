@@ -61,6 +61,39 @@
     </div>
 </div>
 
+<div class="dashboard-header">
+    <h1>Record Case Outcome</h1>
+</div>
+
+<!-- Inspirational Quote -->
+<div style="text-align: center; margin: 20px 0; font-size: 1.2rem; color: #1e3c72; font-style: italic;">
+    "Justice delayed is justice denied." – William E. Gladstone
+</div>
+
+<div class="formcontainer">
+    <div class="form-section">
+        <h2 class="form-title">Record Outcome</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="input-container">
+                <label for="case_id">Select Case:</label>
+                <select id="case_id" name="case_id" required>
+                    {% for case in cases %}
+                    <option value="{{ case.id }}">{{ case.case_number }} - {{ case.case_title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input-container">
+                <label for="outcome">Outcome:</label>
+                <textarea id="outcome" name="outcome" required></textarea>
+            </div>
+            <div class="submit-btn-container">
+                <button type="submit" class="submit-btn">Record Outcome</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <style>
 /* General Styles */
 body {
@@ -219,6 +252,44 @@ body {
     background: #c0392b;
 }
 
+/* Input Container */
+.input-container {
+    margin-bottom: 20px;
+}
+
+.input-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-container input, .input-container select, .input-container textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Submit Button */
+.submit-btn-container {
+    text-align: center;
+}
+
+.submit-btn {
+    background: linear-gradient(to right, #1e3c72, #2a5298);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.submit-btn:hover {
+    background: linear-gradient(to right, #2a5298, #1e3c72);
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .formcontainer {
@@ -242,6 +313,15 @@ body {
         width: 100%;
         margin-top: 10px;
     }
+
+    .input-container input, .input-container select, .input-container textarea {
+        padding: 8px;
+    }
+
+    .submit-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -256,6 +336,11 @@ body {
 
     .info-item {
         flex: 1 1 100%; /* Stacks all items vertically on very small screens */
+    }
+
+    .submit-btn {
+        font-size: 0.9rem;
+        padding: 8px;
     }
 }
 </style>

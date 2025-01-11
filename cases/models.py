@@ -35,7 +35,7 @@ class Hearing(models.Model):
         Case, related_name="hearings", on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()
-    location = models.CharField(max_length=100)
+    videocall_link = models.CharField(max_length=150, blank=True, null=True)
     outcome = models.TextField(blank=True, null=True)
 
     def __str__(self):

@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.contrib.auth import logout
 from users.models import *  # Import all models from users app
-from cases.models import Case, Judge, Document  # Ensure Document model is imported
+from cases.models import *  # Ensure Document model is imported
 from notifications.models import Notification  # Assuming there is a Notification model in the notifications app
 import random
 from django.views.decorators.csrf import csrf_exempt
@@ -21,8 +21,12 @@ def header(request):
 
 @login_required(login_url='/login/')
 def file_cases(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     Defendents = Citizen.objects.exclude(user=request.user)
-    Users = User.objects.filter(user_type='LAWYER', is_active=0)
+    Users = User.objects.filter(user_type='LAWYER', is_active=1)
     Lawyers = Lawyer.objects.filter(user__in=Users)
 
     if request.method == 'POST':
@@ -72,21 +76,16 @@ def file_cases(request):
                 uploaded_by=citizen
             )
 
-        # # Send email to defendant
-        # send_mail(
-        #     'New Case Filed Against You',
-        #     f'A new case titled "{case_title}" has been filed against you. Please log in to your account for more details.',
-        #     settings.DEFAULT_FROM_EMAIL,
-        #     [defendant.user.email],
-        #     fail_silently=False,
-        # )
-
         messages.success(request, 'Case filed successfully.')
         return redirect('my_cases')
     return render(request, 'file_case.html', {'Defendents': Defendents, 'Lawyers': Lawyers})
 
 @login_required(login_url='/login/')
 def my_cases(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     citizen = Citizen.objects.get(user=request.user)
     cases = Case.objects.filter(plaintiff=citizen)
 
@@ -114,20 +113,36 @@ def my_cases(request):
 
 @login_required(login_url='/login/')
 def efilling(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     return render(request, 'efilling.html')
 
 @login_required(login_url='/login/')
 def notification(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     notifications = Notification.objects.filter(user=request.user)
     return render(request, 'notification.html', {'notifications': notifications})
 
 @login_required(login_url='/login/')
 def profile(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     user = request.user
     return render(request, 'profile.html', {'user': user})
 
 @login_required(login_url='/login/')
 def edit_profile(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     user = request.user
     if request.method == 'POST':
         user.username = user.username
@@ -142,14 +157,13 @@ def edit_profile(request):
         return redirect('profile')
     return render(request, 'edit_profile.html', {'user': user})
 
-@login_required(login_url='/login/')
-def logout_view(request):
-    logout(request)
-    messages.success(request, 'You have been logged out successfully.')
-    return redirect('login')
 
 @login_required(login_url='/login/')
 def case_documents(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     case_id = request.GET.get('case_id')
     if not case_id:
         return HttpResponseBadRequest("Case ID is required")
@@ -165,11 +179,29 @@ def case_documents(request):
 
 @login_required(login_url='/login/')
 def notifications(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
+    if request.method == 'POST':
+        notification_id = request.POST.get('notification_id')
+        try:
+            notification = Notification.objects.get(id=notification_id, user=request.user)
+            notification.status = 'READ'
+            notification.save()
+            messages.success(request, 'Notification marked as read.')
+        except Notification.DoesNotExist:
+            messages.error(request, 'Notification not found.')
+
     notifications = Notification.objects.filter(user=request.user).order_by('-date_sent')
     return render(request, 'notifications.html', {'notifications': notifications})
 
 @login_required(login_url='/login/')
 def against_cases(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     citizen = Citizen.objects.get(user=request.user)
     cases = Case.objects.filter(defendant=citizen)
 
@@ -190,6 +222,25 @@ def against_cases(request):
                 messages.error(request, 'Assigned lawyer not found.')
             return redirect('against_cases')
 
-    Users = User.objects.filter(user_type='LAWYER', is_active=0)
+    Users = User.objects.filter(user_type='LAWYER', is_active=1)
     Lawyers = Lawyer.objects.filter(user__in=Users)
     return render(request, 'against_cases.html', {'cases': cases, 'Lawyers': Lawyers})
+
+@login_required(login_url='/login/')
+def hearings(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
+    hearings = Hearing.objects.all()
+    return render(request, 'hearings.html', {'hearings': hearings})
+
+@login_required(login_url='/login/')
+def logout_view(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
+    logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('login')

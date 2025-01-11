@@ -5,7 +5,7 @@ from django.http import HttpResponseBadRequest, HttpResponse
 from django.contrib.auth import logout
 from django.core.mail import send_mail
 from users.models import *  # Import all models from users app
-from cases.models import Case, Document  # Assuming there is a Case model in the cases app
+from cases.models import *  # Assuming there is a Case model in the cases app
 from notifications.models import Notification
 
 @login_required(login_url='/login/')
@@ -17,19 +17,31 @@ def header(request):
 
 @login_required(login_url='/login/')
 def assigned_cases(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     lawyer = Lawyer.objects.get(user=request.user)
-    cases = Case.objects.filter(assigned_to=lawyer)
+    cases = Case.objects.filter(assigned_lawyer=lawyer)
     return render(request, 'assigned_cases.html', {'cases': cases})
 
 @login_required(login_url='/login/')
 def hearings(request):
-    # Logic for hearings
-    return render(request, 'hearings.html')
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
+    hearings = Hearing.objects.all()
+    return render(request, 'hearings.html', {'hearings': hearings})
 
 @login_required(login_url='/login/')
 def efilling(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     lawyer = Lawyer.objects.get(user=request.user)
-    cases = Case.objects.filter(assigned_to=lawyer)
+    cases = Case.objects.filter(assigned_lawyer=lawyer)
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -54,12 +66,20 @@ def efilling(request):
 
 @login_required(login_url='/login/')
 def lawyer_profile(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     lawyer = Lawyer.objects.get(user=request.user)
     user = User.objects.get(id=lawyer.user.id)
     return render(request, 'lawyer_profile.html', {'lawyer': lawyer, 'user': user})
 
 @login_required(login_url='/login/')
 def lawyer_edit_profile(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     lawyer = Lawyer.objects.get(user=request.user)
     user = User.objects.get(id=lawyer.user.id)
     if request.method == 'POST':
@@ -102,11 +122,19 @@ def lawyer_edit_profile(request):
 
 @login_required(login_url='/login/')
 def profile(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     user = request.user
     return render(request, 'profile.html', {'user': user})
 
 @login_required(login_url='/login/')
 def edit_profile(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     user = request.user
     if request.method == 'POST':
         user.username = user.username
@@ -123,21 +151,35 @@ def edit_profile(request):
 
 @login_required(login_url='/login/')
 def logout_view(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     logout(request)
     messages.success(request, 'You have been logged out successfully.')
     return redirect('login')
 
 @login_required(login_url='/login/')
 def case_requests(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     lawyer = Lawyer.objects.get(user=request.user)
     cases = Case.objects.filter(assigned_lawyer=lawyer, lawyer_accepted=False)
     return render(request, 'case_requests.html', {'cases': cases})
 
 @login_required(login_url='/login/')
 def accept_case(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     case_id = request.GET.get('case_id')
     case = Case.objects.get(id=case_id)
     case.lawyer_accepted = True
+    assigned_judge = random.choice(Judge.objects.all())
+    case.assigned_judge = assigned_judge
     case.save()
 
     send_mail(
@@ -147,20 +189,15 @@ def accept_case(request):
         [case.plaintiff.user.email],
         fail_silently=False,
     )
-
-    send_mail(
-        'Case Accepted',
-        f'Your case {case.case_number} has been accepted by the lawyer.',
-        'ecourtofficially@gmail.com',
-        [case.defendant.user.email],
-        fail_silently=False,
-    )
-
     messages.success(request, 'Case accepted successfully.')
     return redirect('case_requests')
 
 @login_required(login_url='/login/')
 def decline_case(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     case_id = request.GET.get('case_id')
     case = Case.objects.get(id=case_id)
 
@@ -180,11 +217,19 @@ def decline_case(request):
 
 @login_required(login_url='/login/')
 def notifications(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     notifications = Notification.objects.filter(user=request.user).order_by('-date_sent')
     return render(request, 'notifications.html', {'notifications': notifications})
 
 @login_required(login_url='/login/')
 def client_case_documents(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     case_id = request.GET.get('case_id')
     if not case_id:
         return HttpResponseBadRequest("Case ID is required")
@@ -197,3 +242,13 @@ def client_case_documents(request):
 
     documents = Document.objects.filter(case=case)
     return render(request, 'client_case_docs.html', {'documents': documents})
+
+@login_required(login_url='/login/')
+def logout_view(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
+    logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('login')

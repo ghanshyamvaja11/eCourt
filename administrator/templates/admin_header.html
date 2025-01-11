@@ -214,10 +214,12 @@
         <h2>Admin Menu</h2>
         <ul>
             <li><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
-            <li><a href="{% url 'user_management' %}">User Management</a></li>
+            {% comment %} <li><a href="{% url 'user_management' %}">User Management</a></li> {% endcomment %}
             <li><a href="{% url 'citizens_management' %}">Citizens Management</a></li>
             <li><a href="{% url 'lawyers_management' %}">Lawyers Management</a></li>
+            <li><a href="{% url 'lawyer_approve_reject' %}">Lawyers Approve/Reject</a></li>
             <li><a href="{% url 'judges_management' %}">Judges Management</a></li>
+             <li><a href="{% url 'add_judge' %}">Add Judge</a></li>
             <li><a href="{% url 'case_management' %}">Case Management</a></li>
             <li><a href="{% url 'case_status' %}">Case Status</a></li>
             <li><a href="{% url 'analytics_dashboard' %}">Analytics</a></li>

@@ -2,34 +2,30 @@
 
 {% block content %}
 <div class="dashboard-header">
-    <h1>User Management</h1>
+    <h1>case Management</h1>
 </div>
 
 <div class="formcontainer">
     <div class="form-section">
-        <h2 class="form-title">Users</h2>
-        <input type="text" id="search-bar" class="search-bar" placeholder="Search users...based on username or full name" onkeyup="filterUsers()">
+        <h2 class="form-title">Cases</h2>
+        <input type="text" id="search-bar" class="search-bar" placeholder="Search cases...based on username or full name" onkeyup="filtercases()">
         <table class="cases-table">
             <thead>
                 <tr>
-                    <th style="text-align: center;">Username</th>
-                    <th style="text-align: center;">Full Name</th>
-                    <th style="text-align: center;">Email</th>
-                    <th style="text-align: center;">Contact Number</th>
-                    <th style="text-align: center;">User Type</th>
+                    <th style="text-align: center;">Case Number</th>
+                    <th style="text-align: center;">title</th>
+                    <th style="text-align: center;">Type</th>
                     <th style="text-align: center;">Action</th>
                 </tr>
             </thead>
-            <tbody id="users-table-body">
-                {% for user in users %}
+            <tbody id="cases-table-body">
+                {% for case in cases %}
                 <tr>
-                    <td style="text-align: center;">{{ user.username }}</td>
-                    <td style="text-align: center;">{{ user.full_name }}</td>
-                    <td style="text-align: center;">{{ user.email }}</td>
-                    <td style="text-align: center;">{{ user.contact_number }}</td>
-                    <td style="text-align: center;">{{ user.user_type }}</td>
+                    <td style="text-align: center;">{{ case.case_number }}</td>
+                    <td style="text-align: center;">{{ case.case_title }}</td>
+                    <td style="text-align: center;">{{ case.case_type }}</td>
                     <td style="text-align: center;">
-                        <button class="delete-btn" onclick="showDeletePopup('{{ user.id }}')">Delete</button>
+                        <button class="delete-btn" onclick="showDeletePopup('{{ case.id }}')">Delete</button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -38,13 +34,13 @@
     </div>
 </div>
 
-<!-- Delete User Popup -->
-<div id="delete-user-popup" class="popup">
+<!-- Delete case Popup -->
+<div id="delete-case-popup" class="popup">
     <div class="popup-content">
-        <h2>Delete User</h2>
+        <h2>Delete case</h2>
         <form method="post">
             {% csrf_token %}
-            <input type="hidden" id="user-id" name="user_id" />
+            <input type="hidden" id="case-id" name="user_id" />
             <div class="input-container">
                 <label for="reason">Reason for Deletion:</label>
                 <textarea id="reason" name="reason" required></textarea>
@@ -53,7 +49,7 @@
                 <button type="submit" class="submit-btn">Delete</button>
             </div>
         </form>
-        <button onclick="closePopup('delete-user-popup')" class="close-btn">Close</button>
+        <button onclick="closePopup('delete-case-popup')" class="close-btn">Close</button>
     </div>
 </div>
 
@@ -245,12 +241,12 @@ button:hover {
 </style>
 
 <script>
-    // Function to filter users based on search input
-    function filterUsers() {
+    // Function to filter cases based on search input
+    function filtercases() {
         var input, filter, table, tr, td, i, j, txtValue;
         input = document.getElementById('search-bar');
         filter = input.value.toUpperCase();
-        table = document.getElementById('users-table-body');
+        table = document.getElementById('cases-table-body');
         tr = table.getElementsByTagName('tr');
 
         for (i = 0; i < tr.length; i++) {
@@ -268,10 +264,10 @@ button:hover {
         }
     }
 
-    // Function to show the delete user popup
-    function showDeletePopup(userId) {
-        document.getElementById('user-id').value = userId;
-        document.getElementById('delete-user-popup').style.display = 'flex';
+    // Function to show the delete case popup
+    function showDeletePopup(caseId) {
+        document.getElementById('case-id').value = caseId;
+        document.getElementById('delete-case-popup').style.display = 'flex';
     }
 
     // Function to close a popup

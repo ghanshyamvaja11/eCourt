@@ -1,6 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, Group,  Permission
-
+from django.contrib.auth.models import AbstractUser, Group, Permission
 
 class User(AbstractUser):
     user_type = models.CharField(
@@ -11,12 +10,10 @@ class User(AbstractUser):
     )
     full_name = models.CharField(max_length=100)
     contact_number = models.CharField(max_length=15, blank=True, null=True)
-    contact_type = models.CharField(
-        max_length=10)
+    contact_type = models.CharField(max_length=10)
     address = models.TextField(blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)  # Add profile_picture field
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
 
-    # Add related_name to avoid conflicts
     groups = models.ManyToManyField(
         Group, related_name='custom_user_set', blank=True
     )
@@ -27,13 +24,12 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
-
 class Admin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_superuser = models.BooleanField(default=True)
+
     def __str__(self):
         return f"Admin - {self.user.username}"
-
 
 class Lawyer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -43,7 +39,6 @@ class Lawyer(models.Model):
     def __str__(self):
         return f"Lawyer - {self.user.username}"
 
-
 class Judge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     court = models.CharField(max_length=100)
@@ -51,7 +46,6 @@ class Judge(models.Model):
 
     def __str__(self):
         return f"Judge - {self.user.username}"
-
 
 class Citizen(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

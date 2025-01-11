@@ -45,9 +45,14 @@
 
             <!-- Buttons for Approve/Reject -->
             <div class="button-container">
-                <form method="post" action="{% url 'approve_or_reject_lawyer' lawyer.user.username %}">
+                <form method="GET" action="{% url 'lawyer_approve' %}" id="lawyer-approve-form">
                     {% csrf_token %}
+                    <input type="hidden" id="lawyer_username" name="username"/>
                     <button type="submit" name="action" value="approve" class="approve-btn">Approve Lawyer</button>
+                </form>
+                <form method="GET" action="{% url 'lawyer_reject' %}" id="lawyer-reject-form">
+                    {% csrf_token %}
+                    <input type="hidden" id="lawyer_username_reject" name="username"/>
                     <button type="submit" name="action" value="reject" class="reject-btn">Reject Lawyer</button>
                 </form>
             </div>
@@ -247,6 +252,8 @@ button:hover {
         };
 
         var lawyer = lawyerData[username];
+        document.getElementById('lawyer_username').value = username;
+        document.getElementById('lawyer_username_reject').value = username;
         var lawyerDetailsCard = document.getElementById('lawyer-info-details');
         lawyerDetailsCard.innerHTML = ` 
             <div class="info-item"><strong>Full Name:</strong> ${lawyer.fullName}</div>

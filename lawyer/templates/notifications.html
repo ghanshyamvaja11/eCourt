@@ -1,4 +1,4 @@
-{% extends 'lawyer_header.html' %}
+{% extends 'citizen_header.html' %}
 
 {% block content %}
 <div class="dashboard-header">
@@ -11,10 +11,16 @@
         <div id="notifications-list">
             {% if notifications %}
                 {% for notification in notifications %}
-                <div class="notification-item">
+                <div class="notification-item {% if not notification.read %}unread{% endif %}">
                     <div><strong>Message:</strong> {{ notification.message }}</div>
                     <div><strong>Date Sent:</strong> {{ notification.date_sent }}</div>
                     <div><strong>Status:</strong> {{ notification.read|yesno:"Read,Unread" }}</div>
+                    {% if not notification.read %}
+                    <form method="post" action="{% url 'mark_as_read' notification.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Mark as Read</button>
+                    </form>
+                    {% endif %}
                 </div>
                 {% endfor %}
             {% else %}
@@ -63,6 +69,10 @@
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #fff;
+}
+
+.notification-item.unread {
+    background-color: #ffeb3b;
 }
 
 .notification-item div {

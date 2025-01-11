@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 import random
 from django.conf import settings
 from django.http import HttpResponseNotFound, HttpResponseBadRequest
+from administrator.models import ContactUs
 
 def index(request):
     return render(request, 'index.html')
@@ -19,6 +20,31 @@ def aboutus(request):
     return render(request, 'about_us.html')
 
 def contactus(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        if not all([name, email, subject, message]):
+            messages.error(request, "All fields are required.")
+        else:
+            ContactUs.objects.create(
+                name=name,
+                email=email,
+                subject=subject,
+                message=message
+            )
+            
+            send_mail(
+                'Thank you for contacting us',
+                f"Dear {name},\n\nThank you for reaching out to us. We have received your message regarding '{subject}' and will get back to you shortly.\n\nBest regards,\nThe eCourt Team",
+                settings.EMAIL_HOST_USER,
+                [email],
+                fail_silently=False,
+            )
+            messages.success(request, "Your message has been sent successfully.")
+            return redirect('contactus')
     return render(request, 'contact_us.html')
 
 def terms_and_conditions(request):
@@ -28,6 +54,10 @@ def privacy_policy(request):
     return render(request, 'privacy_policy.html')
 
 def signup(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+    
     if request.method == 'POST':
         # Extracting form data
         username = request.POST.get('username')
@@ -115,7 +145,7 @@ def signup(request):
                     send_mail(
                         'Account Registration Pending Approval',
                         f"Dear {full_name},\n\nThank you for registering on eCourt. Your account is currently pending approval. You will be able to log in once an administrator reviews and approves your account.\n\nBest regards,\neCourt Team",
-                        'noreply@ecourt.com',
+                        'ecourtofficially@gmail.com',
                         [email],
                         fail_silently=False,
                     )
@@ -143,16 +173,16 @@ def signup(request):
     return render(request, 'signup.html')
 
 def login_view(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     if request.method == "POST":
         # Get form data
         user_type = request.POST.get('user_type')
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        # Print form data to debug
-        print(
-            f"Username: {username}, Password: {password}, User Type: {user_type}")
-        password 
         # Authenticate the user
         user = authenticate(request, username=username, password=password)
 
@@ -194,6 +224,10 @@ def faq(request):
 
     
 def login_with_otp(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     if request.method == 'POST':
         email = request.POST.get('email')
         request.session['temp_email'] = email
@@ -216,6 +250,10 @@ def login_with_otp(request):
     return render(request, 'login_with_otp.html')
 
 def verify_login_otp(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     if request.method == 'POST':
         email = request.session.get('temp_email')
         otp = request.POST.get('otp')
@@ -232,6 +270,10 @@ def verify_login_otp(request):
     return render(request, 'verify_login_otp.html')
 
 def forgot_password(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     if request.method == 'POST':
         email = request.POST.get('email')
         request.session['temp_email'] = email
@@ -254,6 +296,10 @@ def forgot_password(request):
     return render(request, 'forgot_password.html')
 
 def verify_forgot_password_otp(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+    
     if request.method == 'POST':
         email = request.session.get('temp_email')
         otp = request.POST.get('otp')
@@ -268,6 +314,10 @@ def verify_forgot_password_otp(request):
     return render(request, 'verify_login_otp.html')
 
 def change_password(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     if request.method == 'POST':
         email = request.session.get('temp_email')
         new_password = request.POST.get('new_password')
@@ -284,6 +334,10 @@ def change_password(request):
     return render(request, 'change_password.html')
 
 def resend_otp(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     email = request.session.get('temp_email')
     user = User.objects.filter(email=email).first()
     if user:
@@ -304,5 +358,6 @@ def resend_otp(request):
 def error_404_view(request, exception=None):
     return render(request, '404.html', status=404)
 
+
 def error_400_view(request, exception=None):
-    return render(request, '400.html', status=400)
+    return render(request, '400.html', status=404)

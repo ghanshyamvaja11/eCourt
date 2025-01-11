@@ -19,16 +19,15 @@
     <div class="form-section">
         <h2 class="form-title">Generate Data Reports</h2>
         <div class="button-container">
-            <button onclick="showGraphOptions('cases')">Analyze Cases</button>
-            <button onclick="showGraphOptions('lawyers')">Analyze Lawyers</button>
-            <button onclick="showGraphOptions('judges')">Analyze Judges</button>
-            <button onclick="showGraphOptions('citizens')">Analyze Citizens</button>
-            <button onclick="showGraphOptions('caseTypes')">Analyze Case Types</button>
-            <button onclick="showGraphOptions('monthlyCases')">Monthly Cases</button>
-            <button onclick="showGraphOptions('hearings')">Analyze Hearings</button>
-            <button onclick="showGraphOptions('documents')">Analyze Documents</button>
+            <button onclick="downloadPDF('cases')">Download Cases Data</button>
+            <button onclick="downloadPDF('lawyers')">Download Lawyers Data</button>
+            <button onclick="downloadPDF('judges')">Download Judges Data</button>
+            <button onclick="downloadPDF('citizens')">Download Citizens Data</button>
+            <button onclick="downloadPDF('caseTypes')">Download Case Types Data</button>
+            <button onclick="downloadPDF('monthlyCases')">Download Monthly Cases Data</button>
+            <button onclick="downloadPDF('hearings')">Download Hearings Data</button>
+            <button onclick="downloadPDF('documents')">Download Documents Data</button>
         </div>
-        <button onclick="downloadPDF()">Download PDF</button>
     </div>
 </div>
 
@@ -311,18 +310,54 @@ button:hover {
         document.getElementById(modalId).style.display = 'none';
     }
 
-    function downloadPDF() {
+    function downloadPDF(dataType) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        doc.text("Reports Dashboard", 10, 10);
+        let dataLabel = '';
+        switch (dataType) {
+            case 'cases':
+                dataLabel = 'Cases Data';
+                currentData = JSON.parse('{{ cases_data|escapejs }}');
+                break;
+            case 'lawyers':
+                dataLabel = 'Lawyers Data';
+                currentData = JSON.parse('{{ lawyers_data|escapejs }}');
+                break;
+            case 'judges':
+                dataLabel = 'Judges Data';
+                currentData = JSON.parse('{{ judges_data|escapejs }}');
+                break;
+            case 'citizens':
+                dataLabel = 'Citizens Data';
+                currentData = JSON.parse('{{ citizens_data|escapejs }}');
+                break;
+            case 'caseTypes':
+                dataLabel = 'Case Types Data';
+                currentData = JSON.parse('{{ case_types_data|escapejs }}');
+                break;
+            case 'monthlyCases':
+                dataLabel = 'Monthly Cases Data';
+                currentData = JSON.parse('{{ monthly_cases_data|escapejs }}');
+                break;
+            case 'hearings':
+                dataLabel = 'Hearings Data';
+                currentData = JSON.parse('{{ hearings_data|escapejs }}');
+                break;
+            case 'documents':
+                dataLabel = 'Documents Data';
+                currentData = JSON.parse('{{ documents_data|escapejs }}');
+                break;
+        }
+
+        doc.text(dataLabel, 10, 10);
         doc.text("Generated on: " + new Date().toLocaleString(), 10, 20);
 
         const canvas = document.getElementById('chartCanvas');
         const imgData = canvas.toDataURL('image/png');
         doc.addImage(imgData, 'PNG', 10, 30, 180, 160);
 
-        doc.save('report.pdf');
+        doc.save(`${dataLabel}.pdf`);
     }
 </script>
 

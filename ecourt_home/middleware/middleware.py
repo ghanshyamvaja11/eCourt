@@ -7,11 +7,9 @@ class Force404Middleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path == '/page-not-found/':
+        if request.path == '/page-not-found':
             return render(request,'404.html')
         response = self.get_response(request)
         if response.status_code == 404:
-            return redirect('error_404_view')
-        if response.status_code == 400:
             return redirect('error_404_view')
         return response

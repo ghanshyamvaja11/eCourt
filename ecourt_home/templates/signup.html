@@ -207,15 +207,15 @@
                     <input type="text" name="contact_number" placeholder="Contact Number" required>
                     <input type="password" name="password" placeholder="Password" required>
                     <textarea name="address" placeholder="Address" rows="4" required></textarea>
+                     <!-- Profile Picture Upload -->
+                    <input type="file" name="profile_picture" accept="image/*" onchange="previewProfilePicture(event)">
+                    <img id="profilePicturePreview" class="profile-picture-preview" src="#" alt="Profile Picture Preview" style="display: none;">
+                    
                     <select id="register_as" name="register_as" required>
                         <option value="">Register As</option>
                         <option value="lawyer">Lawyer</option>
                         <option value="citizen">Citizen</option>
                     </select>
-
-                    <!-- Profile Picture Upload -->
-                    <input type="file" name="profile_picture" accept="image/*" onchange="previewProfilePicture(event)">
-                    <img id="profilePicturePreview" class="profile-picture-preview" src="#" alt="Profile Picture Preview" style="display: none;">
 
                     <!-- Lawyer-Specific Fields -->
                     <div id="lawyerFields" class="conditional-fields">
