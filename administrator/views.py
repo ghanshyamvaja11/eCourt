@@ -31,8 +31,8 @@ def header(request):
 def citizens_management(request):
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
+        citizen = get_object_or_404(Citizen, id=user_id)
         reason = request.POST.get('reason')
-        citizen = get_object_or_404(Citizen, user_id=user_id)
         user = citizen.user
         citizen.delete()
         user.email_user(
@@ -51,7 +51,7 @@ def lawyers_management(request):
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
         reason = request.POST.get('reason')
-        lawyer = get_object_or_404(Lawyer, user_id=user_id)
+        lawyer = get_object_or_404(Lawyer, id=user_id)
         user = lawyer.user
         lawyer.delete()
         user.email_user(
@@ -70,7 +70,7 @@ def judges_management(request):
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
         reason = request.POST.get('reason')
-        judge = get_object_or_404(Judge, user_id=user_id)
+        judge = get_object_or_404(Judge, id=user_id)
         user = judge.user
         judge.delete()
         user.email_user(
@@ -87,17 +87,24 @@ def judges_management(request):
 @login_required(login_url='/login/')
 def case_management(request):
     if request.method == 'POST':
+        print(request.POST)
         case_id = request.POST.get('case_id')
         reason = request.POST.get('reason')
         case = get_object_or_404(Case, id=case_id)
         case.delete()
         # Assuming the case has a related user to notify
-        user = case.user
-        user.email_user(
+        plaintiff_email = case.plaintiff.user.email
+        defendant_email = case.defendant.user.email
+
+        # Send email to both plaintiff and defendant
+        send_mail(
             'Case Deletion Notification',
             f'Your case has been deleted for the following reason: {reason}',
-            'ecourtofficially@gmail.com'
+            from_email=settings.DEFAULT_FROM_EMAIL,  # Ensure this is set in settings
+            recipient_list=[plaintiff_email, defendant_email],  # List of recipients
+            fail_silently=False,  # Raise errors if email sending fails
         )
+
         messages.success(request, 'Case deleted successfully.')
         return redirect('case_management')
 

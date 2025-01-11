@@ -40,7 +40,7 @@
         <h2>Delete case</h2>
         <form method="post">
             {% csrf_token %}
-            <input type="hidden" id="case-id" name="user_id" />
+            <input type="hidden" id="case-id" name="case_id" />
             <div class="input-container">
                 <label for="reason">Reason for Deletion:</label>
                 <textarea id="reason" name="reason" required></textarea>

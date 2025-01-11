@@ -35,7 +35,7 @@ def contactus(request):
                 subject=subject,
                 message=message
             )
-            
+
             send_mail(
                 'Thank you for contacting us',
                 f"Dear {name},\n\nThank you for reaching out to us. We have received your message regarding '{subject}' and will get back to you shortly.\n\nBest regards,\nThe eCourt Team",
@@ -159,7 +159,7 @@ def signup(request):
                     send_mail(
                         'Registration Successful',
                         f"Dear {full_name},\n\nWelcome to eCourt! Your account has been successfully created, and you can now log in to access your dashboard.\n\nBest regards,\neCourt Team",
-                        'noreply@ecourt.com',
+                        'ecourtofficially@gmail.com',
                         [email],
                         fail_silently=False,
                     )
