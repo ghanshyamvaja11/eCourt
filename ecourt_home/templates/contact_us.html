@@ -241,7 +241,8 @@
     <div class="container">
         <div class="contact-form">
             <h2><i class="fas fa-envelope"></i> Get in Touch</h2>
-            <form action="" method="POST">
+            <form method="POST">
+                {% csrf_token %}
                 <div class="form-group">
                     <input type="text" name="name" placeholder="Your Name" required>
                 </div>

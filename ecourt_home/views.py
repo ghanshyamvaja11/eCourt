@@ -11,7 +11,7 @@ from django.core.mail import send_mail
 import random
 from django.conf import settings
 from django.http import HttpResponseNotFound, HttpResponseBadRequest
-from administrator.models import ContactUs
+from administrator.models import *
 
 def index(request):
     return render(request, 'index.html')
