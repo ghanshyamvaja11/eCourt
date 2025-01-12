@@ -8,8 +8,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.core.mail import send_mail
 from django.conf import settings
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
 import json
-from django.db.models import Count
+from django.db.models import Count, F
+from io import BytesIO
 from django.db.models.functions import TruncMonth
 
 # Create your views here.
@@ -332,89 +337,163 @@ def analytics_dashboard(request):
 
     return render(request, 'analytics.html', context)
 
-@login_required(login_url='/login/')
+
 def reports_dashboard(request):
-    # Fetch data for cases
-    cases = Case.objects.all()
-    case_status_counts = cases.values('status').annotate(count=Count('status'))
-    cases_data = {
-        'labels': [status['status'] for status in case_status_counts],
-        'data': [status['count'] for status in case_status_counts],
-        'label': 'Cases'
-    }
+    if request.method == 'POST':
+        report_type = request.POST.get('report_type')
 
-    # Fetch data for lawyers
-    lawyers = Lawyer.objects.all()
-    lawyer_case_counts = cases.values('assigned_lawyer__user__full_name').annotate(count=Count('id'))
-    lawyers_data = {
-        'labels': [lawyer['assigned_lawyer__user__full_name'] for lawyer in lawyer_case_counts],
-        'data': [lawyer['count'] for lawyer in lawyer_case_counts],
-        'label': 'Cases per Lawyer'
-    }
+        # Prepare data and headers dynamically
+        headers = []
+        data = []
 
-    # Fetch data for judges
-    judges = Judge.objects.all()
-    judge_case_counts = cases.values('assigned_judge__user__full_name').annotate(count=Count('id'))
-    judges_data = {
-        'labels': [judge['assigned_judge__user__full_name'] for judge in judge_case_counts],
-        'data': [judge['count'] for judge in judge_case_counts],
-        'label': 'Cases per Judge'
-    }
+        if report_type == 'cases':
+            cases = Case.objects.select_related(
+                'plaintiff', 'defendant', 'assigned_judge')
+            headers = ["Case Number", "Case Title", "Status",
+                       "Case Type", "Plaintiff", "Defendant", "Assigned Judge"]
 
-    # Fetch data for citizens
-    citizens = Citizen.objects.all()
-    citizens_data = {
-        'labels': ['Total Citizens'],
-        'data': [citizens.count()],
-        'label': 'Citizens'
-    }
+            for case in cases:
+                row = [
+                    case.case_number,
+                    case.case_title,
+                    case.status,
+                    case.case_type,
+                    case.plaintiff.user.full_name if case.plaintiff else "N/A",
+                    case.defendant.user.full_name if case.defendant else "N/A",
+                    case.assigned_judge.user.full_name if case.assigned_judge else "N/A",
+                ]
+                data.append(row)
 
-    # Fetch data for case types
-    case_types = cases.values('case_type').annotate(count=Count('case_type'))
-    case_types_data = {
-        'labels': [case_type['case_type'] for case_type in case_types],
-        'data': [case_type['count'] for case_type in case_types],
-        'label': 'Case Types'
-    }
+        elif report_type == 'lawyers':
+            lawyers = Lawyer.objects.select_related('user')
+            headers = ["Full Name", "License Number",
+                       "Law Firm", "Contact Number"]
 
-    # Fetch data for monthly cases
-    monthly_cases = cases.annotate(month=TruncMonth('case_filed_date')).values('month').annotate(count=Count('id')).order_by('month')
-    monthly_cases_data = {
-        'labels': [month['month'].strftime('%B %Y') for month in monthly_cases],
-        'data': [month['count'] for month in monthly_cases],
-        'label': 'Monthly Cases'
-    }
+            for lawyer in lawyers:
+                row = [
+                    lawyer.user.full_name,
+                    lawyer.license_number,
+                    lawyer.law_firm,
+                    lawyer.user.contact_number,
+                ]
+                data.append(row)
 
-    # Fetch data for hearings
-    hearings = Hearing.objects.all()
-    hearing_counts = hearings.values('date').annotate(count=Count('id'))
-    hearings_data = {
-        'labels': [hearing['date'].strftime('%Y-%m-%d') for hearing in hearing_counts],
-        'data': [hearing['count'] for hearing in hearing_counts],
-        'label': 'Hearings'
-    }
+        elif report_type == 'judges':
+            judges = Judge.objects.select_related('user')
+            headers = ["Full Name", "Court", "Cases Assigned"]
 
-    # Fetch data for documents
-    documents = Document.objects.all()
-    document_counts = documents.values('document_type').annotate(count=Count('id'))
-    documents_data = {
-        'labels': [document['document_type'] for document in document_counts],
-        'data': [document['count'] for document in document_counts],
-        'label': 'Documents'
-    }
+            for judge in judges:
+                row = [
+                    judge.user.full_name,
+                    judge.court,
+                    judge.cases_assigned,
+                ]
+                data.append(row)
 
-    context = {
-        'cases_data': json.dumps(cases_data),
-        'lawyers_data': json.dumps(lawyers_data),
-        'judges_data': json.dumps(judges_data),
-        'citizens_data': json.dumps(citizens_data),
-        'case_types_data': json.dumps(case_types_data),
-        'monthly_cases_data': json.dumps(monthly_cases_data),
-        'hearings_data': json.dumps(hearings_data),
-        'documents_data': json.dumps(documents_data)
-    }
+        elif report_type == 'citizens':
+            citizens = Citizen.objects.select_related('user')
+            headers = ["Full Name", "National ID",
+                       "Cases Filed", "Contact Number"]
 
-    return render(request, 'reports.html', context)
+            for citizen in citizens:
+                row = [
+                    citizen.user.full_name,
+                    citizen.national_id,
+                    citizen.cases_filed,
+                    citizen.user.contact_number,
+                ]
+                data.append(row)
+
+        elif report_type == 'caseTypes':
+            case_types = Case.objects.values(
+                'case_type').annotate(case_count=Count('id'))
+            headers = ["Case Type", "Case Count"]
+
+            for case_type in case_types:
+                row = [
+                    case_type['case_type'],
+                    case_type['case_count'],
+                ]
+                data.append(row)
+
+        elif report_type == 'monthlyCases':
+            monthly_cases = Case.objects.annotate(month=TruncMonth(
+                'case_filed_date')).values('month').annotate(case_count=Count('id'))
+            headers = ["Month", "Case Count"]
+
+            for monthly_case in monthly_cases:
+                row = [
+                    monthly_case['month'].strftime(
+                        '%B %Y') if monthly_case['month'] else "N/A",
+                    monthly_case['case_count'],
+                ]
+                data.append(row)
+
+        elif report_type == 'hearings':
+            hearings = Hearing.objects.select_related('case')
+            headers = ["Case Number", "Hearing Date",
+                       "Hearing Time", "Outcome"]
+
+            for hearing in hearings:
+                row = [
+                    hearing.case.case_number if hearing.case else "N/A",
+                    hearing.date.strftime(
+                        '%Y-%m-%d') if hearing.date else "N/A",
+                    hearing.time.strftime('%H:%M') if hearing.time else "N/A",
+                    hearing.outcome,
+                ]
+                data.append(row)
+
+        elif report_type == 'documents':
+            documents = Document.objects.select_related('case', 'uploaded_by')
+            headers = ["Case Number", "Document Type",
+                       "Uploaded By", "Uploaded At"]
+
+            for document in documents:
+                row = [
+                    document.case.case_number if document.case else "N/A",
+                    document.document_type,
+                    document.uploaded_by.user.full_name if document.uploaded_by else "N/A",
+                    document.uploaded_at.strftime(
+                        '%Y-%m-%d %H:%M') if document.uploaded_at else "N/A",
+                ]
+                data.append(row)
+
+        else:
+            return HttpResponse("Invalid report type", status=400)
+
+        # Prepare the PDF response
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename={report_type}_report.pdf'
+
+        # Create a SimpleDocTemplate
+        pdf = SimpleDocTemplate(response, pagesize=letter)
+
+        # Prepare data for the table
+        table_data = [headers] + data  # Add headers as the first row
+
+        # Create table
+        table = Table(table_data)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0),
+             colors.HexColor("#1e3c72")),  # Header background
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # Header text color
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Center align all text
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # Header font
+            ('FONTSIZE', (0, 0), (-1, -1), 10),  # Font size
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 8),  # Padding for header
+            # Alternate row background
+            ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Grid lines
+        ]))
+
+        # Build the PDF
+        elements = [table]
+        pdf.build(elements)
+
+        return response
+
+    return render(request, 'reports.html')
 
 @login_required(login_url='/login/')
 def contact_us_reply(request):
