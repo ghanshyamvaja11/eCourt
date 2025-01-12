@@ -12,12 +12,14 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Notification',
+            name='ContactUs',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=100)),
+                ('email', models.EmailField(max_length=254)),
+                ('subject', models.CharField(max_length=200)),
                 ('message', models.TextField()),
-                ('date_sent', models.DateTimeField(auto_now_add=True)),
-                ('read', models.BooleanField(default=False)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
             ],
         ),
     ]
