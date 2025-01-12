@@ -19,14 +19,21 @@
     <div class="form-section">
         <h2 class="form-title">Generate Data Reports</h2>
         <div class="button-container">
-            <button class="generate-report" data-report="cases">Download Cases Data</button>
-            <button class="generate-report" data-report="lawyers">Download Lawyers Data</button>
-            <button class="generate-report" data-report="judges">Download Judges Data</button>
-            <button class="generate-report" data-report="citizens">Download Citizens Data</button>
-            <button class="generate-report" data-report="caseTypes">Download Case Types Data</button>
-            <button class="generate-report" data-report="monthlyCases">Download Monthly Cases Data</button>
-            <button class="generate-report" data-report="hearings">Download Hearings Data</button>
-            <button class="generate-report" data-report="documents">Download Documents Data</button>
+            <form id="report-form" method="post">
+                {% csrf_token %}
+                <select name="report_type" id="report-type" required>
+                    <option value="" disabled selected>Select Report Type</option>
+                    <option value="cases">Cases Data</option>
+                    <option value="lawyers">Lawyers Data</option>
+                    <option value="judges">Judges Data</option>
+                    <option value="citizens">Citizens Data</option>
+                    <option value="caseTypes">Case Types Data</option>
+                    <option value="monthlyCases">Monthly Cases Data</option>
+                    <option value="hearings">Hearings Data</option>
+                    <option value="documents">Documents Data</option>
+                </select>
+                <button type="submit" class="generate-report">Download Report</button>
+            </form>
         </div>
     </div>
 </div>
@@ -82,10 +89,13 @@ body {
     margin-bottom: 20px;
 }
 
-.button-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
 }
 
 button {
@@ -96,6 +106,7 @@ button {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    width: 100%;
 }
 
 button:hover {
@@ -140,62 +151,4 @@ button:hover {
     }
 }
 </style>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
-<script>
-    // Event listener for report download buttons
-    document.querySelectorAll('.generate-report').forEach(button => {
-        button.addEventListener('click', function() {
-            const reportType = this.getAttribute('data-report');
-            generatePDF(reportType);
-        });
-    });
-
-    // Function to generate and download PDF based on the selected report type
-    function generatePDF(reportType) {
-        const doc = new jsPDF();
-
-        doc.setFont("helvetica");
-        doc.setFontSize(18);
-        doc.text('Report: ' + reportType.charAt(0).toUpperCase() + reportType.slice(1), 20, 20);
-        doc.setFontSize(12);
-
-        let data = '';
-
-        switch (reportType) {
-            case 'cases':
-                data = '{{ cases_data|escapejs }}';
-                break;
-            case 'lawyers':
-                data = '{{ lawyers_data|escapejs }}';
-                break;
-            case 'judges':
-                data = '{{ judges_data|escapejs }}';
-                break;
-            case 'citizens':
-                data = '{{ citizens_data|escapejs }}';
-                break;
-            case 'caseTypes':
-                data = '{{ case_types_data|escapejs }}';
-                break;
-            case 'monthlyCases':
-                data = '{{ monthly_cases_data|escapejs }}';
-                break;
-            case 'hearings':
-                data = '{{ hearings_data|escapejs }}';
-                break;
-            case 'documents':
-                data = '{{ documents_data|escapejs }}';
-                break;
-            default:
-                data = 'No data available for this report type.';
-        }
-
-        // Adding the data to the PDF in a well-formatted way
-        doc.text(data, 20, 30);
-        
-        // Save the generated PDF
-        doc.save(reportType + '_report.pdf');
-    }
-</script>
 {% endblock %}
