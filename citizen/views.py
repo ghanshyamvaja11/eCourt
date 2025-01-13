@@ -112,38 +112,32 @@ def my_cases(request):
     return render(request, 'my_cases.html', {'cases': cases})
 
 @login_required(login_url='/login/')
-def efilling(request):
+def citizen_efilling(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
 
-    return render(request, 'efilling.html')
+    return render(request, 'citizen_efilling.html')
 
 @login_required(login_url='/login/')
-def notification(request):
-    # Clear all previous messages
-    storage = messages.get_messages(request)
-    storage.used = True
-
-    notifications = Notification.objects.filter(user=request.user)
-    return render(request, 'notification.html', {'notifications': notifications})
-
-@login_required(login_url='/login/')
-def profile(request):
+def citizen_profile(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
 
     user = request.user
-    return render(request, 'profile.html', {'user': user})
+    citizen = Citizen.objects.get(user=user)
+    return render(request, 'citizen_profile.html', {'user': user, 'citizen': citizen})
 
 @login_required(login_url='/login/')
-def edit_profile(request):
+def citizen_edit_profile(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
 
     user = request.user
+    citizen = Citizen.objects.get(user=user)
+
     if request.method == 'POST':
         user.username = user.username
         user.full_name = request.POST['full_name']
@@ -154,8 +148,8 @@ def edit_profile(request):
             user.profile_picture = request.FILES['profile_image']
         user.save()
         messages.success(request, 'Profile updated successfully.')
-        return redirect('profile')
-    return render(request, 'edit_profile.html', {'user': user})
+        return redirect('citizen_profile')
+    return render(request, 'citizen_edit_profile.html', {'user': user, 'citizen': citizen})
 
 
 @login_required(login_url='/login/')
@@ -204,26 +198,30 @@ def against_cases(request):
 
     citizen = Citizen.objects.get(user=request.user)
     cases = Case.objects.filter(defendant=citizen)
+    if request.session.get('lawyer_selected') is not True:
+        request.session['lawyer_selected'] = ''
 
     if request.method == 'POST':
         action = request.POST.get('action')
         case_id = request.POST.get('case_id')
 
         if action == 'select_lawyer':
-            assigned_lawyer_name = request.POST.get('assigned_lawyer')
+            defendent_lawyer = request.POST.get('defendent_lawyer')
             try:
-                assigned_lawyer = User.objects.get(full_name=assigned_lawyer_name).lawyer
+                defendent_lawyer = User.objects.get(
+                    full_name=defendent_lawyer).lawyer
                 case = Case.objects.get(id=case_id)
-                case.assigned_lawyer = assigned_lawyer
+                case.defendent_lawyer = defendent_lawyer
                 case.lawyer_accepted = False
                 case.save()
+                request.session['lawyer_selected'] = True
                 messages.success(request, 'Lawyer assigned successfully.')
             except User.DoesNotExist:
                 messages.error(request, 'Assigned lawyer not found.')
             return redirect('against_cases')
 
     Users = User.objects.filter(user_type='LAWYER', is_active=1)
-    Lawyers = Lawyer.objects.filter(user__in=Users)
+    Lawyers = Lawyer.objects.filter(user__in=Users).exclude(id__in=cases.values_list('assigned_lawyer', flat=True))
     return render(request, 'against_cases.html', {'cases': cases, 'Lawyers': Lawyers})
 
 @login_required(login_url='/login/')
@@ -233,7 +231,7 @@ def hearings(request):
     storage.used = True
 
     hearings = Hearing.objects.all()
-    return render(request, 'hearings.html', {'hearings': hearings})
+    return render(request, 'citizen_hearings.html', {'hearings': hearings})
 
 @login_required(login_url='/login/')
 def logout_view(request):

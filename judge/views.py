@@ -89,7 +89,7 @@ def judge_profile(request):
 
     judge = Judge.objects.get(user=request.user)
     user = User.objects.get(id=judge.user.id)
-    return render(request, 'profile.html', {'judge': judge, 'user': user})
+    return render(request, 'judge_profile.html', {'judge': judge, 'user': user})
 
 @login_required(login_url='/login/')
 def judge_edit_profile(request):
@@ -119,21 +119,17 @@ def judge_edit_profile(request):
             messages.error(request, 'Court is required')
             return redirect('judge_profile')
         
-        user.full_name = name
-        user.email = email
-        user.contact_number = phone
-        judge.court = court
-        
-        # Add other fields as necessary
-        if 'profile_picture' in request.FILES:
-            user.profile_picture = request.FILES['profile_picture']
+         # Check for and save profile picture
+        if request.FILES.get('profile_image'):
+            profile_picture = request.FILES['profile_image']
+            user.profile_picture = profile_picture
         
         judge.save()
         user.save()
         messages.success(request, 'Profile updated successfully')
         return redirect('judge_profile')
-    else:
-        return HttpResponseBadRequest("Invalid request method")
+        
+    return render(request, 'judge_edit_profile.html', {'judge': judge, 'user': user})
 
 @login_required(login_url='/login/')
 def schedule_hearing(request):

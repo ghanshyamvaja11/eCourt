@@ -14,7 +14,7 @@ class Case(models.Model):
     defendant = models.ForeignKey(
         Citizen, related_name="defendant_cases", on_delete=models.CASCADE)
     assigned_lawyer = models.ForeignKey(
-        Lawyer, related_name="cases", on_delete=models.SET_NULL, null=True, blank=True)
+        Lawyer, related_name="cases", on_delete=models.SET_NULL, null=True, blank=True)  # plaintiff
     defendent_lawyer = models.ForeignKey(
         Lawyer, related_name="defendent_lawyer", on_delete=models.SET_NULL, null=True, blank=True)
     assigned_judge = models.ForeignKey(
@@ -24,7 +24,8 @@ class Case(models.Model):
     case_description = models.TextField(blank=True, null=True)
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default='PENDING')
-    laywer_accepted = models.BooleanField(default=False)
+    lawyer_accepted = models.BooleanField(default=False)  # plaintiff
+    defendant_lawyer_accepted = models.BooleanField(default=False)
     case_filed_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

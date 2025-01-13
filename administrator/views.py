@@ -10,7 +10,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.platypus import *
+from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 import json
 from django.db.models import Count, F
@@ -201,7 +202,7 @@ def lawyer_approve(request):
         'ecourtofficially@gmail.com'
     )
 
-    return render(request, 'lawyer_requests.html', {'lawyer': lawyer})
+    return redirect('lawyer-approve-reject')
 
 
 @login_required(login_url='/login/')
@@ -224,7 +225,7 @@ def lawyer_reject(request):
         'ecourtofficially@gmail.com'
     )
 
-    return render(request, 'lawyer_requests.html', {'lawyer': lawyer})
+    return redirect('lawyer-approve-reject')
 
 @login_required(login_url='/login/')
 def profile(request):
@@ -345,12 +346,14 @@ def reports_dashboard(request):
         # Prepare data and headers dynamically
         headers = []
         data = []
+        report_title = ""
 
         if report_type == 'cases':
             cases = Case.objects.select_related(
                 'plaintiff', 'defendant', 'assigned_judge')
             headers = ["Case Number", "Case Title", "Status",
                        "Case Type", "Plaintiff", "Defendant", "Assigned Judge"]
+            report_title = "Cases Report"
 
             for case in cases:
                 row = [
@@ -368,6 +371,7 @@ def reports_dashboard(request):
             lawyers = Lawyer.objects.select_related('user')
             headers = ["Full Name", "License Number",
                        "Law Firm", "Contact Number"]
+            report_title = "Lawyers Report"
 
             for lawyer in lawyers:
                 row = [
@@ -381,6 +385,7 @@ def reports_dashboard(request):
         elif report_type == 'judges':
             judges = Judge.objects.select_related('user')
             headers = ["Full Name", "Court", "Cases Assigned"]
+            report_title = "Judges Report"
 
             for judge in judges:
                 row = [
@@ -394,6 +399,7 @@ def reports_dashboard(request):
             citizens = Citizen.objects.select_related('user')
             headers = ["Full Name", "National ID",
                        "Cases Filed", "Contact Number"]
+            report_title = "Citizens Report"
 
             for citizen in citizens:
                 row = [
@@ -408,6 +414,7 @@ def reports_dashboard(request):
             case_types = Case.objects.values(
                 'case_type').annotate(case_count=Count('id'))
             headers = ["Case Type", "Case Count"]
+            report_title = "Case Types Report"
 
             for case_type in case_types:
                 row = [
@@ -420,6 +427,7 @@ def reports_dashboard(request):
             monthly_cases = Case.objects.annotate(month=TruncMonth(
                 'case_filed_date')).values('month').annotate(case_count=Count('id'))
             headers = ["Month", "Case Count"]
+            report_title = "Monthly Cases Report"
 
             for monthly_case in monthly_cases:
                 row = [
@@ -433,6 +441,7 @@ def reports_dashboard(request):
             hearings = Hearing.objects.select_related('case')
             headers = ["Case Number", "Hearing Date",
                        "Hearing Time", "Outcome"]
+            report_title = "Hearings Report"
 
             for hearing in hearings:
                 row = [
@@ -448,6 +457,7 @@ def reports_dashboard(request):
             documents = Document.objects.select_related('case', 'uploaded_by')
             headers = ["Case Number", "Document Type",
                        "Uploaded By", "Uploaded At"]
+            report_title = "Documents Report"
 
             for document in documents:
                 row = [
@@ -469,10 +479,15 @@ def reports_dashboard(request):
         # Create a SimpleDocTemplate
         pdf = SimpleDocTemplate(response, pagesize=letter)
 
+        # Add a title to the report
+        styles = getSampleStyleSheet()
+        title = Paragraph(f"<strong>{report_title}</strong>", styles['Title'])
+        spacer = Spacer(1, 20)  # Add some space after the title
+
         # Prepare data for the table
         table_data = [headers] + data  # Add headers as the first row
 
-        # Create table
+        # Create the table
         table = Table(table_data)
         table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0),
@@ -487,11 +502,164 @@ def reports_dashboard(request):
             ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Grid lines
         ]))
 
-        # Build the PDF
-        elements = [table]
+        # Build the PDF with title, spacer, and table
+        elements = [title, spacer, table]
         pdf.build(elements)
 
         return response
+    # if request.method == 'POST':
+    #     report_type = request.POST.get('report_type')
+
+    #     # Prepare data and headers dynamically
+    #     headers = []
+    #     data = []
+
+    #     if report_type == 'cases':
+    #         cases = Case.objects.select_related(
+    #             'plaintiff', 'defendant', 'assigned_judge')
+    #         headers = ["Case Number", "Case Title", "Status",
+    #                    "Case Type", "Plaintiff", "Defendant", "Assigned Judge"]
+
+    #         for case in cases:
+    #             row = [
+    #                 case.case_number,
+    #                 case.case_title,
+    #                 case.status,
+    #                 case.case_type,
+    #                 case.plaintiff.user.full_name if case.plaintiff else "N/A",
+    #                 case.defendant.user.full_name if case.defendant else "N/A",
+    #                 case.assigned_judge.user.full_name if case.assigned_judge else "N/A",
+    #             ]
+    #             data.append(row)
+
+    #     elif report_type == 'lawyers':
+    #         lawyers = Lawyer.objects.select_related('user')
+    #         headers = ["Full Name", "License Number",
+    #                    "Law Firm", "Contact Number"]
+
+    #         for lawyer in lawyers:
+    #             row = [
+    #                 lawyer.user.full_name,
+    #                 lawyer.license_number,
+    #                 lawyer.law_firm,
+    #                 lawyer.user.contact_number,
+    #             ]
+    #             data.append(row)
+
+    #     elif report_type == 'judges':
+    #         judges = Judge.objects.select_related('user')
+    #         headers = ["Full Name", "Court", "Cases Assigned"]
+
+    #         for judge in judges:
+    #             row = [
+    #                 judge.user.full_name,
+    #                 judge.court,
+    #                 judge.cases_assigned,
+    #             ]
+    #             data.append(row)
+
+    #     elif report_type == 'citizens':
+    #         citizens = Citizen.objects.select_related('user')
+    #         headers = ["Full Name", "National ID",
+    #                    "Cases Filed", "Contact Number"]
+
+    #         for citizen in citizens:
+    #             row = [
+    #                 citizen.user.full_name,
+    #                 citizen.national_id,
+    #                 citizen.cases_filed,
+    #                 citizen.user.contact_number,
+    #             ]
+    #             data.append(row)
+
+    #     elif report_type == 'caseTypes':
+    #         case_types = Case.objects.values(
+    #             'case_type').annotate(case_count=Count('id'))
+    #         headers = ["Case Type", "Case Count"]
+
+    #         for case_type in case_types:
+    #             row = [
+    #                 case_type['case_type'],
+    #                 case_type['case_count'],
+    #             ]
+    #             data.append(row)
+
+    #     elif report_type == 'monthlyCases':
+    #         monthly_cases = Case.objects.annotate(month=TruncMonth(
+    #             'case_filed_date')).values('month').annotate(case_count=Count('id'))
+    #         headers = ["Month", "Case Count"]
+
+    #         for monthly_case in monthly_cases:
+    #             row = [
+    #                 monthly_case['month'].strftime(
+    #                     '%B %Y') if monthly_case['month'] else "N/A",
+    #                 monthly_case['case_count'],
+    #             ]
+    #             data.append(row)
+
+    #     elif report_type == 'hearings':
+    #         hearings = Hearing.objects.select_related('case')
+    #         headers = ["Case Number", "Hearing Date",
+    #                    "Hearing Time", "Outcome"]
+
+    #         for hearing in hearings:
+    #             row = [
+    #                 hearing.case.case_number if hearing.case else "N/A",
+    #                 hearing.date.strftime(
+    #                     '%Y-%m-%d') if hearing.date else "N/A",
+    #                 hearing.time.strftime('%H:%M') if hearing.time else "N/A",
+    #                 hearing.outcome,
+    #             ]
+    #             data.append(row)
+
+    #     elif report_type == 'documents':
+    #         documents = Document.objects.select_related('case', 'uploaded_by')
+    #         headers = ["Case Number", "Document Type",
+    #                    "Uploaded By", "Uploaded At"]
+
+    #         for document in documents:
+    #             row = [
+    #                 document.case.case_number if document.case else "N/A",
+    #                 document.document_type,
+    #                 document.uploaded_by.user.full_name if document.uploaded_by else "N/A",
+    #                 document.uploaded_at.strftime(
+    #                     '%Y-%m-%d %H:%M') if document.uploaded_at else "N/A",
+    #             ]
+    #             data.append(row)
+
+    #     else:
+    #         return HttpResponse("Invalid report type", status=400)
+
+    #     # Prepare the PDF response
+    #     response = HttpResponse(content_type='application/pdf')
+    #     response['Content-Disposition'] = f'attachment; filename={report_type}_report.pdf'
+
+    #     # Create a SimpleDocTemplate
+    #     pdf = SimpleDocTemplate(response, pagesize=letter)
+
+    #     # Prepare data for the table
+    #     table_data = [headers] + data  # Add headers as the first row
+
+    #     # Create table
+    #     table = Table(table_data)
+    #     table.setStyle(TableStyle([
+    #         ('BACKGROUND', (0, 0), (-1, 0),
+    #          colors.HexColor("#1e3c72")),  # Header background
+    #         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # Header text color
+    #         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Center align all text
+    #         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # Header font
+    #         ('FONTSIZE', (0, 0), (-1, -1), 10),  # Font size
+    #         ('BOTTOMPADDING', (0, 0), (-1, 0), 8),  # Padding for header
+    #         # Alternate row background
+    #         ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+    #         ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Grid lines
+    #     ]))
+
+    #     # Build the PDF
+    #     elements = [table]
+    #     pdf.build(elements)
+
+    #     return response
 
     return render(request, 'reports.html')
 

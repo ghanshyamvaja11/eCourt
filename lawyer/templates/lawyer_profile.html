@@ -13,38 +13,30 @@
         <div class="profile-content">
             <!-- Profile Image on the Left -->
             <div class="profile-image">
-                <img src="/media/signup.gif" alt="Profile Image" class="profile-img">
+                <img src="{{ user.profile_picture.url }}" alt="Profile Image" class="profile-img">
             </div>
             <!-- Profile Details on the Right -->
             <div class="profile-info">
                 <table class="profile-table">
                     <tr>
                         <th><i class="fas fa-user-circle"></i> Username:</th>
-                        <td>lawyer123</td>
+                        <td>{{ user.username }}</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-id-card"></i> Full Name:</th>
-                        <td>Jane Smith</td>
+                        <td>{{ user.full_name }}</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-envelope"></i> Email:</th>
-                        <td>lawyer@example.com</td>
+                        <td>{{ user.email }}</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-phone"></i> Contact Number:</th>
-                        <td>+9876543210</td>
-                    </tr>
-                    <tr>
-                        <th><i class="fas fa-lock"></i> Password:</th>
-                        <td>********</td>
+                        <td>{{ user.contact_number }}</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-map-marker-alt"></i> Address:</th>
-                        <td>456 Justice Avenue, Law City</td>
-                    </tr>
-                    <tr>
-                        <th><i class="fas fa-briefcase"></i> Law Firm:</th>
-                        <td>Smith & Partners Law Firm</td>
+                        <td>{{ user.address }}</td>
                     </tr>
                 </table>
             </div>
