@@ -36,6 +36,9 @@ class Hearing(models.Model):
         Case, related_name="hearings", on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()
+    assigned_judge = models.ForeignKey(
+        Judge, on_delete=models.SET_NULL, null=True, blank=True)
+    status = models.CharField(max_length=50, default='Scheduled')
     videocall_link = models.CharField(max_length=150, blank=True, null=True)
     outcome = models.TextField(blank=True, null=True)
 

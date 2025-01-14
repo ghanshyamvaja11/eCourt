@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, JsonResponse
 from users.models import *  # Import all models from users app
 from cases.models import Case, Hearing  # Assuming there is a Case model in the cases app
+from notifications.models import *  # Assuming there is a Notification model in the notifications app
+from django.core.mail import send_mail
 from django.contrib.auth import logout
 
 @login_required(login_url='/login/')
@@ -24,6 +26,18 @@ def judge_assigned_cases(request):
     cases = Case.objects.filter(assigned_judge=judge)
     return render(request, 'judge_assigned_cases.html', {'cases': cases})
 
+def update_case_status(request):
+    try:
+        case_id = request.POST.get('case_id')
+        new_status = request.POST.get('new_status')
+        # Fetch the case
+        case = Case.objects.get(id=case_id)
+        case.status = new_status
+        case.save()
+        return redirect('judge_assigned_cases')
+    except:
+        return redirect('judge_assigned_cases')
+
 @login_required(login_url='/login/')
 def judge_hearing(request):
     # Clear all previous messages
@@ -31,7 +45,9 @@ def judge_hearing(request):
     storage.used = True
 
     judge = Judge.objects.get(user=request.user)
-    hearings = Case.objects.filter(assigned_judge=judge, status='Scheduled')
+
+    hearings = Hearing.objects.filter(assigned_judge=judge, status='Scheduled')
+    print(hearings)
     return render(request, 'judge_hearing.html', {'hearings': hearings})
 
 @login_required(login_url='/login/')
@@ -140,40 +156,44 @@ def schedule_hearing(request):
         case_id = request.POST.get('case_id')
         date = request.POST.get('date')
         time = request.POST.get('time')
-        videocall_link = request.POST.get('videocall_link')
+        # videocall_link = request.POST.get('videocall_link')
 
         case = get_object_or_404(Case, id=case_id)
+        judge = Judge.objects.get(user = request.user)
         Hearing.objects.create(
             case=case,
             date=date,
             time=time,
-            videocall_link=videocall_link
+            assigned_judge = judge
         )
 
         Notification.objects.create(
-            user=case.plantiff,
+            user=case.plaintiff.user,
             message=f'Hearing scheduled for case {case.case_number} on {date} at {time}.'
         )
         Notification.objects.create(
-            user=case.defendent,
+            user=case.defendant.user,
             message=f'Hearing scheduled for case {case.case_number} on {date} at {time}.'
         )
         Notification.objects.create(
-            user=case.assigned_lawyer,
+            user=case.assigned_lawyer.user,
             message=f'Hearing scheduled for case {case.case_number} on {date} at {time}.'
         )
         Notification.objects.create(
-            user=case.defendent_lawyer,
+            user=case.defendent_lawyer.user,
             message=f'Hearing scheduled for case {case.case_number} on {date} at {time}.'
         )
 
         messages.success(request, 'Hearing scheduled successfully.')
         subject = 'Hearing Scheduled'
-        message = f'A hearing has been scheduled for your case {case.case_number}.\n\n' \
-                  f'Date: {date}\nTime: {time}\nVideo Call Link: {videocall_link}\n\n' \
-                  f'Please be available on time.'
-        recipient_list = [case.plantiff.email,
-                          case.defendent.email, case.assigned_lawyer.email, case.defendent_lawyer.email]
+        message = (
+            f"A hearing has been scheduled for your case {case.case_number}.\n\n"
+            f"Date: {date}\nTime: {time}\n\n"
+            f"A video call link will be provided 15 to 20 minutes before the scheduled time.\n\n"
+            f"Please be available and check your notifications or email for the link prior to the hearing."
+        )
+        recipient_list = [case.plaintiff.user.email,
+                          case.defendant.user.email, case.assigned_lawyer.user.email, case.defendent_lawyer.user.email]
 
         send_mail(subject, message, 'ecourtofficially@gmail.com', recipient_list)
 
@@ -189,7 +209,7 @@ def notifications(request):
     
     judge = Judge.objects.get(user=request.user)
     notifications = Notification.objects.filter(user=judge.user).order_by('-timestamp')
-    return render(request, 'notifications.html', {'notifications': notifications})
+    return render(request, 'notification.html', {'notifications': notifications})
 
 @login_required(login_url='/login/')
 def logout_view(request):

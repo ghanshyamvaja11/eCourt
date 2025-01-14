@@ -19,10 +19,10 @@
         {% for hearing in hearings %}
         <div class="hearing-summary">
             <div class="summary-item">
-                <strong>Plaintiff:</strong> {{ hearing.plaintiff }}
+                <strong>Plaintiff:</strong> {{ hearing.case.plaintiff.user.full_name }}
             </div>
             <div class="summary-item">
-                <strong>Case Type:</strong> {{ hearing.case_type }}
+                <strong>Case Type:</strong> {{ hearing.case.case_type }}
             </div>
             <div class="view-btn-container">
                 <button class="view-btn" onclick="toggleHearingDetails('{{ hearing.id }}')">View</button>

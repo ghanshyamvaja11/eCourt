@@ -1,64 +1,5 @@
 {% extends 'judge_header.html' %}
-
 {% block content %}
-<div class="dashboard-header">
-    <h1>Assigned Cases</h1>
-</div>
-
-<!-- Inspirational Quote -->
-<div style="text-align: center; margin: 20px 0; font-size: 1.2rem; color: #1e3c72; font-style: italic;">
-    "Injustice anywhere is a threat to justice everywhere." – Martin Luther King Jr.
-</div>
-
-<div class="formcontainer">
-    <!-- Case Summary (Judge's Assigned Cases) -->
-    <div class="form-section">
-        <h2 class="form-title">Assigned Cases</h2>
-
-        <!-- Dynamic Case Data (Loop through each case's information) -->
-        {% for case in cases %}
-        <div class="case-summary">
-            <div class="summary-item">
-                <strong>Case Title:</strong> {{ case.title }}
-            </div>
-            <div class="summary-item">
-                <strong>Case Type:</strong> {{ case.case_type }}
-            </div>
-            <div class="view-btn-container">
-                <button class="view-btn" onclick="toggleCaseDetails('{{ case.id }}')">View</button>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-
-<!-- Full Case Information Card (Hidden Initially) -->
-<div id="case-details-card" class="case-details-card">
-    <div class="formcontainer">
-        <div class="form-section">
-            <h2 class="form-title">Case Information</h2>
-
-            <!-- Case's Detailed Info -->
-            <div id="case-info-details" class="case-info">
-                <!-- Content will be populated dynamically -->
-            </div>
-
-            <!-- Dropdown for Updating Case Status -->
-            <div class="info-item" style="display: flex; align-items: center; gap: 10px;">
-                <label for="case-status-dropdown" style="flex: 1;"><strong>Update Status:</strong></label>
-                <select id="case-status-dropdown" class="status-dropdown" style="flex: 2;" onchange="updateCaseStatusDropdown()">
-                    <option value="Pending">Pending</option>
-                    <option value="Active">Active</option>
-                    <option value="Closed">Closed</option>
-                </select>
-                <button class="update-btn" onclick="updateCaseStatus()" style="flex: 1;">Update Status</button>
-            </div>
-
-            <button onclick="closeCaseDetails()" class="close-btn">Close</button>
-        </div>
-    </div>
-</div>
-
 <style>
     body {
         font-family: 'Roboto', sans-serif;
@@ -173,34 +114,86 @@
     .close-btn:hover {
         background: #c0392b;
     }
-
-    .update-btn {
-        background: linear-gradient(to right, #1e3c72, #2a5298);
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .update-btn:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-    }
-   
-
 </style>
+
+<div class="dashboard-header">
+    <h1>Assigned Cases</h1>
+</div>
+
+<!-- Inspirational Quote -->
+<div style="text-align: center; margin: 20px 0; font-size: 1.2rem; color: #1e3c72; font-style: italic;">
+    "Injustice anywhere is a threat to justice everywhere." – Martin Luther King Jr.
+</div>
+
+<div class="formcontainer">
+    <!-- Case Summary (Judge's Assigned Cases) -->
+    <div class="form-section">
+        <h2 class="form-title">Assigned Cases</h2>
+
+        <!-- Dynamic Case Data (Loop through each case's information) -->
+        {% for case in cases %}
+        <div class="case-summary">
+            <div class="summary-item">
+                <strong>Case Title:</strong> {{ case.case_title }}
+            </div>
+            <div class="summary-item">
+                <strong>Case Type:</strong> {{ case.case_type }}
+            </div>
+            <div class="view-btn-container">
+                <button class="view-btn" onclick="toggleCaseDetails('{{ case.id }}')">View</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Full Case Information Card (Hidden Initially) -->
+<div id="case-details-card" class="case-details-card">
+    <div class="formcontainer">
+        <div class="form-section">
+            <h2 class="form-title">Case Information</h2>
+
+            <!-- Case's Detailed Info -->
+            <div id="case-info-details" class="case-info">
+                <!-- Content will be populated dynamically -->
+            </div>
+
+            <!-- Form for Updating Case Status -->
+            <form method="post" action="{% url 'update_case_status' %}">
+                {% csrf_token %}
+                <input type="hidden" name="case_id" id="hidden-case-id">
+                <div class="info-item" style="display: flex; align-items: center; gap: 10px;">
+                    <label for="case-status-dropdown" style="flex: 1;"><strong>Update Status:</strong></label>
+                    <select id="case-status-dropdown" name="new_status" class="status-dropdown" style="flex: 2;">
+                        <option value="Pending" seleted>Pending</option>
+                        <option value="Active">Active</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                </div>
+                <button type="submit" class="view-btn" style="margin-top: 20px;">Submit</button>
+            </form>
+
+            <button onclick="closeCaseDetails()" class="close-btn">Close</button>
+        </div>
+    </div>
+</div>
 
 <script>
     let currentCaseId;
+    const caseData = {
+        {% for case in cases %}
+        '{{ case.id }}': {
+            caseNumber: '{{ case.case_number }}',
+            caseTitle: '{{ case.case_title }}',
+            caseType: '{{ case.case_type }}',
+            plaintiff: '{{ case.plaintiff.user.full_name }}',
+            defendant: '{{ case.defendant.user.full_name }}',
+            status: '{{ case.status }}',
+        },
+        {% endfor %}
+    };
 
     function toggleCaseDetails(caseId) {
-        const caseData = {
-            // ...existing case data...
-        };
-
         currentCaseId = caseId;
         const caseInfo = caseData[caseId];
         const caseDetailsCard = document.getElementById('case-info-details');
@@ -211,10 +204,10 @@
             <div class="info-item"><strong>Plaintiff:</strong> ${caseInfo.plaintiff}</div>
             <div class="info-item"><strong>Defendant:</strong> ${caseInfo.defendant}</div>
             <div class="info-item"><strong>Status:</strong> <span id="case-status">${caseInfo.status}</span></div>
-            <div class="info-item"><strong>Hearing Date:</strong> ${caseInfo.hearingDate}</div>
         `;
 
-        // Set the dropdown value to the current status
+        // Set the hidden input value and dropdown value to the current case and status
+        document.getElementById('hidden-case-id').value = caseId;
         document.getElementById('case-status-dropdown').value = caseInfo.status;
 
         document.getElementById('case-details-card').style.display = 'flex';
@@ -223,25 +216,6 @@
     function closeCaseDetails() {
         document.getElementById('case-details-card').style.display = 'none';
         document.getElementById('case-info-details').innerHTML = '';
-    }
-
-    function updateCaseStatus() {
-        const dropdown = document.getElementById('case-status-dropdown');
-        const newStatus = dropdown.value;
-        const statusElement = document.getElementById('case-status');
-        statusElement.textContent = newStatus;
-
-        console.log(`Status of ${currentCaseId} updated to ${newStatus}`);
-        alert(`Case status updated to ${newStatus}`);
-    }
-
-    function updateCaseStatusDropdown() {
-        const dropdown = document.getElementById('case-status-dropdown');
-        const newStatus = dropdown.value;
-        const statusElement = document.getElementById('case-status');
-        statusElement.textContent = newStatus;
-
-        console.log(`Status of ${currentCaseId} updated to ${newStatus}`);
     }
 </script>
 {% endblock %}
