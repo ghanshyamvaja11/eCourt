@@ -15,7 +15,7 @@ class Case(models.Model):
         Citizen, related_name="defendant_cases", on_delete=models.CASCADE)
     assigned_lawyer = models.ForeignKey(
         Lawyer, related_name="cases", on_delete=models.SET_NULL, null=True, blank=True)  # plaintiff
-    defendent_lawyer = models.ForeignKey(
+    defendant_lawyer = models.ForeignKey(
         Lawyer, related_name="defendent_lawyer", on_delete=models.SET_NULL, null=True, blank=True)
     assigned_judge = models.ForeignKey(
         Judge, related_name="cases", on_delete=models.SET_NULL, null=True, blank=True)

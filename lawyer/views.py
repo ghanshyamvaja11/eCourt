@@ -8,6 +8,8 @@ import random
 from users.models import *  # Import all models from users app
 from cases.models import *  # Assuming there is a Case model in the cases app
 from notifications.models import Notification
+from administrator.models import * # Assuming there is
+from django.db.models import Q
 @login_required(login_url='/login/')
 def lawyer_dashboard(request):
     return render(request, 'lawyer_dashboard.html')
@@ -23,9 +25,9 @@ def assigned_cases(request):
 
     lawyer = Lawyer.objects.get(user=request.user)
     plaintiff_cases = Case.objects.filter(assigned_lawyer=lawyer, lawyer_accepted=True)
-    defendent_cases = Case.objects.filter(
-        defendent_lawyer=lawyer, defendant_lawyer_accepted=True)
-    cases = plaintiff_cases | defendent_cases
+    defendant_cases = Case.objects.filter(
+        defendant_lawyer=lawyer, defendant_lawyer_accepted=True)
+    cases = plaintiff_cases | defendant_cases
     cases = cases.distinct()
     return render(request, 'assigned_cases.html', {'cases': cases})
 
@@ -224,8 +226,8 @@ def plaintiff_decline_case(request):
     if case.assigned_lawyer:
         case.assigned_lawyer = None
     
-    if case.defendent_lawyer:
-        case.defendent_lawyer = None
+    if case.defendant_lawyer:
+        case.defendant_lawyer = None
     case.save()
 
     messages.success(request, 'Case declined successfully.')
@@ -233,22 +235,22 @@ def plaintiff_decline_case(request):
 
 
 @login_required(login_url='/login/')
-def defendent_case_requests(request):
+def defendant_case_requests(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
 
     lawyer = Lawyer.objects.get(user=request.user)
     
-    defendent_cases = Case.objects.filter(
-        defendent_lawyer=lawyer, defendant_lawyer_accepted=False)
-    cases = defendent_cases
+    defendant_cases = Case.objects.filter(
+        defendant_lawyer=lawyer, defendant_lawyer_accepted=False)
+    cases = defendant_cases
 
-    return render(request, 'defendent_case_requests.html', {'cases': cases})
+    return render(request, 'defendant_case_requests.html', {'cases': cases})
 
 
 @login_required(login_url='/login/')
-def defendent_accept_case(request):
+def defendant_accept_case(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
@@ -265,15 +267,15 @@ def defendent_accept_case(request):
         'Case Accepted',
         f'Your case {case.case_number} has been accepted by the lawyer.',
         'ecourtofficially@gmail.com',
-        [case.defendent.user.email],
+        [case.defendant.user.email],
         fail_silently=False,
     )
     messages.success(request, 'Case accepted successfully.')
-    return redirect('defendent_case_requests')
+    return redirect('defendant_case_requests')
 
 
 @login_required(login_url='/login/')
-def defendent_decline_case(request):
+def defendant_decline_case(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
@@ -285,16 +287,16 @@ def defendent_decline_case(request):
         'Case Declined',
         f'Your case {case.case_number} has been declined by the lawyer.',
         'ecourtofficially@gmail.com',
-        [case.defendent.user.email],
+        [case.defendant.user.email],
         fail_silently=False,
     )
 
-    if case.defendent_lawyer:
-        case.defendent_lawyer = None
+    if case.defendant_lawyer:
+        case.defendant_lawyer = None
     case.save()
 
     messages.success(request, 'Case declined successfully.')
-    return redirect('defendent_case_requests')
+    return redirect('defendant_case_requests')
 
 @login_required(login_url='/login/')
 def notifications(request):
@@ -333,3 +335,75 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'You have been logged out successfully.')
     return redirect('login')
+
+def request_payment(request, case_id):
+    # Fetch the lawyer object for the current user
+    try:
+        lawyer = Lawyer.objects.get(user=request.user)
+    except Lawyer.DoesNotExist:
+        lawyer = None  # Handle the absence of a lawyer
+
+    if lawyer:
+        # Try to fetch the cases where the lawyer is involved
+        try:
+            plaintiff_case = Case.objects.get(id=case_id, assigned_lawyer=lawyer)
+        except Case.DoesNotExist:
+            plaintiff_case = None  # Handle the absence of a plaintiff case
+
+        try:
+            defendant_case = Case.objects.get(id=case_id, defendant_lawyer=lawyer)
+        except Case.DoesNotExist:
+            defendant_case = None  # Handle the absence of a defendant case
+
+        # Combine the cases if they exist
+        if plaintiff_case and defendant_case:
+            cases = plaintiff_case | defendant_case  # Combine the cases
+        elif plaintiff_case:
+            cases = plaintiff_case
+        elif defendant_case:
+            cases = defendant_case
+        else:
+            cases = 'no cases avaiable'  # No cases found
+
+    else:
+        cases = 'no lawyers avaiable'  # No lawyer found
+
+    if plaintiff_case:
+        if request.method == 'POST':
+            amount = request.POST['amount']
+            description = request.POST['description']
+            Payment.objects.create(case=plaintiff_case, amount=amount, description=description)
+            Notification.objects.create(
+                user=plaintiff_case.plaintiff.user,
+                message=f'You have a new payment request for case {plaintiff_case.case_number}.'
+            )
+            # Send email to client
+            send_mail(
+                'Payment Request',
+                f'You have a new payment request for case {plaintiff_case.case_number}.',
+                'ecourtofficially@gmail.com',
+                [plaintiff_case.plaintiff.user.email],
+                fail_silently=False,
+            )
+    else:
+        if defendant_case:
+            if request.method == 'POST':
+                amount = request.POST['amount']
+                description = request.POST['description']
+                Payment.objects.create(case=defendant_case, amount=amount, description=description)
+
+                Notification.objects.create(
+                user=defendant_case.defendant.user,
+                message=f'You have a new payment request for case {defendant_case.case_number}.'
+            )
+                
+                # Send email to client
+            send_mail(
+                'Payment Request',
+                f'You have a new payment request for case {defendant_case.case_number}.',
+                'ecourtofficially@gmail.com',
+                [plaintiff_case.defendant.user.email],
+                fail_silently=False,
+            )
+        return redirect('lawyer_dashboard')
+    return render(request, 'request_payment.html', {'case': cases})

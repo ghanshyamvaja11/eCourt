@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.contrib.auth import logout
 from users.models import *  # Import all models from users app
 from cases.models import *  # Ensure Document model is imported
@@ -10,6 +10,17 @@ import random
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.conf import settings
+from administrator.models import *
+import razorpay
+from django.views.decorators.csrf import csrf_exempt
+import json 
+import logging
+from django.db.models import Q
+
+# Razorpay Client Setup
+razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+logger = logging.getLogger(__name__)
 
 @login_required(login_url='/login/')
 def citizen_dashboard(request):
@@ -254,3 +265,142 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'You have been logged out successfully.')
     return redirect('login')
+
+def requested_payments(request):
+    # Clear all previous messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
+    RAZORPAY_KEY_ID = settings.RAZORPAY_KEY_ID
+
+    # Fetch the citizen object for the current user
+    try:
+        citizen = Citizen.objects.get(user=request.user)
+    except Citizen.DoesNotExist:
+        return HttpResponse("Citizen not found", status=404)  # Return an error response if no citizen is found
+
+    # Fetch cases where the citizen is a plaintiff or a defendant
+    plaintiff_cases = Case.objects.filter(plaintiff=citizen)
+    defendant_cases = Case.objects.filter(defendant=citizen)
+
+    # Combine the querysets
+    cases = plaintiff_cases | defendant_cases
+
+    if cases.exists():  # Check if there are any cases
+        if cases.count() == 1:
+            # If there is exactly one case
+            payments = Payment.objects.filter(case=cases.first())
+        else:
+            # If there are multiple cases
+            payments = Payment.objects.filter(case__in=cases)
+    else:
+        payments = Payment.objects.none()  # No cases found
+
+    # Render the template with payments or a message if no payments exist
+    if payments.exists():
+        return render(request, 'requested_payments.html', {
+            'payments': payments,
+            'RAZORPAY_KEY_ID': RAZORPAY_KEY_ID,
+        })
+    else:
+        return render(request, 'requested_payments.html', {
+            'message': 'No payments found.',
+            'RAZORPAY_KEY_ID': RAZORPAY_KEY_ID,
+        })
+
+def create_order(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        payment_id = data.get("payment_id")
+        amount = data.get('amount')  # Amount in paise
+        amount = float(amount) * 100
+        amount = int(amount)  # Convert to integer
+        currency = "INR"
+        user_email = request.user.email  # Fetch email from the logged-in user
+
+        try:
+            order_info = {
+                "amount": amount,
+                "currency": currency,
+                "payment_capture": 1  # Automatically capture payment
+            }
+            # Create the Razorpay order
+            order = razorpay_client.order.create(order_info)
+            order_id = order.get('id')
+            if not order_id:
+                logger.error(
+                    "Failed to retrieve order_id from Razorpay response")
+                return JsonResponse({'error': 'Failed to create Razorpay order. Try again.'}, status=500)
+
+            # Save payment details to the database
+            payment = Payment.objects.get(id=payment_id)
+            payment.order_id = order_id
+            payment.save()
+
+            request.session['payment_id'] = payment_id
+
+            logger.info(f"Payment created successfully: {payment}")
+
+            # Include user email in response
+            return JsonResponse({'order_id': order_id, 'amount': amount, 'email': user_email})
+        except Exception as e:
+            logger.error(f"Error creating Razorpay order: {str(e)}")
+            return JsonResponse({'error': f'Error creating Razorpay order: {str(e)}'}, status=500)
+
+    logger.error("Invalid request method for create_order")
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+def verify_payment(request):
+    if request.method == "POST":
+        try:
+            # Parse JSON payload
+            data = json.loads(request.body)
+            razorpay_order_id = data.get('razorpay_order_id')
+            razorpay_payment_id = data.get('razorpay_payment_id')
+            razorpay_signature = data.get('razorpay_signature')
+
+            if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature]):
+                return JsonResponse({'status': 'Failed', 'message': 'Invalid payment data'}, status=400)
+
+            # Verify the payment signature
+            params_dict = {
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature
+            }
+
+            try:
+                # Signature verification
+                razorpay_client.utility.verify_payment_signature(params_dict)
+            except razorpay.errors.SignatureVerificationError:
+                return JsonResponse({'status': 'Failed', 'message': 'Payment verification failed. Invalid signature.'}, status=400)
+
+            # Update payment status in the database
+            try:
+                payment = Payment.objects.get(order_id=razorpay_order_id)
+                payment.payment_id = razorpay_payment_id
+                payment.signature = razorpay_signature
+                payment.status = 'Completed'
+                payment.refund_amount = 0
+                payment.save()
+
+            except Payment.DoesNotExist:
+                return JsonResponse({'status': 'Failed', 'message': 'Payment record not found'}, status=404)
+            try:
+                payment = Payment.objects.get(order_id=razorpay_order_id)
+
+                # Check if the status is 'Completed'
+                if payment.status != 'Completed':
+                    payment.delete()  # Delete the payment if the status is not 'Completed'
+
+            except:
+                # Handle the case where no matching Payment record is found
+                print("Payment record not found for the provided order_id.")
+
+            return JsonResponse({'status': 'success', 'message': 'Payment Verified'}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'Failed', 'message': 'Invalid JSON payload'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'Failed', 'message': f'Error: {str(e)}'}, status=500)
+
+    return JsonResponse({'status': 'Failed', 'message': 'Invalid request method'}, status=400)

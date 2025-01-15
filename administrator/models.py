@@ -15,12 +15,10 @@ class ContactUs(models.Model):
 
 
 class Payment(models.Model):
-    client = models.ForeignKey(
-        Citizen, on_delete=models.CASCADE)
-    lawyer = models.ForeignKey(
-        Lawyer, on_delete=models.CASCADE)
     case = models.ForeignKey(
         Case, on_delete=models.CASCADE)
+    description = models.CharField(max_length=500)
+    email = models.EmailField()
     order_id = models.CharField(max_length=255)
     payment_id = models.CharField(max_length=50)
     signature = models.CharField(max_length=256)
