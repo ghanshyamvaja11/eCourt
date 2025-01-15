@@ -15,33 +15,20 @@
     <div class="form-section">
         <h2 class="form-title">Hearing Information</h2>
 
-        <!-- Static Hearing Data (Loop through each hearing's information) -->
-
+        <!-- Loop through each hearing's information -->
+        {% for hearing in hearings %}
         <div class="hearing-summary">
             <div class="summary-item">
-                <strong>Plaintiff:</strong> John Doe
+                <strong>Plaintiff:</strong> {{ hearing.case.plaintiff_name }}
             </div>
             <div class="summary-item">
-                <strong>Case Type:</strong> Civil Case
+                <strong>Case Type:</strong> {{ hearing.case.case_type }}
             </div>
             <div class="view-btn-container">
-                <button class="view-btn" onclick="toggleHearingDetails('case1')">View</button>
+                <button class="view-btn" onclick="toggleHearingDetails({{ hearing.id }})">View</button>
             </div>
         </div>
-
-        <div class="hearing-summary">
-            <div class="summary-item">
-                <strong>Plaintiff:</strong> Jane Smith
-            </div>
-            <div class="summary-item">
-                <strong>Case Type:</strong> Criminal Case
-            </div>
-            <div class="view-btn-container">
-                <button class="view-btn" onclick="toggleHearingDetails('case2')">View</button>
-            </div>
-        </div>
-
-        <!-- Add more hearing records here as needed -->
+        {% endfor %}
     </div>
 </div>
 
@@ -59,7 +46,7 @@
             <!-- Options for Updating Hearing Status -->
             <div class="status-update-container">
                 <label for="hearing-status">Update Hearing Status:</label>
-                <div class="status-update-options">
+                {% comment %} <div class="status-update-options">
                     <select id="hearing-status" class="status-select">
                         <option value="Scheduled">Scheduled</option>
                         <option value="Completed">Completed</option>
@@ -67,9 +54,9 @@
                         <option value="Canceled">Canceled</option>
                     </select>
                     <button onclick="updateHearingStatus()" class="update-status-btn">Update Status</button>
-                </div>
+                </div> {% endcomment %}
             </div>
-
+            
             <button onclick="closeHearingDetails()" class="close-btn">Close</button>
         </div>
     </div>
@@ -276,35 +263,21 @@ body {
 
 <script>
     // Function to toggle the hearing details card and populate information dynamically
-    function toggleHearingDetails(caseId) {
-        var hearingData = {
-            "case1": {
-                "judgeName": "Judge John",
-                "location": "Courtroom 1",
-                "date": "2025-01-10",
-                "time": "10:00 AM",
-                "status": "Scheduled"
-            },
-            "case2": {
-                "judgeName": "Judge Emily",
-                "location": "Courtroom 3",
-                "date": "2025-02-15",
-                "time": "2:00 PM",
-                "status": "Scheduled"
-            }
-        };
-
-        var hearing = hearingData[caseId];
-        var hearingDetailsCard = document.getElementById('hearing-info-details');
-        hearingDetailsCard.innerHTML = ` 
-            <div class="info-item"><strong>Judge:</strong> ${hearing.judgeName}</div>
-            <div class="info-item"><strong>Location:</strong> ${hearing.location}</div>
-            <div class="info-item"><strong>Date:</strong> ${hearing.date}</div>
-            <div class="info-item"><strong>Time:</strong> ${hearing.time}</div>
-            <div class="info-item"><strong>Status:</strong> ${hearing.status}</div>
-        `;
-        
-        document.getElementById('hearing-details-card').style.display = 'flex';
+    function toggleHearingDetails(hearingId) {
+        fetch(`/get_hearing_details/${hearingId}/`)
+        .then(response => response.json())
+        .then(hearing => {
+            var hearingDetailsCard = document.getElementById('hearing-info-details');
+            hearingDetailsCard.innerHTML = ` 
+                <div class="info-item"><strong>Judge:</strong> ${hearing.judge}</div>
+                <div class="info-item"><strong>Location:</strong> ${hearing.location}</div>
+                <div class="info-item"><strong>Date:</strong> ${hearing.date}</div>
+                <div class="info-item"><strong>Time:</strong> ${hearing.time}</div>
+                <div class="info-item"><strong>Status:</strong> ${hearing.status}</div>
+                <div class="info-item"><strong>Outcome:</strong> ${hearing.outcome}</div>
+            `;
+            document.getElementById('hearing-details-card').style.display = 'flex';
+        });
     }
 
     // Function to close the hearing details card
@@ -318,5 +291,4 @@ body {
         alert("Hearing status updated to: " + status);
     }
 </script>
-
 {% endblock %}

@@ -41,13 +41,16 @@
             <div id="case-info-details" class="case-info"></div>
             <div class="button-container">
                 <button onclick="viewDocuments()" class="approve-btn">View Documents</button>
+                {% if request.session.lawyer_selected == '' %}
                 <button onclick="selectLawyer()" class="reject-btn">Select Lawyer</button>
+                {% endif %}
             </div>
             <button onclick="closeCaseDetails()" class="close-btn">Close</button>
         </div>
     </div>
 </div>
 
+{% if request.session.lawyer_selected == '' %}
 <div id="select-lawyer-popup" class="popup">
     <div class="popup-content">
         <h2>Select Lawyer</h2>
@@ -56,7 +59,7 @@
             <input type="hidden" id="case-id" name="case_id" />
             <div class="input-container">
                 <label for="assigned-lawyer">Assigned Lawyer:</label>
-                <input type="text" id="assigned-lawyer" name="assigned_lawyer" list="lawyers" required />
+                <input type="text" id="assigned-lawyer" name="defendent_lawyer" list="lawyers" required />
                 <datalist id="lawyers">
                     {% for lawyer in Lawyers %}
                         <option value="{{ lawyer.user.full_name }}">{{ lawyer.user.email }}</option>
@@ -70,7 +73,7 @@
         <button onclick="closePopup('select-lawyer-popup')" class="close-btn">Close</button>
     </div>
 </div>
-
+{% endif %}
 <style>
 /* General Styles */
 body {

@@ -13,7 +13,7 @@
         <div class="profile-content">
             <!-- Profile Image on the Left -->
             <div class="profile-image">
-                <img src="{{ judge.profile_image.url }}" alt="Profile Image" class="profile-img">
+                <img src="{{ judge.user.profile_picture.url }}" alt="Profile Image" class="profile-img">
             </div>
             <!-- Profile Details on the Right -->
             <div class="profile-info">
@@ -24,7 +24,7 @@
                     </tr>
                     <tr>
                         <th><i class="fas fa-id-card"></i> Full Name:</th>
-                        <td>{{ judge.full_name }}</td>
+                        <td>{{ judge.user.full_name }}</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-envelope"></i> Email:</th>
@@ -32,15 +32,15 @@
                     </tr>
                     <tr>
                         <th><i class="fas fa-phone"></i> Contact Number:</th>
-                        <td>{{ judge.contact_number }}</td>
+                        <td>{{ judge.user.contact_number }}</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-map-marker-alt"></i> Address:</th>
-                        <td>{{ judge.address }}</td>
+                        <td>{{ judge.user.address }}</td>
                     </tr>
                     <tr>
                         <th><i class="fas fa-gavel"></i> Court Name:</th>
-                        <td>{{ judge.court_name }}</td>
+                        <td>{{ judge.court }}</td>
                     </tr>
                 </table>
             </div>
