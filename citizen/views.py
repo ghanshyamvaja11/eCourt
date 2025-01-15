@@ -36,7 +36,7 @@ def file_cases(request):
     storage = messages.get_messages(request)
     storage.used = True
 
-    Defendents = Citizen.objects.exclude(user=request.user)
+    defendants = Citizen.objects.exclude(user=request.user)
     Users = User.objects.filter(user_type='LAWYER', is_active=1)
     Lawyers = Lawyer.objects.filter(user__in=Users)
 
@@ -89,7 +89,7 @@ def file_cases(request):
 
         messages.success(request, 'Case filed successfully.')
         return redirect('my_cases')
-    return render(request, 'file_case.html', {'Defendents': Defendents, 'Lawyers': Lawyers})
+    return render(request, 'file_case.html', {'defendants': defendants, 'Lawyers': Lawyers})
 
 @login_required(login_url='/login/')
 def my_cases(request):
@@ -157,6 +157,21 @@ def citizen_edit_profile(request):
         user.address = request.POST['address']
         if request.FILES.get('profile_image'):
             user.profile_picture = request.FILES['profile_image']
+
+        # Add validations
+        if not user.full_name:
+            messages.error(request, 'Name is required')
+            return redirect('citizen_profile')
+        if not user.email:
+            messages.error(request, 'Email is required')
+            return redirect('citizen_profile')
+        if not user.contact_number:
+            messages.error(request, 'Phone number is required')
+            return redirect('citizen_profile')
+        if not user.address:
+            messages.error(request, 'addrress is required')
+            return redirect('citizen_profile')
+
         user.save()
         messages.success(request, 'Profile updated successfully.')
         return redirect('citizen_profile')
@@ -180,7 +195,7 @@ def case_documents(request):
         return HttpResponseBadRequest("Invalid Case ID")
 
     documents = Document.objects.filter(case=case)
-    return render(request, 'case_docs.html', {'documents': documents})
+    return render(request, 'my_case_docs.html', {'documents': documents})
 
 @login_required(login_url='/login/')
 def notifications(request):
@@ -215,12 +230,12 @@ def against_cases(request):
         case_id = request.POST.get('case_id')
 
         if action == 'select_lawyer':
-            defendent_lawyer = request.POST.get('defendent_lawyer')
+            defendant_lawyer = request.POST.get('defendant_lawyer')
             try:
-                defendent_lawyer = User.objects.get(
-                    full_name=defendent_lawyer).lawyer
+                defendant_lawyer = User.objects.get(
+                    full_name=defendant_lawyer).lawyer
                 case = Case.objects.get(id=case_id)
-                case.defendent_lawyer = defendent_lawyer
+                case.defendant_lawyer = defendant_lawyer
                 case.lawyer_accepted = False
                 case.save()
                 request.session['lawyer_selected'] = True
@@ -235,7 +250,7 @@ def against_cases(request):
     cases = Case.objects.filter(defendant=citizen)
 
     # Step 2: Get all lawyers assigned to the defendant and plaintiff sides in these cases.
-    assigned_defendant_lawyers = cases.values_list('defendent_lawyer', flat=True)
+    assigned_defendant_lawyers = cases.values_list('defendant_lawyer', flat=True)
     assigned_plaintiff_lawyers = cases.values_list('assigned_lawyer', flat=True)
 
     # Step 3: Combine the lists of defendant and plaintiff lawyers to exclude them.

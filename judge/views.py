@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseBadRequest, JsonResponse
 from users.models import *  # Import all models from users app
-from cases.models import Case, Hearing  # Assuming there is a Case model in the cases app
+from cases.models import *  # Assuming there is a Case model in the cases app
 from notifications.models import *  # Assuming there is a Notification model in the notifications app
 from django.core.mail import send_mail
 from django.contrib.auth import logout
@@ -39,7 +39,7 @@ def update_case_status(request):
         return redirect('judge_assigned_cases')
 
 @login_required(login_url='/login/')
-def judge_hearing(request):
+def judge_hearings(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
@@ -47,8 +47,87 @@ def judge_hearing(request):
     judge = Judge.objects.get(user=request.user)
 
     hearings = Hearing.objects.filter(assigned_judge=judge, status='Scheduled')
-    print(hearings)
-    return render(request, 'judge_hearing.html', {'hearings': hearings})
+    return render(request, 'judge_hearings.html', {'hearings': hearings})
+
+@login_required(login_url='/login/')
+def hearing_videocall_url(request):
+    if request.method == "POST":
+        hearing_id = request.POST.get("hearing_id")
+        videocall_link = request.POST.get("videocall_url")
+        if hearing_id and videocall_link:
+            try:
+                hearing = Hearing.objects.get(id=hearing_id)
+                hearing.videocall_link = videocall_link
+                hearing.save()
+
+                messages.success(request, "Videocall URL submitted successfully.")
+
+                hearing = Hearing.objects.get(id=hearing_id)
+
+                case = Case.objects.get(id=hearing.case.id)
+                Notification.objects.create(
+                    user=case.plaintiff.user,
+                    message=f'Join the Videocall link : {videocall_link} for hearing of case number : {case.case_number} on {hearing.date} before {hearing.time}.'
+                )
+                Notification.objects.create(
+                    user=case.defendant.user,
+                    message=f'Join the Videocall link : {videocall_link} for hearing of case number : {case.case_number} on {hearing.date} before {hearing.time}.'
+                )
+                Notification.objects.create(
+                    user=case.assigned_lawyer.user,
+                    message=f'Join the Videocall link : {videocall_link} for hearing of case number : {case.case_number} on {hearing.date} before {hearing.time}.'
+                )
+                Notification.objects.create(
+                    user=case.defendant_lawyer.user,
+                    message=f'Join the Videocall link : {videocall_link} for hearing of case number : {case.case_number} on {hearing.date} before {hearing.time}.'
+                )
+        
+                messages.success(request, 'Hearing scheduled successfully.')
+                subject = 'Hearing Scheduled'
+                message = (
+                    f"Please join the videoconference for the hearing of your case {case.case_number} as per the details below:\n\n"
+                    f"Date: {hearing.date}\n"
+                    f"Time: {hearing.time}\n\n"
+                    f"Videocall Link: {videocall_link}\n\n"
+                    f"Kindly ensure you are available at the scheduled time and join the hearing via the provided link.\n\n"
+                    f"Best regards,\n"
+                    f"The Court Team"
+                )
+                recipient_list = [case.plaintiff.user.email,
+                                  case.defendant.user.email, case.assigned_lawyer.user.email, case.defendent_lawyer.user.email]
+        
+                send_mail(subject, message, 'ecourtofficially@gmail.com', recipient_list)
+                
+                return redirect('judge_hearings')  # Redirect to the judge's dashboard or another page
+            except Hearing.DoesNotExist:
+                messages.error(request, "Hearing not found.")
+        else:
+            messages.error(request, "Invalid form submission.")
+    
+    return redirect('judge_dashboard')  # Redirect to the judge's dashboard on failure
+
+@login_required(login_url='/login/')
+def submit_hearing_outcome(request):
+    if request.method == "POST":
+        hearing_id = request.POST.get("hearing_id")
+        outcome = request.POST.get("outcome")
+
+        if hearing_id and outcome:
+            try:
+                hearing = Hearing.objects.get(id=hearing_id)
+                hearing.outcome = outcome
+                hearing.save()
+
+                messages.success(request, "Outcome submitted successfully.")
+                # Redirect to the judge's dashboard or another page
+                return redirect('judge_dashboard')
+            except Hearing.DoesNotExist:
+                messages.error(request, "Hearing not found.")
+        else:
+            messages.error(request, "Invalid form submission.")
+
+    # Redirect to the judge's dashboard on failure
+    return redirect('judge_dashboard')
 
 @login_required(login_url='/login/')
 def outcome(request):
@@ -88,14 +167,23 @@ def outcome(request):
     return render(request, 'outcome.html', {'cases': cases})
 
 @login_required(login_url='/login/')
-def case_doc(request):
+def case_docs(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
 
-    judge = Judge.objects.get(user=request.user)
-    cases = Case.objects.filter(assigned_judge=judge)
-    return render(request, 'case_doc.html', {'cases': cases})
+    case_id = request.GET.get('case_id')
+    if not case_id:
+        return HttpResponseBadRequest("Case ID is required")
+
+    try:
+        case = Case.objects.get(id=case_id)
+        request.session['case_number'] = case.case_number
+    except Case.DoesNotExist:
+        return HttpResponseBadRequest("Invalid Case ID")
+
+    documents = Document.objects.filter(case=case)
+    return render(request, 'case_docs.html', {'documents': documents})
 
 @login_required(login_url='/login/')
 def judge_profile(request):
@@ -116,31 +204,34 @@ def judge_edit_profile(request):
     judge = Judge.objects.get(user=request.user)
     user = User.objects.get(id=judge.user.id)
     if request.method == 'POST':
-        name = request.POST.get('name', judge.user.full_name)
-        email = request.POST.get('email', user.email)
-        phone = request.POST.get('phone', judge.user.contact_number)
-        court = request.POST.get('court', judge.court)
+        user.full_name = request.POST.get('full_name')
+        user.email = request.POST.get('email')
+        user.contact_number = request.POST.get('contact_number')
+        user.address = request.POST.get('address')
+        # judge.court = request.POST.get('court')
         
         # Add validations
-        if not name:
+        if not user.full_name:
             messages.error(request, 'Name is required')
             return redirect('judge_profile')
-        if not email:
+        if not user.email:
             messages.error(request, 'Email is required')
             return redirect('judge_profile')
-        if not phone:
+        if not user.contact_number:
             messages.error(request, 'Phone number is required')
             return redirect('judge_profile')
-        if not court:
-            messages.error(request, 'Court is required')
+        if not user.address:
+            messages.error(request, 'addrress is required')
             return redirect('judge_profile')
+        # if not judge.court:
+            # messages.error(request, 'Court is required')
+            # return redirect('judge_profile')
         
          # Check for and save profile picture
         if request.FILES.get('profile_image'):
             profile_picture = request.FILES['profile_image']
             user.profile_picture = profile_picture
-        
-        judge.save()
+
         user.save()
         messages.success(request, 'Profile updated successfully')
         return redirect('judge_profile')

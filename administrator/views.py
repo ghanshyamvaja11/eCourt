@@ -244,6 +244,21 @@ def edit_profile(request):
         user.address = request.POST['address']
         if request.FILES.get('profile_image'):
             user.profile_picture = request.FILES['profile_image']
+        
+        # Add validations
+        if not user.full_name:
+            messages.error(request, 'Name is required')
+            return redirect('profile')
+        if not user.email:
+            messages.error(request, 'Email is required')
+            return redirect('profile')
+        if not user.contact_number:
+            messages.error(request, 'Phone number is required')
+            return redirect('profile')
+        if not user.address:
+            messages.error(request, 'addrress is required')
+            return redirect('profile')
+
         user.save()
         messages.success(request, 'Profile updated successfully.')
         return redirect('profile')

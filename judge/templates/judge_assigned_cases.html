@@ -7,7 +7,6 @@
         background-color: #f4f7f9;
     }
 
-    /* Form Container */
     .formcontainer {
         max-width: 900px;
         margin: auto;
@@ -126,60 +125,50 @@
 </div>
 
 <div class="formcontainer">
-    <!-- Case Summary (Judge's Assigned Cases) -->
-    <div class="form-section">
-        <h2 class="form-title">Assigned Cases</h2>
+    <h2 class="form-title">Assigned Cases</h2>
 
-        <!-- Dynamic Case Data (Loop through each case's information) -->
-        {% for case in cases %}
-        <div class="case-summary">
-            <div class="summary-item">
-                <strong>Case Title:</strong> {{ case.case_title }}
-            </div>
-            <div class="summary-item">
-                <strong>Case Type:</strong> {{ case.case_type }}
-            </div>
-            <div class="view-btn-container">
-                <button class="view-btn" onclick="toggleCaseDetails('{{ case.id }}')">View</button>
-            </div>
+    {% for case in cases %}
+    <div class="case-summary">
+        <div class="summary-item">
+            <strong>Case Title:</strong> {{ case.case_title }}
         </div>
-        {% endfor %}
+        <div class="summary-item">
+            <strong>Case Type:</strong> {{ case.case_type }}
+        </div>
+        <div class="view-btn-container">
+            <button class="view-btn" onclick="toggleCaseDetails('{{ case.id }}')">View</button>
+        </div>
     </div>
+    {% endfor %}
 </div>
 
-<!-- Full Case Information Card (Hidden Initially) -->
 <div id="case-details-card" class="case-details-card">
     <div class="formcontainer">
-        <div class="form-section">
-            <h2 class="form-title">Case Information</h2>
+        <h2 class="form-title">Case Information</h2>
 
-            <!-- Case's Detailed Info -->
-            <div id="case-info-details" class="case-info">
-                <!-- Content will be populated dynamically -->
-            </div>
-
-            <!-- Form for Updating Case Status -->
-            <form method="post" action="{% url 'update_case_status' %}">
-                {% csrf_token %}
-                <input type="hidden" name="case_id" id="hidden-case-id">
-                <div class="info-item" style="display: flex; align-items: center; gap: 10px;">
-                    <label for="case-status-dropdown" style="flex: 1;"><strong>Update Status:</strong></label>
-                    <select id="case-status-dropdown" name="new_status" class="status-dropdown" style="flex: 2;">
-                        <option value="Pending" seleted>Pending</option>
-                        <option value="Active">Active</option>
-                        <option value="Closed">Closed</option>
-                    </select>
-                </div>
-                <button type="submit" class="view-btn" style="margin-top: 20px;">Submit</button>
-            </form>
-
-            <button onclick="closeCaseDetails()" class="close-btn">Close</button>
+        <div id="case-info-details" class="case-info">
+            <!-- Content populated dynamically -->
         </div>
+
+        <form method="post" action="{% url 'update_case_status' %}">
+            {% csrf_token %}
+            <input type="hidden" name="case_id" id="case-id">
+            <div class="info-item">
+                <label for="case-status-dropdown"><strong>Update Status:</strong></label>
+                <select id="case-status-dropdown" name="new_status" class="status-dropdown">
+                    <option value="Pending">Pending</option>
+                    <option value="Active">Active</option>
+                    <option value="Closed">Closed</option>
+                </select>
+            </div>
+            <button type="submit" class="view-btn" style="margin-top: 20px;">Update</button>
+        </form>
+        <button onclick="viewDocuments()" class="view-btn" style="margin-top: 20px;">View Documents</button>
+        <button onclick="closeCaseDetails()" class="close-btn">Close</button>
     </div>
 </div>
 
 <script>
-    let currentCaseId;
     const caseData = {
         {% for case in cases %}
         '{{ case.id }}': {
@@ -194,23 +183,23 @@
     };
 
     function toggleCaseDetails(caseId) {
-        currentCaseId = caseId;
         const caseInfo = caseData[caseId];
-        const caseDetailsCard = document.getElementById('case-info-details');
-        caseDetailsCard.innerHTML = `
+        document.getElementById('case-info-details').innerHTML = `
             <div class="info-item"><strong>Case Number:</strong> ${caseInfo.caseNumber}</div>
             <div class="info-item"><strong>Case Title:</strong> ${caseInfo.caseTitle}</div>
             <div class="info-item"><strong>Case Type:</strong> ${caseInfo.caseType}</div>
             <div class="info-item"><strong>Plaintiff:</strong> ${caseInfo.plaintiff}</div>
             <div class="info-item"><strong>Defendant:</strong> ${caseInfo.defendant}</div>
-            <div class="info-item"><strong>Status:</strong> <span id="case-status">${caseInfo.status}</span></div>
+            <div class="info-item"><strong>Status:</strong> ${caseInfo.status}</div>
         `;
-
-        // Set the hidden input value and dropdown value to the current case and status
-        document.getElementById('hidden-case-id').value = caseId;
+        document.getElementById('case-id').value = caseId;
         document.getElementById('case-status-dropdown').value = caseInfo.status;
-
         document.getElementById('case-details-card').style.display = 'flex';
+    }
+
+    function viewDocuments() {
+        const caseId = document.getElementById('case-id').value;
+        window.location.href = "{% url 'case_docs' %}?case_id=" + caseId;
     }
 
     function closeCaseDetails() {
