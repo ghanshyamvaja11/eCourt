@@ -11,8 +11,10 @@
             margin: 0;
             padding: 0;
         }
+        a{
+            text-decoration: none;
+        }
 
-        /* Header Section */
         .dashboard-header {
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
@@ -54,7 +56,6 @@
             padding: 20px;
         }
 
-        /* Responsive Design */
         @media (max-width: 1200px) {
             .dashboard-container {
                 grid-template-columns: repeat(3, 1fr);
@@ -91,7 +92,7 @@
         .card-icon {
             font-size: 3rem;
             margin-bottom: 10px;
-            color: #ffd700; /* Consistent golden color for all icons */
+            color: #ffd700;
         }
 
         h3 {
@@ -105,44 +106,52 @@
     </style>
 </head>
 <body>
-    <!-- Header Section -->
     <div class="dashboard-header">
         <h1>Admin Dashboard</h1>
         <p>Manage all the functionalities efficiently</p>
     </div>
 
-    <!-- Cards Section -->
     <div class="dashboard-container">
+        <!-- Pre-existing and newly added cards -->
         <div class="dashboard-card">
             <div class="card-icon">👤</div>
             <h3>Total Users</h3>
             <p>{{ total_users }}</p>
         </div>
+    <a href="{% url 'case_status' %}">
         <div class="dashboard-card">
             <div class="card-icon">⚖️</div>
             <h3>Total Cases</h3>
             <p>{{ total_cases }}</p>
         </div>
+    </a>
+    <a href="{% url 'judges_management' %}">
         <div class="dashboard-card">
-            <div class="card-icon">🔔</div>
-            <h3>Notifications</h3>
-            <p>View recent updates</p>
+            <div class="card-icon">👨‍⚖️</div>
+            <h3>Judges Management</h3>
+            <p>Administer judges' details</p>
         </div>
+    </a>
+    <a href="{% url 'lawyers_management' %}">
         <div class="dashboard-card">
-            <div class="card-icon">📄</div>
-            <h3>Reports</h3>
-            <p>Generate detailed reports</p>
+            <div class="card-icon">⚖️</div>
+            <h3>Lawyers Management</h3>
+            <p>Oversee lawyers' profiles</p>
         </div>
-        <div class="dashboard-card">
-            <div class="card-icon">📊</div>
-            <h3>Analytics</h3>
-            <p>Analyze case trends</p>
-        </div>
-        <a href="{% url 'lawyer_approve_reject' %}">
+    </a>
+    <a href="{% url 'citizens_management' %}">
             <div class="dashboard-card">
-                <div class="card-icon">✍️</div>
-                <h3>Requested Lawyers</h3>
-                <p>Approve or deny requests</p>
+                <div class="card-icon">👥</div>
+                <h3>Citizens Management</h3>
+                <p>Manage citizen details</p>
+            </div>
+        </a>
+    
+        <a href="{% url 'case_management' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">📂</div>
+                <h3>Case Management</h3>
+                <p>View and update case statuses</p>
             </div>
         </a>
         <a href="{% url 'add_judge' %}">
@@ -152,6 +161,34 @@
                 <p>Add new judges</p>
             </div>
         </a>
+        <a href="{% url 'lawyer_approve_reject' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">✍️</div>
+                <h3>Requested Lawyers</h3>
+                <p>Approve or deny requests</p>
+            </div>
+        </a>
+        <a href="{% url 'analytics_dashboard' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">📊</div>
+                <h3>Analytics</h3>
+                <p>Analyze case trends</p>
+            </div>
+        </a>
+        <a href="{% url 'reports_dashboard' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">📄</div>
+                <h3>Reports</h3>
+                <p>Generate detailed reports</p>
+            </div>
+        </a>
+       
+        <div class="dashboard-card">
+            <div class="card-icon">🔔</div>
+            <h3>Notifications</h3>
+            <p>View recent updates</p>
+        </div>
+
         <a href="{% url 'profile' %}">
             <div class="dashboard-card">
                 <div class="card-icon">👤</div>

@@ -102,6 +102,9 @@
             font-size: 0.9rem;
             opacity: 0.8;
         }
+        a{
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -116,7 +119,7 @@
         <a href="{% url 'file_cases' %}">
             <div class="dashboard-card">
                 <div class="card-icon">📝</div>
-                <h3>File Case</h3>
+                <h3>File Cases</h3>
                 <p>File a new case in the eCourt system</p>
             </div>
         </a>
@@ -134,6 +137,13 @@
                 <p>View cases filed against you</p>
             </div>
         </a>
+        <a href="{% url 'citizen_hearings' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">📅</div>
+                <h3>Hearings</h3>
+                <p>Check the schedule of your hearings</p>
+            </div>
+        </a>
         <a href="{% url 'citizen_notifications' %}">
             <div class="dashboard-card">
                 <div class="card-icon">🔔</div>
@@ -141,10 +151,17 @@
                 <p>Stay updated on case status and legal updates</p>
             </div>
         </a>
+        <a href="{% url 'requested_payments' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">💳</div>
+                <h3>Payments</h3>
+                <p>Manage your payment requests and dues</p>
+            </div>
+        </a>
         <a href="{% url 'citizen_profile' %}">
             <div class="dashboard-card">
                 <div class="card-icon">👤</div>
-                <h3>Your Profile</h3>
+                <h3>Profile</h3>
                 <p>View and update your personal information</p>
             </div>
         </a>
