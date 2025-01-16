@@ -94,7 +94,7 @@ def hearing_videocall_url(request):
                     f"The Court Team"
                 )
                 recipient_list = [case.plaintiff.user.email,
-                                  case.defendant.user.email, case.assigned_lawyer.user.email, case.defendent_lawyer.user.email]
+                                  case.defendant.user.email, case.assigned_lawyer.user.email, case.defendant_lawyer.user.email]
         
                 send_mail(subject, message, 'ecourtofficially@gmail.com', recipient_list)
                 
@@ -149,7 +149,7 @@ def outcome(request):
             message=f'Outcome recorded for case {case.case_number}.'
         )
         Notification.objects.create(
-            user=case.defendent,
+            user=case.defendant,
             message=f'Outcome recorded for case {case.case_number}.'
         )
         Notification.objects.create(
@@ -157,7 +157,7 @@ def outcome(request):
             message=f'Outcome recorded for case {case.case_number}.'
         )
         Notification.objects.create(
-            user=case.defendent_lawyer,
+            user=case.defendant_lawyer,
             message=f'Outcome recorded for case {case.case_number}.'
         )
 
@@ -271,7 +271,7 @@ def schedule_hearing(request):
             message=f'Hearing scheduled for case {case.case_number} on {date} at {time}.'
         )
         Notification.objects.create(
-            user=case.defendent_lawyer.user,
+            user=case.defendant_lawyer.user,
             message=f'Hearing scheduled for case {case.case_number} on {date} at {time}.'
         )
 
@@ -284,7 +284,7 @@ def schedule_hearing(request):
             f"Please be available and check your notifications or email for the link prior to the hearing."
         )
         recipient_list = [case.plaintiff.user.email,
-                          case.defendant.user.email, case.assigned_lawyer.user.email, case.defendent_lawyer.user.email]
+                          case.defendant.user.email, case.assigned_lawyer.user.email, case.defendant_lawyer.user.email]
 
         send_mail(subject, message, 'ecourtofficially@gmail.com', recipient_list)
 

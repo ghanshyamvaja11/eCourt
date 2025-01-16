@@ -59,7 +59,7 @@
             <input type="hidden" id="case-id" name="case_id" />
             <div class="input-container">
                 <label for="assigned-lawyer">Assigned Lawyer:</label>
-                <input type="text" id="assigned-lawyer" name="defendent_lawyer" list="lawyers" required />
+                <input type="text" id="assigned-lawyer" name="defendant_lawyer" list="lawyers" required />
                 <datalist id="lawyers">
                     {% for lawyer in Lawyers %}
                         <option value="{{ lawyer.user.full_name }}">{{ lawyer.user.email }}</option>

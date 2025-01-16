@@ -36,7 +36,7 @@
                     <label for="defendant">Defendant:</label>
                     <input type="text" id="defendant" name="defendant" list="defendants" required />
                     <datalist id="defendants">
-                        {% for defendant in Defendents %}
+                        {% for defendant in Defendants %}
                             <option value="{{ defendant.user.full_name }}">{{ defendant.user.email }}</option>
                         {% endfor %}
                     </datalist>
