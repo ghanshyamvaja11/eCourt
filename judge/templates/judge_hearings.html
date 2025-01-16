@@ -19,7 +19,7 @@
         {% for hearing in hearings %}
         <div class="hearing-summary">
             <div class="summary-item">
-                <strong>Plaintiff:</strong> {{ hearing.case.plaintiff.user.full_name }}
+                <strong>Case Number:</strong> {{ hearing.case.case_number }}
             </div>
             <div class="summary-item">
                 <strong>Case Type:</strong> {{ hearing.case.case_type }}
@@ -279,7 +279,7 @@ function toggleHearingDetails(button) {
         judgeName: button.getAttribute('data-judge-name'),
         caseNumber: button.getAttribute('data-case-number'),
         plaintiff: button.getAttribute('data-plaintiff'),
-        defendant: button.getAttribute('data-defandent'),
+        defendant: button.getAttribute('data-defendant'),
         plaintiff_lawyer: button.getAttribute('data-plaintiff-lawyer'),
         defendant_lawyer: button.getAttribute('data-defendant-lawyer'),
         date: button.getAttribute('data-date'),
