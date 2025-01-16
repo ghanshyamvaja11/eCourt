@@ -6,6 +6,7 @@ from django.contrib.auth import logout
 from django.core.mail import send_mail
 import random
 from users.models import *  # Import all models from users app
+from users.models import Judge
 from cases.models import *  # Assuming there is a Case model in the cases app
 from notifications.models import Notification
 from administrator.models import * # Assuming there is
@@ -205,9 +206,10 @@ def plaintiff_accept_case(request):
     case.lawyer_accepted = True
     assigned_judge = random.choice(Judge.objects.all())
     case.assigned_judge = assigned_judge
-    Judge = Judge.objects.get(user=assigned_judge)
-    Judge.cases_assigned = Judge.cases_assigned + 1
-    Judge.save()
+    judge_instance = Judge.objects.get(user=assigned_judge.user)
+    judge_instance.cases_assigned += 1
+   
+    judge_instance.save()
     case.status = 'ACTIVE'
     case.save()
 
@@ -272,9 +274,7 @@ def defendant_accept_case(request):
 
     case_id = request.GET.get('case_id')
     case = Case.objects.get(id=case_id)
-    case.lawyer_accepted = True
-    assigned_judge = random.choice(Judge.objects.all())
-    case.assigned_judge = assigned_judge
+    case.defendant_lawyer_accepted = True
     case.status = 'ACTIVE'
     case.save()
 
