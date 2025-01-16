@@ -206,7 +206,7 @@ def plaintiff_accept_case(request):
     assigned_judge = random.choice(Judge.objects.all())
     case.assigned_judge = assigned_judge
     Judge = Judge.objects.get(user=assigned_judge)
-    Judge.cases_assigned = judge.cases_assigned + 1
+    Judge.cases_assigned = Judge.cases_assigned + 1
     Judge.save()
     case.status = 'ACTIVE'
     case.save()
