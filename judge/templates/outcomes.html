@@ -1,0 +1,38 @@
+{% extends 'judge_header.html' %}
+
+{% block content %}
+<!-- Outcomes Page -->
+<div class="dashboard-header">
+    <h1>Record Case Outcome</h1>
+</div>
+
+<!-- Inspirational Quote -->
+<div style="text-align: center; margin: 20px 0; font-size: 1.2rem; color: #1e3c72; font-style: italic;">
+    "Justice delayed is justice denied." – William E. Gladstone
+</div>
+
+<div class="formcontainer">
+    <div class="form-section">
+        <h2 class="form-title">Record Outcome</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="input-container">
+                <label for="case_id">Select Case:</label>
+                <select id="case_id" name="case_id" required>
+                    {% for case in cases %}
+                    <option value="{{ case.id }}">{{ case.case_number }} - {{ case.case_title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input-container">
+                <label for="outcome">Outcome:</label>
+                <textarea id="outcome" name="outcome" required></textarea>
+            </div>
+            <div class="submit-btn-container">
+                <button type="submit" class="submit-btn">Record Outcome</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

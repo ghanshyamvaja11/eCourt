@@ -1,0 +1,91 @@
+{% extends 'judge_header.html' %}
+
+{% block content %}
+<!-- Verdicts Page -->
+<div class="dashboard-header">
+    <h1>Verdicts</h1>
+</div>
+
+<!-- Inspirational Quote -->
+<div style="text-align: center; margin: 20px 0; font-size: 1.2rem; color: #1e3c72; font-style: italic;">
+    "Justice is the constant and perpetual will to allot every man his due." – Domitius Ulpian
+</div>
+
+<div class="formcontainer">
+    <!-- Case Verdicts Summary (Plaintiff Name and Case Type) -->
+    <div class="form-section">
+        <h2 class="form-title">Verdict Information</h2>
+
+        <!-- Dynamic Verdict Data (Loop through each case's verdict details) -->
+        {% for verdict in verdicts %}
+        <div class="verdict-summary">
+            <div class="summary-item">
+                <strong>Plaintiff:</strong> {{ verdict.plaintiff }}
+            </div>
+            <div class="summary-item">
+                <strong>Case Type:</strong> {{ verdict.case_type }}
+            </div>
+            <div class="view-btn-container">
+                <button class="view-btn" onclick="toggleVerdictDetails('{{ verdict.id }}')">View Verdict</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Full Verdict Details Card (Hidden Initially) -->
+<div id="verdict-details-card" class="verdict-details-card">
+    <div class="verdict-details-container">
+        <div class="form-section">
+            <h2 class="form-title">Verdict Details</h2>
+
+            <!-- Verdict Detailed Information -->
+            <div id="verdict-info-details" class="verdict-info">
+                <!-- Content will be populated dynamically -->
+            </div>
+
+            <button onclick="closeVerdictDetails()" class="close-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to toggle the verdict details card and populate information dynamically
+    function toggleVerdictDetails(caseId) {
+        var verdictData = {
+            "case1": {
+                "judgeName": "Judge John",
+                "location": "Courtroom 1",
+                "date": "2025-01-10",
+                "time": "10:00 AM",
+                "verdict": "Guilty"
+            },
+            "case2": {
+                "judgeName": "Judge Emily",
+                "location": "Courtroom 3",
+                "date": "2025-02-15",
+                "time": "2:00 PM",
+                "verdict": "Not Guilty"
+            }
+        };
+
+        var verdict = verdictData[caseId];
+        var verdictDetailsCard = document.getElementById('verdict-info-details');
+        verdictDetailsCard.innerHTML = ` 
+            <div class="info-item"><strong>Judge:</strong> ${verdict.judgeName}</div>
+            <div class="info-item"><strong>Location:</strong> ${verdict.location}</div>
+            <div class="info-item"><strong>Date:</strong> ${verdict.date}</div>
+            <div class="info-item"><strong>Time:</strong> ${verdict.time}</div>
+            <div class="info-item"><strong>Verdict:</strong> ${verdict.verdict}</div>
+        `;
+        
+        document.getElementById('verdict-details-card').style.display = 'flex';
+    }
+
+    // Function to close the verdict details card
+    function closeVerdictDetails() {
+        document.getElementById('verdict-details-card').style.display = 'none';
+    }
+</script>
+
+{% endblock %}

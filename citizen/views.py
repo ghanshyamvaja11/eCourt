@@ -63,14 +63,12 @@ def file_cases(request):
                 return redirect('file_cases')
 
         case_number = f"{case_type.upper()}-{random.randint(1000, 9999)}"
-        # assigned_judge = random.choice(Judge.objects.all())
 
         case = Case.objects.create(
             case_number=case_number,
             plaintiff=request.user.citizen,
             defendant=defendant,
             assigned_lawyer=assigned_lawyer,
-            # assigned_judge=assigned_judge,
             case_title=case_title,
             case_type=case_type,
             case_description=case_description,
@@ -207,7 +205,7 @@ def notifications(request):
         notification_id = request.POST.get('notification_id')
         try:
             notification = Notification.objects.get(id=notification_id, user=request.user)
-            notification.status = 'READ'
+            notification.read = True
             notification.save()
             messages.success(request, 'Notification marked as read.')
         except Notification.DoesNotExist:
@@ -236,7 +234,6 @@ def against_cases(request):
                     full_name=defendant_lawyer).lawyer
                 case = Case.objects.get(id=case_id)
                 case.defendant_lawyer = defendant_lawyer
-                case.lawyer_accepted = False
                 case.save()
                 request.session['lawyer_selected'] = True
                 messages.success(request, 'Lawyer assigned successfully.')
@@ -249,16 +246,20 @@ def against_cases(request):
     # Step 1: Get all cases where the citizen is the defendant.
     cases = Case.objects.filter(defendant=citizen)
 
-    # Step 2: Get all lawyers assigned to the defendant and plaintiff sides in these cases.
-    assigned_defendant_lawyers = cases.values_list('defendant_lawyer', flat=True)
-    assigned_plaintiff_lawyers = cases.values_list('assigned_lawyer', flat=True)
+    # Step 2: Get all lawyers assigned to these cases for both defendant and plaintiff.
+    assigned_defendant_lawyers = cases.values_list(
+        'defendant_lawyer_id', flat=True)
+    assigned_plaintiff_lawyers = cases.values_list('assigned_lawyer_id', flat=True)
 
-    # Step 3: Combine the lists of defendant and plaintiff lawyers to exclude them.
-    excluded_lawyers = set(assigned_defendant_lawyers) | set(
-        assigned_plaintiff_lawyers)
+    # Step 3: Combine the lists of defendant and plaintiff lawyers and exclude `None` values.
+    excluded_lawyer_ids = set(filter(None, assigned_defendant_lawyers)) | set(
+        filter(None, assigned_plaintiff_lawyers))
 
-    # Step 4: Filter out the lawyers who are assigned to these cases, by excluding the lawyers in 'excluded_lawyers'.
-    available_lawyers = Lawyer.objects.exclude(id__in=excluded_lawyers)
+    # Step 4: Query lawyers excluding those already assigned.
+    available_lawyers = Lawyer.objects.exclude(id__in=excluded_lawyer_ids)
+
+    print(f"Excluded Lawyer IDs: {excluded_lawyer_ids}")
+    print(f"Available Lawyers: {available_lawyers}")
 
     return render(request, 'against_cases.html', {'cases': cases, 'Lawyers': available_lawyers})
 

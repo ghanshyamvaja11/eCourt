@@ -304,42 +304,71 @@ button:hover {
         }
     }
 
-    // Function to toggle the case details card and populate information dynamically
-    function toggleCaseDetails(caseId) {
-        var caseData = {
-            {% for case in cases %}
-            "{{ case.id }}": {
-                "caseNumber": "{{ case.case_number }}",
-                "plaintiff": "{{ case.plaintiff.user.full_name }}",
-                "defendant": "{{ case.defendant.user.full_name }}",
-                "caseTitle": "{{ case.case_title }}",
-                "caseType": "{{ case.case_type }}",
-                "status": "{{ case.status }}",
-                "lawyer": "{{ case.assigned_lawyer.user.full_name }}",
-                "lawyer_accepted": "{{ case.lawyer_accepted }}"
-            },
-            {% endfor %}
-        };
+// Function to toggle the case details card and populate information dynamically
+function toggleCaseDetails(caseId) {
+    var caseData = {
+        {% for case in cases %}
+        "{{ case.id }}": {
+            "caseNumber": "{{ case.case_number }}",
+            "plaintiff": "{{ case.plaintiff.user.full_name }}",
+            "defendant": "{{ case.defendant.user.full_name }}",
+            "caseTitle": "{{ case.case_title }}",
+            "caseType": "{{ case.case_type }}",
+            "status": "{{ case.status }}",
+            "lawyer": {% if case.assigned_lawyer %}"{{ case.assigned_lawyer.user.full_name }}"{% else %}null{% endif %},
+            "lawyer_accepted": {% if case.lawyer_accepted is not None %}{{ case.lawyer_accepted|yesno:"true,false" }}{% else %}null{% endif %}
+        },
+        {% endfor %}
+    };
 
-        var caseInfo = caseData[caseId];
-        var caseDetailsCard = document.getElementById('case-info-details');
-        caseDetailsCard.innerHTML = ` 
-            <div class="info-item"><strong>Case Number:</strong> ${caseInfo.caseNumber}</div>
-            <div class="info-item"><strong>Plaintiff:</strong> ${caseInfo.plaintiff}</div>
-            <div class="info-item"><strong>Defendant:</strong> ${caseInfo.defendant}</div>
-            <div class="info-item"><strong>Case Title:</strong> ${caseInfo.caseTitle}</div>
-            <div class="info-item"><strong>Case Type:</strong> ${caseInfo.caseType}</div>
-            <div class="info-item"><strong>Status:</strong> ${caseInfo.status}</div>
+    var caseInfo = caseData[caseId];
+    var caseDetailsCard = document.getElementById('case-info-details');
+
+    // Build the initial HTML content for common details
+    var detailsHTML = `
+        <div class="info-item"><strong>Case Number:</strong> ${caseInfo.caseNumber}</div>
+        <div class="info-item"><strong>Plaintiff:</strong> ${caseInfo.plaintiff}</div>
+        <div class="info-item"><strong>Defendant:</strong> ${caseInfo.defendant}</div>
+        <div class="info-item"><strong>Case Title:</strong> ${caseInfo.caseTitle}</div>
+        <div class="info-item"><strong>Case Type:</strong> ${caseInfo.caseType}</div>
+        <div class="info-item"><strong>Status:</strong> ${caseInfo.status}</div>
+    `;
+
+    // Add lawyer details only if a lawyer is assigned
+    if (caseInfo.lawyer !== null) {
+        // Determine the acceptance status of the lawyer
+        var lawyerAcceptedMessage = '';
+        var lawyerAcceptedColor = '';
+
+        if (caseInfo.lawyer_accepted === true) {
+            lawyerAcceptedMessage = 'Accepted';
+            lawyerAcceptedColor = 'green';
+        } else if (caseInfo.lawyer_accepted === false) {
+            lawyerAcceptedMessage = 'Not Accepted';
+            lawyerAcceptedColor = 'red';
+        } else {
+            lawyerAcceptedMessage = 'Pending';
+            lawyerAcceptedColor = 'orange';
+        }
+
+        // Append lawyer details and acceptance status
+        detailsHTML += `
             <div class="info-item"><strong>Lawyer:</strong> ${caseInfo.lawyer}</div>
-            <div class="info-item"><strong>Lawyer Accepted:</strong> 
-                <span style="color: ${caseInfo.lawyer_accepted == '1' ? 'green' : 'red'};">
-                    ${caseInfo.lawyer_accepted == '1' ? 'Accepted' : 'Not Accepted'}
+            <div class="info-item"><strong>Lawyer Acceptance Status:</strong> 
+                <span style="color: ${lawyerAcceptedColor};">
+                    ${lawyerAcceptedMessage}
                 </span>
             </div>
         `;
-        document.getElementById('case-details-card').style.display = 'flex';
-        document.getElementById('case-id').value = caseId;
     }
+
+    // Update the case details card with the final HTML content
+    caseDetailsCard.innerHTML = detailsHTML;
+
+    // Display the case details card and set the selected case ID
+    document.getElementById('case-details-card').style.display = 'flex';
+    document.getElementById('case-id').value = caseId;
+}
 
     // Function to close the case details card
     function closeCaseDetails() {

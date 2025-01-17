@@ -24,8 +24,8 @@ class Case(models.Model):
     case_description = models.TextField(blank=True, null=True)
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default='PENDING')
-    lawyer_accepted = models.BooleanField(default=False)  # plaintiff
-    defendant_lawyer_accepted = models.BooleanField(default=False)
+    lawyer_accepted = models.BooleanField(null=True)
+    defendant_lawyer_accepted = models.BooleanField(null=True)
     case_filed_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -297,7 +297,17 @@ def notifications(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
-    
+    if request.method == 'POST':
+        notification_id = request.POST.get('notification_id')
+        try:
+            notification = Notification.objects.get(
+                id=notification_id, user=request.user)
+            notification.read = True
+            notification.save()
+            messages.success(request, 'Notification marked as read.')
+        except Notification.DoesNotExist:
+            messages.error(request, 'Notification not found.')
+
     judge = Judge.objects.get(user=request.user)
     notifications = Notification.objects.filter(user=judge.user).order_by('-timestamp')
     return render(request, 'notification.html', {'notifications': notifications})
@@ -311,3 +321,46 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'You have been logged out successfully.')
     return redirect('login')
+
+@login_required(login_url='/login/')
+def verdicts(request):
+    judge = Judge.objects.get(user=request.user)
+    verdicts = Case.objects.filter(assigned_judge=judge, status='CLOSED')
+    return render(request, 'verdicts.html', {'verdicts': verdicts})
+
+@login_required(login_url='/login/')
+def outcomes(request):
+    judge = Judge.objects.get(user=request.user)
+    cases = Case.objects.filter(assigned_judge=judge)
+
+    if request.method == 'POST':
+        case_id = request.POST.get('case_id')
+        outcome_text = request.POST.get('outcome')
+
+        case = get_object_or_404(Case, id=case_id)
+        case.status = 'CLOSED'
+        case.save()
+
+        Hearing.objects.filter(case=case).update(outcome=outcome_text)
+
+        Notification.objects.create(
+            user=case.plaintiff.user,
+            message=f'Outcome recorded for case {case.case_number}.'
+        )
+        Notification.objects.create(
+            user=case.defendant.user,
+            message=f'Outcome recorded for case {case.case_number}.'
+        )
+        Notification.objects.create(
+            user=case.assigned_lawyer.user,
+            message=f'Outcome recorded for case {case.case_number}.'
+        )
+        Notification.objects.create(
+            user=case.defendant_lawyer.user,
+            message=f'Outcome recorded for case {case.case_number}.'
+        )
+
+        messages.success(request, 'Outcome recorded successfully.')
+        return redirect('outcomes')
+
+    return render(request, 'outcomes.html', {'cases': cases})

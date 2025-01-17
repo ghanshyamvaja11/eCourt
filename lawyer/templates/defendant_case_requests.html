@@ -50,11 +50,11 @@
 
             <!-- Buttons for Accept/Decline -->
             <div class="button-container">
-                <form method="GET" action="{% url 'plaintiff_accept_case' %}" style="flex: 1; margin-right: 10px;">
+                <form method="GET" action="{% url 'defendant_accept_case' %}" style="flex: 1; margin-right: 10px;">
                     <input type="hidden" name="case_id" id="accept-case-id">
                     <button type="submit" class="approve-btn">Accept</button>
                 </form>
-                <form method="GET" action="{% url 'plaintiff_decline_case' %}" style="flex: 1;">
+                <form method="GET" action="{% url 'defendant_decline_case' %}" style="flex: 1;">
                     <input type="hidden" name="case_id" id="decline-case-id">
                     <button type="submit" class="reject-btn">Decline</button>
                 </form>

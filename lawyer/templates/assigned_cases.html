@@ -55,8 +55,8 @@
 
             <!-- Action Buttons -->
             <div class="button-container">
-                <button type="submit" class="approve-btn">View Documents</button>
-                <button type="submit" class="reject-btn">Upload Documents</button>
+                <button type="submit" onclick="viewDocuments()" class="viewdoc-btn">View Documents</button>
+                <button type="submit" onclick="requestDocuments()" class="reqquestdoc-btn">request Documents</button>
               
             </div>
             <button onclick="closeCaseDetails()" class="close-btn">Close</button>
@@ -233,6 +233,18 @@ function toggleCaseDetails(button) {
     // Display case details card
     document.getElementById('case-details-card').style.display = 'flex';
 }
+
+    // Function to view documents
+    function viewDocuments() {
+        var caseId = document.getElementById('case-id').value;
+        window.location.href = "{% url 'client_case_documents' %}?case_id=" + caseId;
+    }
+
+    // Function to view documents
+    function requestDocuments() {
+        var caseId = document.getElementById('case-id').value;
+        window.location.href = "{% url 'request_client_case_documents' %}?case_id=" + caseId;
+    }
 
 function closeCaseDetails() {
     document.getElementById('case-details-card').style.display = 'none';

@@ -16,4 +16,6 @@ urlpatterns = [
    path('logout', logout_view, name='logout'),
    path('schedule-hearing', schedule_hearing, name='schedule_hearing'),
    path('notifications', notifications, name='judge_notifications'),
+   path('verdicts', verdicts, name='verdicts'),
+   path('outcomes', outcomes, name='outcomes'),
 ]

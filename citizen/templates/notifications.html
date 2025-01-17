@@ -12,13 +12,22 @@
             {% if notifications %}
                 {% for notification in notifications %}
                 <div class="notification-item {% if not notification.read %}unread{% endif %}">
-                    <div><strong>Message:</strong> {{ notification.message }}</div>
-                    <div><strong>Date Sent:</strong> {{ notification.date_sent }}</div>
-                    <div><strong>Status:</strong> {{ notification.read|yesno:"Read,Unread" }}</div>
+                    <div class="notification-header">
+                        <div class="notification-message">
+                            <strong>Message:</strong> {{ notification.message|urlize }}
+                        </div>
+                        <div class="notification-date">
+                            <strong>Date Sent:</strong> {{ notification.date_sent }}
+                        </div>
+                    </div>
+                    <div class="notification-status">
+                        <strong>Status:</strong> {{ notification.read|yesno:"Read,Unread" }}
+                    </div>
                     {% if not notification.read %}
-                    <form method="post" action="{% url 'mark_as_read' notification.id %}">
+                    <form method="post" class="mark-read-form">
                         {% csrf_token %}
-                        <button type="submit">Mark as Read</button>
+                        <input type="hidden" value="{{ notification.id }}" name="notification_id">
+                        <button type="submit" class="mark-read-btn">Mark as Read</button>
                     </form>
                     {% endif %}
                 </div>
@@ -33,6 +42,13 @@
 </div>
 
 <style>
+/* General Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #f4f7f9;
+}
+
 .dashboard-header {
     text-align: center;
     margin-bottom: 20px;
@@ -47,15 +63,17 @@
 
 .form-section {
     width: 80%;
-    background-color: #f9f9f9;
+    background-color: #fff;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 
 .form-title {
     text-align: center;
     margin-bottom: 20px;
+    color: #1e3c72;
 }
 
 #notifications-list {
@@ -67,22 +85,94 @@
 .notification-item {
     padding: 15px;
     border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
+    border-radius: 10px;
+    background-color: #e8f5e9; /* Light green background */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .notification-item.unread {
-    background-color: #ffeb3b;
+    background-color: #ffcc80; /* Light orange background for unread notifications */
 }
 
-.notification-item div {
+.notification-item:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 10px;
+}
+
+.notification-message {
+    flex: 2;
+}
+
+.notification-date {
+    flex: 1;
+    text-align: right;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.notification-status {
+    margin-bottom: 10px;
+}
+
+.mark-read-form {
+    text-align: right;
+}
+
+.mark-read-btn {
+    background: linear-gradient(to right, #1e3c72, #2a5298);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mark-read-btn:hover {
+    background: linear-gradient(to right, #2a5298, #1e3c72);
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 .no-notifications {
     text-align: center;
-    font-size: 18px;
+    font-size: 1.2rem;
     color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-section {
+        width: 90%;
+    }
+
+    .notification-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .notification-date {
+        text-align: left;
+        margin-top: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-title {
+        font-size: 1.5rem;
+    }
+
+    .mark-read-btn {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
 }
 </style>
 {% endblock %}

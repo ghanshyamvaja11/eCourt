@@ -6,7 +6,6 @@ from django.contrib.auth import logout
 from django.core.mail import send_mail
 import random
 from users.models import *  # Import all models from users app
-from users.models import Judge
 from cases.models import *  # Assuming there is a Case model in the cases app
 from notifications.models import Notification
 from administrator.models import * # Assuming there is
@@ -189,7 +188,7 @@ def plaintiff_case_requests(request):
     storage.used = True
 
     lawyer = Lawyer.objects.get(user=request.user)
-    plantiff_cases = Case.objects.filter(assigned_lawyer=lawyer, lawyer_accepted=False)
+    plantiff_cases = Case.objects.filter(assigned_lawyer=lawyer, lawyer_accepted=None)
 
     cases = plantiff_cases
 
@@ -204,14 +203,15 @@ def plaintiff_accept_case(request):
     case_id = request.GET.get('case_id')
     case = Case.objects.get(id=case_id)
     case.lawyer_accepted = True
-    assigned_judge = random.choice(Judge.objects.all())
-    case.assigned_judge = assigned_judge
-    judge_instance = Judge.objects.get(user=assigned_judge.user)
-    judge_instance.cases_assigned += 1
-   
-    judge_instance.save()
     case.status = 'ACTIVE'
     case.save()
+
+    case_id = request.GET.get('case_id')
+    case = Case.objects.get(id=case_id)
+    if case.lawyer_accepted == True and case.defendant_lawyer_accepted == True:
+        judge = random.choice(Judge.objects.all())
+        case.assigned_judge = judge
+        case.save()
 
     send_mail(
         'Case Accepted',
@@ -232,6 +232,17 @@ def plaintiff_decline_case(request):
     case_id = request.GET.get('case_id')
     case = Case.objects.get(id=case_id)
 
+
+    if case.assigned_lawyer:
+        case.assigned_lawyer = None
+        case.lawyer_accepted = False
+    
+    if case.defendant_lawyer:
+        case.defendant_lawyer = None
+        case.defendant_lawyer_accepted = False
+
+    case.save()
+
     send_mail(
         'Case Declined',
         f'Your case {case.case_number} has been declined by the lawyer.',
@@ -239,13 +250,6 @@ def plaintiff_decline_case(request):
         [case.plaintiff.user.email],
         fail_silently=False,
     )
-
-    if case.assigned_lawyer:
-        case.assigned_lawyer = None
-    
-    if case.defendant_lawyer:
-        case.defendant_lawyer = None
-    case.save()
 
     messages.success(request, 'Case declined successfully.')
     return redirect('plaintiff_case_requests')
@@ -260,7 +264,7 @@ def defendant_case_requests(request):
     lawyer = Lawyer.objects.get(user=request.user)
     
     defendant_cases = Case.objects.filter(
-        defendant_lawyer=lawyer, defendant_lawyer_accepted=False)
+        defendant_lawyer=lawyer, defendant_lawyer_accepted=None)
     cases = defendant_cases
 
     return render(request, 'defendant_case_requests.html', {'cases': cases})
@@ -277,6 +281,14 @@ def defendant_accept_case(request):
     case.defendant_lawyer_accepted = True
     case.status = 'ACTIVE'
     case.save()
+
+    case_id = request.GET.get('case_id')
+    case = Case.objects.get(id=case_id)
+    if case.lawyer_accepted == True and case.defendant_lawyer_accepted == True:
+        judge = random.choice(Judge.objects.all())
+        case.assigned_judge = judge
+        case.save()
+
 
     send_mail(
         'Case Accepted',
@@ -318,6 +330,16 @@ def notifications(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
+    if request.method == 'POST':
+        notification_id = request.POST.get('notification_id')
+        try:
+            notification = Notification.objects.get(
+                id=notification_id, user=request.user)
+            notification.read = True
+            notification.save()
+            messages.success(request, 'Notification marked as read.')
+        except Notification.DoesNotExist:
+            messages.error(request, 'Notification not found.')
 
     notifications = Notification.objects.filter(user=request.user).order_by('-date_sent')
     return render(request, 'notifications.html', {'notifications': notifications})
@@ -340,6 +362,10 @@ def client_case_documents(request):
 
     documents = Document.objects.filter(case=case)
     return render(request, 'client_case_docs.html', {'documents': documents})
+
+
+def request_client_case_documents(request):
+    pass
 
 @login_required(login_url='/login/')
 def logout_view(request):
