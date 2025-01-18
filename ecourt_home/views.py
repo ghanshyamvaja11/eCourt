@@ -13,6 +13,8 @@ from django.conf import settings
 from django.http import HttpResponseNotFound, HttpResponseBadRequest
 from administrator.models import *
 
+def header_footer(request):
+    return render(request, 'header_footer.html')
 def index(request):
     return render(request, 'index.html')
 
@@ -48,7 +50,7 @@ def contactus(request):
     return render(request, 'contact_us.html')
 
 def terms_and_conditions(request):
-    return render(request, 'terms_and_conditions.html')
+    return render(request, 'terms_condition.html')
 
 def privacy_policy(request):
     return render(request, 'privacy_policy.html')

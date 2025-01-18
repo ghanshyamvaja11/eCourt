@@ -3,9 +3,9 @@ from .views import *
 
 urlpatterns = [
     path('', index, name='index'),
-    path('aboutus', aboutus, name='about'),
+    path('aboutus', aboutus, name='aboutus'),
     path('contactus', contactus, name='contactus'),
-    path('terms-and-condition', terms_and_conditions, name='t&c'),
+    path('terms-and-condition', terms_and_conditions, name='terms_and_condition'),
     path('privacy-policy', privacy_policy, name='privacy_policy'),
     path('faq', faq, name='faq'),
     path('signup/', signup, name='signup'),
@@ -17,6 +17,7 @@ urlpatterns = [
     path('forgot-passwordverify-otp', verify_forgot_password_otp, name='verify_forgot_password_otp'),
     path('forgot-passwordchange-password', change_password, name='change_password'),
     path('page-not-found', error_404_view, name='error_404_view'),
+    path('header-footer', header_footer, name='header_footer'),
 ]
 
 handler400 = 'ecourt_home.views.error_404_view'

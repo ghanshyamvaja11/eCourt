@@ -1,3 +1,7 @@
+{% extends 'header_footer.html' %}
+
+{% block content %}
+<br>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,18 +51,19 @@
 
         .contact-form-wrapper {
             display: flex;
-            align-items: stretch; /* Ensures elements stretch to the tallest element */
-            justify-content: space-between;
-            flex-wrap: wrap;
+            align-items: stretch;
+            justify-content: center;
+            gap: 0; /* Remove space between form and image */
+            flex-wrap: wrap; /* Stacks items on smaller screens */
         }
 
         .contact-form {
             background: #f9f9f9;
             padding: 40px;
-            border-radius: 10px;
+            border-radius: 10px 0 0 10px; /* Rounded left corners only */
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
             flex: 1;
+            max-width: 500px;
         }
 
         .contact-form h2 {
@@ -84,6 +89,7 @@
             border-radius: 30px;
             cursor: pointer;
             transition: background-color 0.3s;
+            width:100%;
         }
 
         .contact-form button:hover {
@@ -92,15 +98,18 @@
 
         .contact-image {
             flex: 1;
-            text-align: center;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; /* Ensures the image fits within bounds */
+            border-radius: 0 10px 10px 0; /* Rounded right corners only */
         }
 
         .contact-image img {
-            max-width: 100%;
-            height: 100%; /* Matches the height of the form */
-            object-fit: cover; /* Ensures the image scales proportionally */
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* Contact Info Section */
@@ -114,6 +123,7 @@
             font-size: 2rem;
             color: #003366;
             margin-bottom: 20px;
+            font-family: 'Merriweather', serif;
         }
 
         .contact-info {
@@ -136,34 +146,45 @@
             color: #555;
         }
 
-        /* Footer Section */
-        .footer {
-            background: #003366;
-            color: white;
-            padding: 20px 0;
+        .contact-info img {
+            border-radius: 50%; /* Round the images */
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        .contact-info-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .contact-info-wrapper .contact-info {
+            flex: 1;
             text-align: center;
         }
 
-        .footer a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
         @media (max-width: 768px) {
-            .hero-section h1 {
-                font-size: 2.5rem;
-            }
-
             .contact-form-wrapper {
                 flex-direction: column;
+                gap: 20px; /* Add space between form and image on small screens */
             }
 
             .contact-form {
-                margin-bottom: 20px;
+                border-radius: 10px;
+            }
+
+            .contact-image {
+                border-radius: 10px;
+            }
+
+            .contact-info-wrapper {
+                flex-direction: column;
+            }
+
+            .contact-info {
+                margin-bottom: 30px; /* Add margin bottom for spacing */
             }
         }
     </style>
@@ -179,22 +200,25 @@
 <!-- Contact Form Section -->
 <section class="contact-form-section">
     <div class="container">
-        <div class="contact-form">
-            <h2><i class="fas fa-envelope"></i> Get in Touch</h2>
-            <form action="" method="POST">
-                {%csrf_token%}
-                <div class="form-group">
-                    <input type="text" name="name" placeholder="Your Name" required>
-                    <input type="email" name="email" placeholder="Your Email" required>
-                    <input type="text" name="subject" placeholder="Subject" required>
-                    <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+        <div class="contact-form-wrapper">
+            <!-- Form -->
+            <div class="contact-form">
+                <h2><i class="fas fa-envelope"></i> Get in Touch</h2>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                        <input type="email" name="email" placeholder="Your Email" required>
+                        <input type="text" name="subject" placeholder="Subject" required>
+                        <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+                    </div>
                     <button type="submit">Submit</button>
                 </form>
             </div>
 
             <!-- Image -->
             <div class="contact-image">
-                <img src="https://thumbs.dreamstime.com/b/young-hispanic-woman-wearing-judge-uniform-smiling-looking-camera-pointing-two-hands-fingers-to-side-young-231181696.jpg" alt="Contact Us">
+                <img src="/media/contactus.gif" alt="Contact Us">
             </div>
         </div>
     </div>
@@ -204,19 +228,19 @@
 <section class="contact-info-section">
     <div class="container">
         <h2>Our Contact Details</h2>
-        <div class="row">
-            <div class="col-md-4 contact-info">
-                <i class="fas fa-envelope"></i>
+        <div class="contact-info-wrapper">
+            <div class="contact-info">
+                <img src="/media/email.jpeg" alt="Email Icon">
                 <h4>Email Us</h4>
                 <p>support@ecourt.com</p>
             </div>
-            <div class="col-md-4 contact-info">
-                <i class="fas fa-phone-alt"></i>
+            <div class="contact-info">
+                <img src="/media/call.jpeg" alt="Phone Icon">
                 <h4>Call Us</h4>
                 <p>+123-456-7890</p>
             </div>
-            <div class="col-md-4 contact-info">
-                <i class="fas fa-clock"></i>
+            <div class="contact-info">
+                <img src="/media/timing.jpeg" alt="Clock Icon">
                 <h4>Working Hours</h4>
                 <p>Mon - Fri: 9 AM - 6 PM</p>
             </div>
@@ -224,10 +248,9 @@
     </div>
 </section>
 
-<!-- Footer -->
-<section class="footer">
-    <p>&copy; 2025 eCourt. All Rights Reserved. | <a href="#">Privacy Policy</a></p>
-</section>
-
 </body>
+<br>
+<br>
 </html>
+
+{% endblock %}

@@ -1,6 +1,7 @@
 {% extends 'header_footer.html' %}
 
 {% block content %}
+<br>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,11 +67,16 @@
             background-color: #f9f9f9;
             padding: 60px 0;
             text-align: center;
+            border-radius: 20px;
+            margin-left: 5%;
+            margin-right: 5%;
         }
-        .features h2 {
+        h2 {
             font-size: 2.5rem;
             margin-bottom: 20px;
             color: #003366;
+            font-family: 'Merriweather', serif;
+            text-align: center;
         }
         .feature-card {
             margin: 20px;
@@ -99,27 +105,37 @@
         }
         /* How It Works Section */
         .how-it-works {
-            background-color: #ffffff;
-            padding: 0px 20px;
+            background-color: #f9f9f9;
+            padding: 60px 0;
             text-align: center;
+            border-radius: 20px;
+            margin-left: 5%;
+            margin-right: 5%;
+            margin-top:2%;
         }
 
-        .how-it-works h2 {
+        h2 {
             font-size: 36px;
             margin-bottom: 0px;
             color: #003366;
+            font-family: 'Merriweather', serif;
         }
 
         /* Testimonials Section */
         .testimonials {
-            background-color: #f1f1f1;
+            background-color: #f9f9f9;
             padding: 60px 0;
             text-align: center;
+            border-radius: 20px;
+            margin-left: 5%;
+            margin-right: 5%;
+            margin-top:2%;
         }
-        .testimonials h2 {
+        h2 {
             font-size: 2.5rem;
             margin-bottom: 30px;
             color: #003366;
+            font-family: 'Merriweather', serif;
         }
         .testimonial-card {
             background-color: white;
@@ -153,12 +169,16 @@
         .faq-section {
             background-color: #f9f9f9;
             padding: 60px 0;
+            border-radius: 20px;
+            margin-left: 5%;
+            margin-right: 5%;
         }
-        .faq-section h2 {
+         h2 {
             font-size: 2.5rem;
             margin-bottom: 30px;
             color: #003366;
             text-align: center;
+            font-family: 'Merriweather', serif;
         }
         .faq-item {
             margin-bottom: 20px;
@@ -167,6 +187,7 @@
             font-size: 1.5rem;
             color: #004080;
             cursor: pointer;
+            font-family: 'Merriweather', serif;
         }
         .faq-item p {
             display: none;
@@ -189,14 +210,17 @@
         }
 
         .explore-more-button .btn {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            transition: background-color 0.3s;
+        background: linear-gradient(135deg, #007bff, #0056b3);
+         border: none;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         margin: 0 auto; /* Center the button horizontally */
+         {% comment %} display: block; /* Make it a block-level element for easier centering */ {% endcomment %}
+         font-size: 1.2rem;
+         color: white; /* Change text color to white */
+         font-family: monospace;
+         height: 50px;
+         width: 250px;
         }
 
         .explore-more-button .btn:hover {
@@ -204,42 +228,76 @@
         }
 
         /* Contact Us Form */
+        
         .contact-form {
             padding: 60px 0;
-            background-color: #004080;
+            background: linear-gradient(135deg, #001f3f, #0056b3);
             color: white;
-            margin-left: 80px;
-            margin-right: 80px;
-            margin-bottom: 60px;
-            border-radius: 42px;
+            margin: 60px 80px;
+            border-radius: 20px;
+            margin-top: 1%;
         }
+        
         .contact-form h2 {
             margin-bottom: 30px;
             font-size: 2.5rem;
             text-align: center;
         }
-        .contact-form input, .contact-form textarea {
+        
+        .contact-form .form-flex-container {
+            display: flex;
+            gap: 20px;
+            justify-content: space-between;
+        }
+        
+        .contact-form .form-part {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .contact-form input, 
+        .contact-form textarea {
             width: 100%;
             padding: 10px;
-            margin-bottom: 20px;
             border-radius: 5px;
-            border: 1px solid #ddd;
+            border: 2px solid #ddd;
+            border-radius: 40px;
             resize: none;
         }
+        
+        .contact-form textarea {
+            flex-grow: 1; /* Ensures the message field fills the remaining space */
+            height: 60px;
+            border-radius: 10px;
+        }
+        
+        .contact-form .form-button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
         .contact-form button {
-         padding: 10px 20px;
-         border-radius: 5px;
-         background-color: #0066cc;
-         color: white;
-         border: none;
-         font-size: 1.2rem;
-         margin: 0 auto; /* Center the button horizontally */
-         display: block; /* Make it a block-level element for easier centering */
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color:rgb(179, 176, 0);
+            {% comment %} background: linear-gradient(135deg, #007bff, #0056b3); {% endcomment %}
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: white;
+            font-family: monospace;
+            transition: all 0.3s ease;
+            margin-left: -2px;
+            width: 100%;
         }
+        
         .contact-form button:hover {
-            background-color:rgb(215, 222, 228);
-            color : #0066cc;
+            background-color: rgb(215, 222, 228);
+            color: #0066cc;
         }
+        
 
         /* Animations */
         .fade-in {
@@ -265,11 +323,12 @@
         <a href="#features" class="btn btn-primary">Explore Features</a>
     </div>
 </section>
-
+<br>
 <!-- Features Section -->
+<h2>Our Features</h2>
 <section id="features" class="features fade-in">
     <div class="container">
-        <h2>Our Features</h2>
+       
         <div class="row">
             <div class="col-md-4">
                 <div class="feature-card">
@@ -319,9 +378,11 @@
 </section>
 
 <!-- How It Works Section -->
+ <br>
+<h2 class="section-title">How It Works</h2>
 <section id="how-it-works" class="how-it-works">
     <div class="container">
-        <h2 class="section-title">How It Works</h2>
+        
         <div class="row">
             <div class="col-md-4">
                 <div class="feature-card">
@@ -346,13 +407,15 @@
 </section>
 
 <!-- Testimonials Section -->
+ <br>
+<h2>What Our Users Say</h2>
 <section id="testimonials" class="testimonials fade-in">
     <div class="container">
-        <h2>What Our Users Say</h2>
+        
         <div class="row">
             <div class="col-md-4">
                 <div class="testimonial-card">
-                    <img src="john_doe_image.jpg" alt="John Doe" class="testimonial-image">
+                    <img src="/media/logo.png" alt="John Doe" class="testimonial-image">
                     <p>"eCourt has made managing my cases so much easier. The interface is simple, yet powerful!"</p>
                     <h4>John Doe</h4>
                     <p>Lawyer</p>
@@ -360,7 +423,7 @@
             </div>
             <div class="col-md-4">
                 <div class="testimonial-card">
-                    <img src="jane_smith_image.jpg" alt="Jane Smith" class="testimonial-image">
+                    <img src="/media/logo.png" alt="Jane Smith" class="testimonial-image">
                     <p>"I can file my documents from the comfort of my home. A real game-changer!"</p>
                     <h4>Jane Smith</h4>
                     <p>Citizen</p>
@@ -368,7 +431,7 @@
             </div>
             <div class="col-md-4">
                 <div class="testimonial-card">
-                    <img src="judge_mike_image.jpg" alt="Judge Mike" class="testimonial-image">
+                    <img src="/media/logo.png" alt="Judge Mike" class="testimonial-image">
                     <p>"As a judge, I can now easily track cases and hearings. The platform saves me so much time!"</p>
                     <h4>Judge Mike</h4>
                     <p>Judge</p>
@@ -379,9 +442,11 @@
 </section>
 
 <!-- FAQ Section -->
+ <br>
+<h2>Frequently Asked Questions</h2>
 <section id="faq" class="faq-section">
     <div class="container">
-        <h2>Frequently Asked Questions</h2>
+       
         <div class="faq-item">
             <h4><i class="fas fa-chevron-down"></i> What is eCourt?</h4>
             <p>eCourt is an online platform that modernizes the court management process, enabling users to manage cases, hearings, and filings easily and efficiently.</p>
@@ -427,16 +492,30 @@
 </section>
 
 <!-- Contact Us Section -->
+ <!-- Contact Us Section -->
+  <br>
+ <h2>Contact Us</h2>
 <section id="contact" class="contact-form">
     <div class="container">
-        <h2>Contact Us</h2>
+       
         <form action="{% url 'contactus' %}" method="post">
             {% csrf_token %}
-            <input type="text" name="name" placeholder="Your Name" required>
-            <input type="email" name="email" placeholder="Your Email" required>
-            <input type="text" name="subject" placeholder="Your Subject" required>
-            <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
-            <button type="submit">Send Message</button>
+            <div class="form-flex-container">
+                <!-- First Part: Name, Email, Subject -->
+                <div class="form-part">
+                    <input type="text" name="name" placeholder="Your Name" required>
+                    <input type="email" name="email" placeholder="Your Email" required>
+                    <input type="text" name="subject" placeholder="Your Subject" required>
+                </div>
+                <!-- Second Part: Message -->
+                <div class="form-part">
+                    <textarea name="message" rows="8" placeholder="Your Message" required></textarea>
+                </div>
+            </div>
+            <!-- Button -->
+            <div class="form-button-container">
+                <button type="submit">Send Message</button>
+            </div>
         </form>
     </div>
 </section>
