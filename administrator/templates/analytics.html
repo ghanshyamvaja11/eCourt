@@ -27,6 +27,7 @@
             <button onclick="showGraphOptions('monthlyCases')">Monthly Cases</button>
             <button onclick="showGraphOptions('hearings')">Analyze Hearings</button>
             <button onclick="showGraphOptions('documents')">Analyze Documents</button>
+            <button onclick="showGraphOptions('payments')">Analyze Payments</button>
         </div>
     </div>
 </div>
@@ -253,6 +254,9 @@ button:hover {
                 break;
             case 'documents':
                 currentData = JSON.parse('{{ documents_data|escapejs }}');
+                break;
+            case 'payments':
+                currentData = JSON.parse('{{ payments_data|escapejs }}');
                 break;
         }
         document.getElementById('graph-options-modal').style.display = 'flex';

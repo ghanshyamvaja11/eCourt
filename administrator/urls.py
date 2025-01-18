@@ -22,6 +22,7 @@ urlpatterns = [
     path('logout', logout_view, name='logout'),
     path('analytics-dashboard', analytics_dashboard, name='analytics_dashboard'),
     path('reports-dashboard', reports_dashboard, name='reports_dashboard'),
+    path('view-payments', view_payments, name='view_payments'),
 ]
 
 handler404 = 'ecourt_home.views.error_404_view'

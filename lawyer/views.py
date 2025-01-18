@@ -10,6 +10,7 @@ from cases.models import *  # Assuming there is a Case model in the cases app
 from notifications.models import Notification
 from administrator.models import * # Assuming there is
 from django.db.models import Q
+import datetime
 @login_required(login_url='/login/')
 def lawyer_dashboard(request):
     return render(request, 'lawyer_dashboard.html')
@@ -41,7 +42,7 @@ def hearings(request):
     return render(request, 'lawyer_hearings.html', {'hearings': hearings})
 
 @login_required(login_url='/login/')
-def efilling(request):
+def lawyer_upload_document(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
@@ -50,25 +51,21 @@ def efilling(request):
     cases = Case.objects.filter(assigned_lawyer=lawyer)
 
     if request.method == 'POST':
-        action = request.POST.get('action')
         case_id = request.POST.get('case_id')
+        document_type = request.POST.get('document_type')
+        file = request.FILES.get('file')
+        case = Case.objects.get(id=case_id)     
+        Document.objects.create(
+            case=case,
+            document_type=document_type,
+            file=file,
+            uploaded_by=request.user,
+            user_type='LAWYER'
+        )
 
-        if action == 'upload_document':
-            document_type = request.POST.get('document_type')
-            file = request.FILES.get('file')
-            case = Case.objects.get(id=case_id)
-
-            Document.objects.create(
-                case=case,
-                document_type=document_type,
-                file=file,
-                uploaded_by=lawyer
-            )
-
-            messages.success(request, 'Document uploaded successfully.')
-            return redirect('efilling')
-
-    return render(request, 'efilling.html', {'cases': cases})
+        messages.success(request, 'Document uploaded successfully.')
+        return redirect('assigned_cases')
+    return render(request, 'assigned_cases.html', {'cases': cases})
 
 @login_required(login_url='/login/')
 def lawyer_profile(request):
@@ -411,9 +408,10 @@ def request_payment(request, case_id):
 
     if plaintiff_case:
         if request.method == 'POST':
-            amount = request.POST['amount']
-            description = request.POST['description']
-            Payment.objects.create(case=plaintiff_case, amount=amount, description=description)
+            amount = request.POST.get('amount')
+            description = request.POST.get('description')
+            Payment.objects.create(case=plaintiff_case, lawyer_email=request.user.email,
+                                   amount=amount, description=description, requested_at=datetime.datetime.now())
             Notification.objects.create(
                 user=plaintiff_case.plaintiff.user,
                 message=f'You have a new payment request for case {plaintiff_case.case_number}.'
@@ -429,9 +427,11 @@ def request_payment(request, case_id):
     else:
         if defendant_case:
             if request.method == 'POST':
-                amount = request.POST['amount']
-                description = request.POST['description']
-                Payment.objects.create(case=defendant_case, amount=amount, description=description)
+                amount = request.POST.get('amount')
+                description = request.POST.get('description')
+                request_date_time = request.POST.get('current_datetime')
+                Payment.objects.create(case=defendant_case, lawyer_email=request.user.email,
+                                       amount=amount, description=description, requested_at=datetime.datetime.now())
 
                 Notification.objects.create(
                 user=defendant_case.defendant.user,
@@ -439,12 +439,17 @@ def request_payment(request, case_id):
             )
                 
                 # Send email to client
-            send_mail(
-                'Payment Request',
-                f'You have a new payment request for case {defendant_case.case_number}.',
-                'ecourtofficially@gmail.com',
-                [plaintiff_case.defendant.user.email],
-                fail_silently=False,
-            )
-        return redirect('lawyer_dashboard')
+                send_mail(
+                    'Payment Request',
+                    f'You have a new payment request for case {defendant_case.case_number}.',
+                    'ecourtofficially@gmail.com',
+                    [defendant_case.defendant.user.email],
+                    fail_silently=False,
+                )
+                return redirect('lawyer_dashboard')
     return render(request, 'request_payment.html', {'case': cases})
+
+@login_required(login_url='/login/')
+def lawyer_payments(request):
+    payments = Payment.objects.filter(lawyer_email=request.user.email)
+    return render(request, 'lawyer_payments.html', {'payments': payments})
