@@ -326,7 +326,7 @@ def defendant_decline_case(request):
     return redirect('defendant_case_requests')
 
 @login_required(login_url='/login/')
-def notifications(request):
+def lawyer_notifications(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
@@ -342,7 +342,7 @@ def notifications(request):
             messages.error(request, 'Notification not found.')
 
     notifications = Notification.objects.filter(user=request.user).order_by('-date_sent')
-    return render(request, 'notifications.html', {'notifications': notifications})
+    return render(request, 'lawyer_notifications.html', {'notifications': notifications})
 
 @login_required(login_url='/login/')
 def client_case_documents(request):

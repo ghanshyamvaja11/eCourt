@@ -125,6 +125,20 @@
             <p>{{ total_cases }}</p>
         </div>
     </a>
+    <a href="{% url 'add_judge' %}">
+        <div class="dashboard-card">
+            <div class="card-icon">👨‍⚖️</div>
+            <h3>Add Judge</h3>
+            <p>Add new judges</p>
+        </div>
+    </a>
+    <a href="{% url 'lawyer_approve_reject' %}">
+        <div class="dashboard-card">
+            <div class="card-icon">✍️</div>
+            <h3>Requested Lawyers</h3>
+            <p>Approve or deny requests</p>
+        </div>
+    </a>
     <a href="{% url 'judges_management' %}">
         <div class="dashboard-card">
             <div class="card-icon">👨‍⚖️</div>
@@ -154,20 +168,7 @@
                 <p>View and update case statuses</p>
             </div>
         </a>
-        <a href="{% url 'add_judge' %}">
-            <div class="dashboard-card">
-                <div class="card-icon">👨‍⚖️</div>
-                <h3>Add Judge</h3>
-                <p>Add new judges</p>
-            </div>
-        </a>
-        <a href="{% url 'lawyer_approve_reject' %}">
-            <div class="dashboard-card">
-                <div class="card-icon">✍️</div>
-                <h3>Requested Lawyers</h3>
-                <p>Approve or deny requests</p>
-            </div>
-        </a>
+        
         <a href="{% url 'analytics_dashboard' %}">
             <div class="dashboard-card">
                 <div class="card-icon">📊</div>
@@ -183,12 +184,6 @@
             </div>
         </a>
        
-        <div class="dashboard-card">
-            <div class="card-icon">🔔</div>
-            <h3>Notifications</h3>
-            <p>View recent updates</p>
-        </div>
-
         <a href="{% url 'profile' %}">
             <div class="dashboard-card">
                 <div class="card-icon">👤</div>

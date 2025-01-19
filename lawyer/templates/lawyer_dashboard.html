@@ -102,6 +102,10 @@
             font-size: 0.9rem;
             opacity: 0.8;
         }
+        a{
+            text-decoration: none;
+            color: #007bff;
+        }
     </style>
 </head>
 <body>
@@ -113,6 +117,7 @@
 
     <!-- Cards Section -->
     <div class="dashboard-container">
+        <!-- Assigned Cases Card -->
         <a href="{% url 'assigned_cases' %}">
             <div class="dashboard-card">
                 <div class="card-icon">⚖️</div>
@@ -120,14 +125,46 @@
                 <p>View and manage your assigned cases</p>
             </div>
         </a>
-        
+
+        <!-- Plaintiff Case Requests Card -->
+        <a href="{% url 'plaintiff_case_requests' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">📑</div>
+                <h3>Plaintiff Case Requests</h3>
+                <p>View and manage plaintiff case requests</p>
+            </div>
+        </a>
+
+        <!-- Defendant Case Requests Card -->
+       
+        <a href="{% url 'defendant_case_requests' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">⚒️</div>
+                    <h3>Defendant Case Requests</h3>
+                    <p>View and manage defendant case requests</p>
+            </div>
+        </a>
+
+
+        <!-- Hearings Card -->
+        <a href="{% url 'lawyer_hearings' %}">
             <div class="dashboard-card">
                 <div class="card-icon">📅</div>
                 <h3>Hearings</h3>
                 <p>Track upcoming and past hearings</p>
             </div>
-        
-        
+        </a>
+
+        <!-- Notifications Card -->
+        <a href="{% url 'lawyer_notifications' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">🔔</div>
+                <h3>Notifications</h3>
+                <p>View your latest notifications</p>
+            </div>
+        </a>
+
+        <!-- Profile Card -->
         <a href="{% url 'lawyer_profile' %}">
             <div class="dashboard-card">
                 <div class="card-icon">👤</div>
