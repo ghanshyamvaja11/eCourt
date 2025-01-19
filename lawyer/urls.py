@@ -2,8 +2,6 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-#     path('lawyer-profile', lawyer_profile, name='lawyer_profile'),
-#     path('lawyer-edit-profile', lawyer_edit_profile, name='lawyer_edit_profile'),
     path('lawyer-dashboard', lawyer_dashboard, name='lawyer_dashboard'),
     path('lawyer-header', header, name='header'),
     path('assigned-cases', assigned_cases, name='assigned_cases'),
@@ -26,6 +24,6 @@ urlpatterns = [
     path('upload-document/', lawyer_upload_document, name='lawyer_upload_document'),
     path('lawyer-payments', lawyer_payments, name='lawyer_payments'),
     path('logout', logout_view, name='logout'),
-    path('notifications', notifications, name='lawyer_notifications'),
+    path('notifications', lawyer_notifications, name='lawyer_notifications'),
     path('request-payment/case/<int:case_id>/', request_payment, name='request_payment'),
 ]
