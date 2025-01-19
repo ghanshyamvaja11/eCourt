@@ -26,6 +26,6 @@ urlpatterns = [
     path('upload-document/', lawyer_upload_document, name='lawyer_upload_document'),
     path('lawyer-payments', lawyer_payments, name='lawyer_payments'),
     path('logout', logout_view, name='logout'),
-    path('notifications', notifications, name='lawyer_notifications'),
+    path('notifications', lawyer_notifications, name='lawyer_notifications'),
     path('request-payment/<int:case_id>/', request_payment, name='request_payment'),
 ]

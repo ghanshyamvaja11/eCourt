@@ -214,13 +214,13 @@
         <h2>Lawyer Menu</h2>
         <ul>
             <li><a href="{% url 'lawyer_dashboard' %}">Dashboard</a></li>
-            <li><a href="{% url 'plaintiff_case_requests' %}">Plaintiff Case Requests</a></li>
-            <li><a href="{% url 'defendant_case_requests' %}">Defendant Case Requests</a></li>
             <li><a href="{% url 'assigned_cases' %}">Assigned Cases</a></li>
+            <li><a href="{% url 'plaintiff_case_requests' %}">Plaintiff Case Requests</a></li>
+            <li><a href="{% url 'defendant_case_requests' %}">Defendant Case Requests</a></li>            
             <li><a href="{% url 'lawyer_hearings' %}">Hearings</a></li>
-            <li><a href="{% url 'lawyer_payments' %}">Your Payment Requests</a></li>
-            
-            <li><a href="{% url 'lawyer_profile' %}">Profile</a></li>
+            <li><a href="{% url 'lawyer_payments' %}">Requested Payments</a></li>
+            <li><a href="{% url 'lawyer_notifications' %}">Notifications</a></li> <!-- Payment -->
+            <li><a href="{% url 'lawyer_profile' %}">Profile</a></li>   
             <li><a href="{% url 'logout' %}" class="logout-btn">Logout</a></li>
         </ul>
     </div>

@@ -33,7 +33,7 @@
 
         .hero-section h1 {
             font-size: 3.5rem;
-            font-family: 'Merriweather', serif;
+            font-family: 'monospace';
             text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
             margin-bottom: 20px;
         }
@@ -70,6 +70,7 @@
             font-size: 2rem;
             color: #003366;
             margin-bottom: 20px;
+            font-family: 'monospace';
         }
 
         .contact-form input,
@@ -83,17 +84,18 @@
 
         .contact-form button {
             padding: 12px 30px;
-            background: #0066cc;
+            background: linear-gradient(135deg, #007bff, #0056b3);
             color: white;
             border: none;
             border-radius: 30px;
             cursor: pointer;
             transition: background-color 0.3s;
             width:100%;
+
         }
 
         .contact-form button:hover {
-            background: #004080;
+            background: linear-gradient(135deg, #0056b3,#007bff);
         }
 
         .contact-image {
@@ -123,7 +125,8 @@
             font-size: 2rem;
             color: #003366;
             margin-bottom: 20px;
-            font-family: 'Merriweather', serif;
+            font-family: 'monospace';
+           
         }
 
         .contact-info {
@@ -140,6 +143,7 @@
             font-size: 1.3rem;
             color: #003366;
             margin-top: 10px;
+            
         }
 
         .contact-info p {
@@ -203,7 +207,7 @@
         <div class="contact-form-wrapper">
             <!-- Form -->
             <div class="contact-form">
-                <h2><i class="fas fa-envelope"></i> Get in Touch</h2>
+                <h2> <i class="fas fa-question-circle"></i> How Can I Help You ??</h2>
                 <form action="" method="POST">
                     {% csrf_token %}
                     <div class="form-group">
@@ -227,22 +231,22 @@
 <!-- Contact Info Section -->
 <section class="contact-info-section">
     <div class="container">
-        <h2>Our Contact Details</h2>
+        <h2>Get In Touch </h2>
         <div class="contact-info-wrapper">
             <div class="contact-info">
                 <img src="/media/email.jpeg" alt="Email Icon">
                 <h4>Email Us</h4>
-                <p>support@ecourt.com</p>
+                <p>ecourtofficially@gmail.com</p>
             </div>
             <div class="contact-info">
                 <img src="/media/call.jpeg" alt="Phone Icon">
                 <h4>Call Us</h4>
-                <p>+123-456-7890</p>
+                <p>+88412 81600</p>
             </div>
             <div class="contact-info">
                 <img src="/media/timing.jpeg" alt="Clock Icon">
                 <h4>Working Hours</h4>
-                <p>Mon - Fri: 9 AM - 6 PM</p>
+                <p>27/7 hours</p>
             </div>
         </div>
     </div>

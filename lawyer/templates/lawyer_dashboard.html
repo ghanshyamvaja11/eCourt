@@ -154,6 +154,14 @@
                 <p>Track upcoming and past hearings</p>
             </div>
         </a>
+        <!-- Payment Card -->
+    <a href="{% url 'lawyer_payments' %}">  <!-- Replace `1` with the actual case ID dynamically -->
+        <div class="dashboard-card">
+            <div class="card-icon">💵</div>
+            <h3>Requested Payment</h3>
+            <p>Requested payment for a specific case</p>
+        </div>
+    </a>
 
         <!-- Notifications Card -->
         <a href="{% url 'lawyer_notifications' %}">

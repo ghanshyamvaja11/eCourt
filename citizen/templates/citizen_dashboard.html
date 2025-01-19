@@ -20,7 +20,6 @@
             padding: 40px 20px;
             margin-bottom: 20px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            position: relative;
         }
 
         .dashboard-header h1 {
@@ -54,7 +53,6 @@
             padding: 20px;
         }
 
-        /* Responsive Design */
         @media (max-width: 1200px) {
             .dashboard-container {
                 grid-template-columns: repeat(3, 1fr);
@@ -78,7 +76,6 @@
             color: white;
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -91,7 +88,7 @@
         .card-icon {
             font-size: 3rem;
             margin-bottom: 10px;
-            color: #ffd700; /* Consistent golden color for all icons */
+            color: #ffd700;
         }
 
         h3 {
@@ -102,19 +99,18 @@
             font-size: 0.9rem;
             opacity: 0.8;
         }
-        a{
+
+        a {
             text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <!-- Header Section -->
     <div class="dashboard-header">
         <h1>Citizen Dashboard</h1>
         <p>Manage your cases, file new ones, and stay informed</p>
     </div>
 
-    <!-- Cards Section -->
     <div class="dashboard-container">
         <a href="{% url 'file_cases' %}">
             <div class="dashboard-card">
@@ -154,7 +150,7 @@
         <a href="{% url 'requested_payments' %}">
             <div class="dashboard-card">
                 <div class="card-icon">💳</div>
-                <h3>Payments</h3>
+                <h3>Requested Payments</h3>
                 <p>Manage your payment requests and dues</p>
             </div>
         </a>
