@@ -204,8 +204,16 @@
                 <li class="nav-item">
                     <a class="nav-link" style="color:white" href="{% url 'faq' %}">FAQ</a>
                 </li>
+                 <li class="nav-item">
+                    {% comment %} <a class="nav-link" style="color:white" href="{% url 'faq' %}">Dashboard</a> {% endcomment %}
+                    <i class="fas fa-sign-in-alt login-icon"></i>
+                </li> 
                 <li class="nav-item">
                     <a class="nav-link" style="color:white" href="{% url 'login' %}">Login</a>
+                </li>
+                <li class="nav-item">
+                    {% comment %} <a class="nav-link" style="color:white" href="{% url 'faq' %}">Logout</a> {% endcomment %}
+                    <i class="fas fa-sign-in-alt login-icon"></i>
                 </li>
             </ul>
         </div>
@@ -231,7 +239,7 @@
                     <a href="#"><i class="fab fa-twitter"></i></a>
                     <a href="#"><i class="fab fa-linkedin"></i></a>
                 </div>
-                <p>Powered by eCourt | <a href="#">Privacy Policy</a></p>
+                <p>Powered by eCourt | <a href="privacy_policy">Privacy Policy</a></p>
             </div>
 
             <!-- Second Part: Our Pages -->
@@ -258,7 +266,7 @@
             <!-- Fourth Part: Contact Information -->
             <div class="col-md-3">
                 <h5>Contact Information</h5>
-                <p>Email: <a href="mailto:support@ecourt.com">support@ecourt.com</a></p>
+                <p>Email: <a href="mailto:support@ecourt.com">ecourtofficially@gmail.com</a></p>
                 <p>Phone: +1 (800) 123-4567</p>
             </div>
         </div>

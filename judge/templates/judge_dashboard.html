@@ -156,6 +156,10 @@
         .dashboard-section ul li a:hover {
             color: #2a5298;
         }
+        a{
+            text-decoration: none;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -172,6 +176,7 @@
 
     <!-- Cards Section -->
     <div class="dashboard-container">
+        <!-- Assigned Cases -->
         <a href="{% url 'judge_assigned_cases' %}">
             <div class="dashboard-card">
                 <div class="card-icon">⚖️</div>
@@ -179,32 +184,58 @@
                 <p>View and manage your assigned cases</p>
             </div>
         </a>
+
+        <!-- Hearings -->
         <a href="{% url 'judge_hearings' %}">
             <div class="dashboard-card">
-                <div class="card-icon">📅</div>
+                <div class="card-icon">📜</div> <!-- Changed icon -->
                 <h3>Hearings</h3>
                 <p>Track upcoming and past hearings</p>
             </div>
         </a>
+
+        <!-- Schedule Hearing -->
+        <a href="{% url 'schedule_hearing' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">📅</div> <!-- Changed icon -->
+                <h3>Schedule Hearing</h3>
+                <p>Schedule a new hearing</p>
+            </div>
+        </a>
+
+        <!-- Outcome -->
         <a href="{% url 'outcome' %}">
             <div class="dashboard-card">
                 <div class="card-icon">✔️</div>
-                <h3>Verdicts & Outcomes</h3>
+                <h3>Outcomes</h3>
                 <p>Manage and record case outcomes</p>
             </div>
         </a>
+
+        <!-- Verdict -->
+        <a href="{% url 'verdicts' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">📝</div>
+                <h3>Verdicts</h3>
+                <p>Review and submit verdicts</p>
+            </div>
+        </a>
+
+        <!-- Notifications -->
+        <a href="{% url 'judge_notifications' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">🔔</div>
+                <h3>Notifications</h3>
+                <p>View recent updates and alerts</p>
+            </div>
+        </a>
+
+        <!-- Profile -->
         <a href="{% url 'judge_profile' %}">
             <div class="dashboard-card">
                 <div class="card-icon">👤</div>
                 <h3>Your Profile</h3>
                 <p>View and update your profile information</p>
-            </div>
-        </a>
-        <a href="{% url 'schedule_hearing' %}">
-            <div class="dashboard-card">
-                <div class="card-icon">📅</div>
-                <h3>Schedule Hearing</h3>
-                <p>Schedule a new hearing</p>
             </div>
         </a>
     </div>

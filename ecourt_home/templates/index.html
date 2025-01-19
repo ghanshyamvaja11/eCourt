@@ -53,9 +53,19 @@
         }
         .btn-primary {
             padding: 12px 30px;
-            font-size: 1.2rem;
-            border-radius: 30px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            cursor: pointer;
             transition: all 0.3s ease;
+            display: inline-block;
+            font-size: 1.2rem;
+            color: white; /* Change text color to white */
+            font-family: monospace;
+            height: 60px;
+            width: 250px;
+            text-align: center;
+            
+            border-radius: 50px;
+       
         }
         .btn-primary:hover {
             background-color: #0066cc;
@@ -165,67 +175,99 @@
         margin-bottom: 15px;
     }
 
-        /* FAQ Section */
-        .faq-section {
-            background-color: #f9f9f9;
-            padding: 60px 0;
-            border-radius: 20px;
-            margin-left: 5%;
-            margin-right: 5%;
-        }
-         h2 {
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-            color: #003366;
-            text-align: center;
-            font-family: 'Merriweather', serif;
-        }
-        .faq-item {
-            margin-bottom: 20px;
-        }
-        .faq-item h4 {
-            font-size: 1.5rem;
-            color: #004080;
-            cursor: pointer;
-            font-family: 'Merriweather', serif;
-        }
-        .faq-item p {
-            display: none;
-            color: #555;
-            font-size: 1.2rem;
-            margin-top: 10px;
-        }
-        .faq-item.active p {
-            display: block;
-        }
-        .faq-item i {
-            transition: transform 0.3s ease;
-        }
-        .faq-item.active i {
-            transform: rotate(180deg);
-        }
-        .explore-more-button {
-            text-align: left;
-            margin-top: 20px;
-        }
+    /* FAQ Section */
+    .faq-section {
+        background-color: #f9f9f9;
+        padding: 60px;
+        border-radius: 20px;
+        margin-left: 5%;
+        margin-right: 5%;
+        display: flex;
+        align-items: center; /* Center vertically */
+        gap: 40px; /* Space between FAQ and image */
+    }
 
-        .explore-more-button .btn {
+    /* FAQ Content */
+    .faq-content {
+        flex: 1; /* Takes up the available space */
+        margin-left: 10%;
+    }
+
+    h2 {
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+        color: #003366;
+        text-align: left;
+        font-family: 'Merriweather', serif;
+    }
+
+    .faq-item {
+        margin-bottom: 20px;
+    }
+
+    .faq-item h4 {
+        font-size: 1.5rem;
+        color: #004080;
+        cursor: pointer;
+        font-family: 'Merriweather', serif;
+    }
+
+    .faq-item p {
+        display: none;
+        color: #555;
+        font-size: 1.2rem;
+        margin-top: 10px;
+    }
+
+    .faq-item.active p {
+        display: block;
+    }
+
+    .faq-item i {
+        transition: transform 0.3s ease;
+    }
+
+    .faq-item.active i {
+        transform: rotate(180deg);
+    }
+
+    .explore-more-button {
+        text-align: left;
+        margin-top: 20px;
+    }
+
+    .explore-more-button .btn {
         background: linear-gradient(135deg, #007bff, #0056b3);
-         border: none;
-         cursor: pointer;
-         transition: all 0.3s ease;
-         margin: 0 auto; /* Center the button horizontally */
-         {% comment %} display: block; /* Make it a block-level element for easier centering */ {% endcomment %}
-         font-size: 1.2rem;
-         color: white; /* Change text color to white */
-         font-family: monospace;
-         height: 50px;
-         width: 250px;
-        }
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-block;
+        font-size: 1.2rem;
+        color: white; /* Change text color to white */
+        font-family: monospace;
+        height: 60px;
+        width: 250px;
+        text-align: center;
+       
+    }
 
-        .explore-more-button .btn:hover {
-            background-color: #0056b3;
-        }
+    .explore-more-button .btn:hover {
+        background-color: #0056b3;
+    }
+
+    /* FAQ Image */
+    .faq-image {
+        flex: 1; /* Takes up the available space */
+        text-align: center;
+        margin-right: 20px;
+    }
+
+    .faq-image img {
+        max-width: 100%; /* Ensure the image scales properly */
+        height: 100%;
+        {% comment %} border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); {% endcomment %}
+    }
 
         /* Contact Us Form */
         
@@ -238,7 +280,7 @@
             margin-top: 1%;
         }
         
-        .contact-form h2 {
+         h2 {
             margin-bottom: 30px;
             font-size: 2.5rem;
             text-align: center;
@@ -320,7 +362,7 @@
     <div class="content">
         <h1>Welcome to eCourt</h1>
         <p>Your one-stop platform for seamless court case management.</p>
-        <a href="#features" class="btn btn-primary">Explore Features</a>
+        <a href="aboutus" class="btn btn-primary">Explore eCourt</a>
     </div>
 </section>
 <br>
@@ -442,59 +484,66 @@
 </section>
 
 <!-- FAQ Section -->
- <br>
+<br>
 <h2>Frequently Asked Questions</h2>
 <section id="faq" class="faq-section">
-    <div class="container">
-       
+    <!-- FAQ Content -->
+    <div class="faq-content">
+
         <div class="faq-item">
             <h4><i class="fas fa-chevron-down"></i> What is eCourt?</h4>
-            <p>eCourt is an online platform that modernizes the court management process, enabling users to manage cases, hearings, and filings easily and efficiently.</p>
+            <p>
+                eCourt is an online platform designed to simplify court processes, enabling users to manage cases, hearings, and filings efficiently.
+            </p>
         </div>
+
         <div class="faq-item">
-            <h4><i class="fas fa-chevron-down"></i> How do I register?</h4>
-            <p>You can register on our platform by filling out the signup form for your role (Citizen, Lawyer, Judge, or Admin).</p>
+            <h4><i class="fas fa-chevron-down"></i> How can I register?</h4>
+            <p>
+                Register by filling out the signup form for your role (Citizen, Lawyer, Judge, or Admin) with the required details.
+            </p>
         </div>
+
         <div class="faq-item">
             <h4><i class="fas fa-chevron-down"></i> Can I file a case online?</h4>
-            <p>Yes, citizens can file a new case through the eCourt platform by submitting the necessary documents online.</p>
+            <p>
+                Yes, citizens can file cases online by submitting the necessary documents through the eCourt platform.
+            </p>
         </div>
+
         <div class="faq-item">
-            <h4><i class="fas fa-chevron-down"></i> Is my data safe?</h4>
-            <p>Yes, eCourt uses high-level encryption and security measures to ensure the privacy and safety of all user data.</p>
+            <h4><i class="fas fa-chevron-down"></i> Is my data secure?</h4>
+            <p>
+                eCourt ensures the safety of your data using encryption and secure systems to protect personal and legal information.
+            </p>
         </div>
+
         <div class="faq-item">
             <h4><i class="fas fa-chevron-down"></i> Can I track my case status?</h4>
-            <p>Yes, users can track the status of their cases and hearings through their dashboard.</p>
+            <p>
+                Yes, users can track the progress of their cases and upcoming hearings through their personalized dashboard.
+            </p>
         </div>
-        {% comment %} <div class="faq-item">
-            <h4><i class="fas fa-chevron-down"></i> How do I submit legal documents?</h4>
-            <p>Lawyers and citizens can submit legal documents via the eFiling system on the platform.</p>
-        </div>
-        <div class="faq-item">
-            <h4><i class="fas fa-chevron-down"></i> Who can see my documents?</h4>
-            <p>Only authorized users such as judges, lawyers, and relevant parties can access case-related documents.</p>
-        </div>
-        <div class="faq-item">
-            <h4><i class="fas fa-chevron-down"></i> Can I cancel or reschedule a hearing?</h4>
-            <p>Only the assigned judge can cancel or reschedule a hearing. However, lawyers can request changes through the platform.</p>
-        </div>
-        <div class="faq-item">
-            <h4><i class="fas fa-chevron-down"></i> How do I contact support?</h4>
-            <p>You can contact our support team through the Contact Us page.</p>
-        </div> {% endcomment %}
-        
+
         <!-- Explore More Button -->
         <div class="explore-more-button">
-            <a href="#more-info" class="btn btn-primary">Explore More</a>
+            <a href="faq" class="btn btn-primary">Explore More</a>
         </div>
     </div>
+
+    <!-- FAQ Image -->
+    <div class="faq-image" style="margin-right: 10%;">
+        <img src="/media/faq.gif" alt="FAQ Image">
+    </div>
 </section>
+
+
+   
 
 <!-- Contact Us Section -->
  <!-- Contact Us Section -->
   <br>
- <h2>Contact Us</h2>
+ <h2>Contact Us Immediately</h2>
 <section id="contact" class="contact-form">
     <div class="container">
        
@@ -528,7 +577,7 @@
 <!-- Custom JS -->
 <script>
     // Add 'loaded' class to body once content is loaded
-    window.addEventListener('load', () => {
+    {% comment %} window.addEventListener('load', () => {
         document.body.classList.add('loaded');
     });
 
@@ -538,7 +587,27 @@
         item.addEventListener('click', () => {
             item.parentElement.classList.toggle('active');
         });
-    });
+    }); {% endcomment %}
+
+     // Toggle FAQ items
+     const faqItems = document.querySelectorAll('.faq-item h4');
+
+     faqItems.forEach(item => {
+         item.addEventListener('click', () => {
+             const parent = item.parentElement;
+ 
+             // Close all other FAQs
+             document.querySelectorAll('.faq-item').forEach(faq => {
+                 if (faq !== parent) {
+                     faq.classList.remove('active');
+                 }
+             });
+ 
+             // Toggle the clicked FAQ
+             parent.classList.toggle('active');
+         });
+     });
+ 
 </script>
 
 </body>

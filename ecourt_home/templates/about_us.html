@@ -126,35 +126,37 @@
         .cta-btn {
             padding: 12px 30px;
             font-size: 1.2rem;
-            background-color: #0066cc;
+            background: linear-gradient(135deg, #007bff, #0056b3);
             color: white;
+            cursor: pointer;
             border-radius: 30px;
             margin-top: 30px;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
             text-decoration: none;
             animation: fadeInUp 2s ease-out;
+            font-family: monospace;
+            height: 60px;
+            width: 250px;
+            text-align: center;
+          
+           
         }
 
         .cta-btn:hover {
             background-color: #004080;
-        }
-
-        .footer {
-            background-color: #003366;
             color: white;
-            padding: 30px 0;
-            text-align: center;
-        }
-
-        .footer a {
-            color: white;
+            
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            transition: all 2 ease;
             text-decoration: none;
+            font-family: monospace;
+            height: 60px;
+            width: 250px;
+            text-align: center;
+
         }
 
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
+      
         /* Animations */
         @keyframes fadeIn {
             from {
@@ -260,7 +262,7 @@
         <div class="team-section">
             <!-- Ghanshyam Vaja -->
             <div class="team-member">
-                <img src="https://via.placeholder.com/150" alt="Ghanshyam Vaja">
+                <img src="/media/logo.png" alt="Ghanshyam Vaja">
                 <h4>Ghanshyam Vaja</h4>
                 <p>Lead Developer</p>
                 <p>Ghanshyam is the lead developer behind eCourt. With extensive experience in both frontend and backend development, he is responsible for creating the platform's architecture and ensuring its smooth operation. He has worked on various large-scale projects and has a passion for building scalable, user-friendly applications.</p>
@@ -268,7 +270,7 @@
 
             <!-- Selja Chauhan -->
             <div class="team-member">
-                <img src="https://via.placeholder.com/150" alt="Selja Chauhan">
+                <img src="/media/logo.png" alt="Selja Chauhan">
                 <h4>Selja Chauhan</h4>
                 <p>Project Manager</p>
                 <p>Selja manages the eCourt project, coordinating between the technical team and stakeholders. She brings expertise in project management and is dedicated to delivering the platform on time and within budget. With a background in law and technology, Selja ensures the platform aligns with legal standards and best practices.</p>
@@ -277,7 +279,7 @@
 
         <!-- Call to Action -->
         <div class="text-center">
-            <a href="contact.html" class="cta-btn">Get in Touch</a>
+            <a href="contactus" class="cta-btn">Get in Touch</a>
         </div>
     </div>
 </section>

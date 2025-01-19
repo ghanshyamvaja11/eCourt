@@ -311,7 +311,7 @@ def requested_payments(request):
             payments = Payment.objects.filter(citizen_email=request.user.email)
         else:
             # If there are multiple cases
-            payments = Payment.objects.filter(citizn_email=request.user.email)
+            payments = Payment.objects.filter(citizen_email=request.user.email)
     else:
         payments = Payment.objects.none()  # No cases found
 
