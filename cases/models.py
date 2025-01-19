@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Lawyer, Judge, Citizen
+from users.models import User, Lawyer, Judge, Citizen
 
 class Case(models.Model):
     STATUS_CHOICES = [
@@ -50,8 +50,8 @@ class Document(models.Model):
                              on_delete=models.CASCADE)  # Updated related_name
     document_type = models.CharField(max_length=100)
     file = models.FileField(upload_to='case_documents/%Y/%m/%d/')
-    uploaded_by = models.ForeignKey(
-        Citizen, related_name="uploaded_documents", on_delete=models.CASCADE)
+    uploaded_by = models.ForeignKey(User, verbose_name=("uploaded_by"), on_delete=models.CASCADE)
+    user_type = models.CharField(max_length=15, null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

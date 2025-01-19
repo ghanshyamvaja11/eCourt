@@ -16,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json 
 import logging
 from django.db.models import Q
+import datetime
 
 # Razorpay Client Setup
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
@@ -82,7 +83,8 @@ def file_cases(request):
                 case=case,
                 document_type='Case Document',
                 file=document,
-                uploaded_by=citizen
+                uploaded_by=request.user,
+                user_type = 'citizen'
             )
 
         messages.success(request, 'Case filed successfully.')
@@ -112,7 +114,8 @@ def my_cases(request):
                 case=case,
                 document_type=document_type,
                 file=file,
-                uploaded_by=citizen
+                uploaded_by=request.user,
+                user_type='CITIZEN'
             )
 
             messages.success(request, 'Document uploaded successfully.')
@@ -305,10 +308,10 @@ def requested_payments(request):
     if cases.exists():  # Check if there are any cases
         if cases.count() == 1:
             # If there is exactly one case
-            payments = Payment.objects.filter(case=cases.first())
+            payments = Payment.objects.filter(citizen_email=request.user.email)
         else:
             # If there are multiple cases
-            payments = Payment.objects.filter(case__in=cases)
+            payments = Payment.objects.filter(citizn_email=request.user.email)
     else:
         payments = Payment.objects.none()  # No cases found
 
@@ -398,6 +401,8 @@ def verify_payment(request):
                 payment.signature = razorpay_signature
                 payment.status = 'Completed'
                 payment.refund_amount = 0
+                payment.citizen_email = request.user.email
+                payment.paid_at = datetime.datetime.now()
                 payment.save()
 
             except Payment.DoesNotExist:

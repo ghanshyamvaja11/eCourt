@@ -24,7 +24,7 @@
                     <td>{{ payment.amount }}</td>
                     <td>{{ payment.description }}</td>
                     <td>
-                        {% if payment.status == 'pending' %}
+                        {% if payment.status == 'Pending' %}
                         <button onclick="startPayment('{{ payment.id }}', '{{ payment.amount }}')" class="chart-button">Pay Now</button>
                         {% else %}
                         <button style="color: white; background-color: green;">Paid</button>

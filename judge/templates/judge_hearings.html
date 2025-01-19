@@ -314,5 +314,29 @@ function toggleHearingDetails(button) {
 function closeHearingDetails() {
     document.getElementById("hearing-details-card").style.display = 'none';
 }
+
+// Hide video link form and show outcome form after submitting video link
+document.getElementById('videocall-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('videocall-form').style.display = 'none';
+            document.getElementById('outcome-form').style.display = 'block';
+        } else {
+            alert('Failed to submit video link');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
 </script>
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from users.models import *
 from cases.models import *
+from .models import *
 from .models import ContactUs
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseBadRequest
@@ -17,13 +18,14 @@ import json
 from django.db.models import Count, F
 from io import BytesIO
 from django.db.models.functions import TruncMonth
+from django.utils import timezone
 
 # Create your views here.
 @login_required(login_url='/login/')
 def admin_dashboard(request):
     # Fetch some data to display on the dashboard
-    total_users = User.objects.count()
     total_cases = Case.objects.count()
+    total_users = User.objects.count()
     return render(request, 'admin_dashboard.html', {
         'total_users': total_users,
         'total_cases': total_cases,
@@ -340,6 +342,15 @@ def analytics_dashboard(request):
         'label': 'Documents'
     }
 
+    # Fetch data for payments
+    payments = Payment.objects.all()
+    payment_status_counts = payments.values('status').annotate(count=Count('status'))
+    payments_data = {
+        'labels': [status['status'] for status in payment_status_counts],
+        'data': [status['count'] for status in payment_status_counts],
+        'label': 'Payments'
+    }
+
     context = {
         'cases_data': json.dumps(cases_data),
         'lawyers_data': json.dumps(lawyers_data),
@@ -348,11 +359,11 @@ def analytics_dashboard(request):
         'case_types_data': json.dumps(case_types_data),
         'monthly_cases_data': json.dumps(monthly_cases_data),
         'hearings_data': json.dumps(hearings_data),
-        'documents_data': json.dumps(documents_data)
+        'documents_data': json.dumps(documents_data),
+        'payments_data': json.dumps(payments_data)
     }
 
     return render(request, 'analytics.html', context)
-
 
 def reports_dashboard(request):
     if request.method == 'POST':
@@ -484,6 +495,22 @@ def reports_dashboard(request):
                 ]
                 data.append(row)
 
+        elif report_type == 'payments':
+            payments = Payment.objects.select_related('case')
+            headers = ["Order ID", "Case Number", "Amount", "Status", "Requested At", "Paid At"]
+            report_title = "Payments Report"
+
+            for payment in payments:
+                row = [
+                    payment.order_id,
+                    payment.case.case_number if payment.case else "N/A",
+                    payment.amount,
+                    payment.status,
+                    payment.requested_at.strftime('%Y-%m-%d %H:%M') if payment.requested_at else "N/A",
+                    payment.paid_at.strftime('%Y-%m-%d %H:%M') if payment.paid_at else "N/A",
+                ]
+                data.append(row)
+
         else:
             return HttpResponse("Invalid report type", status=400)
 
@@ -522,159 +549,6 @@ def reports_dashboard(request):
         pdf.build(elements)
 
         return response
-    # if request.method == 'POST':
-    #     report_type = request.POST.get('report_type')
-
-    #     # Prepare data and headers dynamically
-    #     headers = []
-    #     data = []
-
-    #     if report_type == 'cases':
-    #         cases = Case.objects.select_related(
-    #             'plaintiff', 'defendant', 'assigned_judge')
-    #         headers = ["Case Number", "Case Title", "Status",
-    #                    "Case Type", "Plaintiff", "Defendant", "Assigned Judge"]
-
-    #         for case in cases:
-    #             row = [
-    #                 case.case_number,
-    #                 case.case_title,
-    #                 case.status,
-    #                 case.case_type,
-    #                 case.plaintiff.user.full_name if case.plaintiff else "N/A",
-    #                 case.defendant.user.full_name if case.defendant else "N/A",
-    #                 case.assigned_judge.user.full_name if case.assigned_judge else "N/A",
-    #             ]
-    #             data.append(row)
-
-    #     elif report_type == 'lawyers':
-    #         lawyers = Lawyer.objects.select_related('user')
-    #         headers = ["Full Name", "License Number",
-    #                    "Law Firm", "Contact Number"]
-
-    #         for lawyer in lawyers:
-    #             row = [
-    #                 lawyer.user.full_name,
-    #                 lawyer.license_number,
-    #                 lawyer.law_firm,
-    #                 lawyer.user.contact_number,
-    #             ]
-    #             data.append(row)
-
-    #     elif report_type == 'judges':
-    #         judges = Judge.objects.select_related('user')
-    #         headers = ["Full Name", "Court", "Cases Assigned"]
-
-    #         for judge in judges:
-    #             row = [
-    #                 judge.user.full_name,
-    #                 judge.court,
-    #                 judge.cases_assigned,
-    #             ]
-    #             data.append(row)
-
-    #     elif report_type == 'citizens':
-    #         citizens = Citizen.objects.select_related('user')
-    #         headers = ["Full Name", "National ID",
-    #                    "Cases Filed", "Contact Number"]
-
-    #         for citizen in citizens:
-    #             row = [
-    #                 citizen.user.full_name,
-    #                 citizen.national_id,
-    #                 citizen.cases_filed,
-    #                 citizen.user.contact_number,
-    #             ]
-    #             data.append(row)
-
-    #     elif report_type == 'caseTypes':
-    #         case_types = Case.objects.values(
-    #             'case_type').annotate(case_count=Count('id'))
-    #         headers = ["Case Type", "Case Count"]
-
-    #         for case_type in case_types:
-    #             row = [
-    #                 case_type['case_type'],
-    #                 case_type['case_count'],
-    #             ]
-    #             data.append(row)
-
-    #     elif report_type == 'monthlyCases':
-    #         monthly_cases = Case.objects.annotate(month=TruncMonth(
-    #             'case_filed_date')).values('month').annotate(case_count=Count('id'))
-    #         headers = ["Month", "Case Count"]
-
-    #         for monthly_case in monthly_cases:
-    #             row = [
-    #                 monthly_case['month'].strftime(
-    #                     '%B %Y') if monthly_case['month'] else "N/A",
-    #                 monthly_case['case_count'],
-    #             ]
-    #             data.append(row)
-
-    #     elif report_type == 'hearings':
-    #         hearings = Hearing.objects.select_related('case')
-    #         headers = ["Case Number", "Hearing Date",
-    #                    "Hearing Time", "Outcome"]
-
-    #         for hearing in hearings:
-    #             row = [
-    #                 hearing.case.case_number if hearing.case else "N/A",
-    #                 hearing.date.strftime(
-    #                     '%Y-%m-%d') if hearing.date else "N/A",
-    #                 hearing.time.strftime('%H:%M') if hearing.time else "N/A",
-    #                 hearing.outcome,
-    #             ]
-    #             data.append(row)
-
-    #     elif report_type == 'documents':
-    #         documents = Document.objects.select_related('case', 'uploaded_by')
-    #         headers = ["Case Number", "Document Type",
-    #                    "Uploaded By", "Uploaded At"]
-
-    #         for document in documents:
-    #             row = [
-    #                 document.case.case_number if document.case else "N/A",
-    #                 document.document_type,
-    #                 document.uploaded_by.user.full_name if document.uploaded_by else "N/A",
-    #                 document.uploaded_at.strftime(
-    #                     '%Y-%m-%d %H:%M') if document.uploaded_at else "N/A",
-    #             ]
-    #             data.append(row)
-
-    #     else:
-    #         return HttpResponse("Invalid report type", status=400)
-
-    #     # Prepare the PDF response
-    #     response = HttpResponse(content_type='application/pdf')
-    #     response['Content-Disposition'] = f'attachment; filename={report_type}_report.pdf'
-
-    #     # Create a SimpleDocTemplate
-    #     pdf = SimpleDocTemplate(response, pagesize=letter)
-
-    #     # Prepare data for the table
-    #     table_data = [headers] + data  # Add headers as the first row
-
-    #     # Create table
-    #     table = Table(table_data)
-    #     table.setStyle(TableStyle([
-    #         ('BACKGROUND', (0, 0), (-1, 0),
-    #          colors.HexColor("#1e3c72")),  # Header background
-    #         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # Header text color
-    #         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Center align all text
-    #         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # Header font
-    #         ('FONTSIZE', (0, 0), (-1, -1), 10),  # Font size
-    #         ('BOTTOMPADDING', (0, 0), (-1, 0), 8),  # Padding for header
-    #         # Alternate row background
-    #         ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
-    #         ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Grid lines
-    #     ]))
-
-    #     # Build the PDF
-    #     elements = [table]
-    #     pdf.build(elements)
-
-    #     return response
 
     return render(request, 'reports.html')
 
@@ -704,3 +578,10 @@ def contact_us_reply(request):
 
     contacts = ContactUs.objects.all()
     return render(request, 'contactus_reply.html', {'contacts': contacts})
+
+@login_required(login_url='/login/')
+def view_payments(request):
+    Completed = Payment.objects.filter(status='Completed')
+    Failed = Payment.objects.filter(status='Failed')
+    payments = Completed | Failed
+    return render(request, 'view_payments.html', {'payments': payments})

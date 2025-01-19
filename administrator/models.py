@@ -18,7 +18,8 @@ class Payment(models.Model):
     case = models.ForeignKey(
         Case, on_delete=models.CASCADE)
     description = models.CharField(max_length=500)
-    email = models.EmailField()
+    lawyer_email = models.EmailField()
+    citizen_email = models.EmailField()
     order_id = models.CharField(max_length=255)
     payment_id = models.CharField(max_length=50)
     signature = models.CharField(max_length=256)
@@ -28,6 +29,9 @@ class Payment(models.Model):
         max_digits=10, decimal_places=2, null=True)
     status = models.CharField(max_length=100, choices=[(
         'Pending', 'Pending'), ('Completed', 'Completed'), ('Failed', 'Failed')], default='Pending')
+    requested_at = models.DateTimeField(auto_now=False, auto_now_add=False, null=True)
+    paid_at = models.DateTimeField(auto_now=False, auto_now_add=False, null=True)
+
 
     def __str__(self):
         return f"Payment - {self.order_id} for {self.email}"

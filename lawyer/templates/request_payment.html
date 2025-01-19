@@ -11,8 +11,10 @@
         <form id="payment-request-form" method="post">
             {% csrf_token %}
             <div class="input-container">
-                <label for="case-id">Case ID:</label>
-                <input type="text" id="case-id" name="case_id" value="{{ case.id }}" readonly />
+                <label for="case-id">Case Title:</label>
+                <input type="hidden" id="case-id" name="case_id" value="{{ case.id }}" readonly />
+                
+                <input type="text" id="case-id" name="case_title" value="{{ case.case_title }}" readonly />
             </div>
             <div class="input-container">
                 <label for="amount">Amount:</label>
@@ -22,6 +24,7 @@
                 <label for="description">Description:</label>
                 <textarea id="description" name="description" required></textarea>
             </div>
+            <input type="hidden" id="current-datetime" name="current_datetime" />
             <div class="button-container">
                 <button type="submit" class="chart-button">Request Payment</button>
             </div>
@@ -103,4 +106,11 @@ button:hover {
     background-color: #3e5c92;
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var currentDateTime = new Date().toISOString();
+    document.getElementById('current-datetime').value = currentDateTime;
+});
+</script>
 {% endblock %}

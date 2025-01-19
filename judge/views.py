@@ -98,13 +98,13 @@ def hearing_videocall_url(request):
         
                 send_mail(subject, message, 'ecourtofficially@gmail.com', recipient_list)
                 
-                return redirect('judge_hearings')  # Redirect to the judge's dashboard or another page
+                return JsonResponse({'success': True})
             except Hearing.DoesNotExist:
                 messages.error(request, "Hearing not found.")
         else:
             messages.error(request, "Invalid form submission.")
     
-    return redirect('judge_dashboard')  # Redirect to the judge's dashboard on failure
+    return JsonResponse({'success': False})
 
 @login_required(login_url='/login/')
 def submit_hearing_outcome(request):
