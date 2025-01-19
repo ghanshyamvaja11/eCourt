@@ -15,20 +15,28 @@
     <div class="form-section">
         <h2 class="form-title">Hearing Information</h2>
 
-        <!-- Loop through each hearing's information -->
-        {% for hearing in hearings %}
-        <div class="hearing-summary">
-            <div class="summary-item">
-                <strong>Plaintiff:</strong> {{ hearing.case.plaintiff_name }}
-            </div>
-            <div class="summary-item">
-                <strong>Case Type:</strong> {{ hearing.case.case_type }}
-            </div>
-            <div class="view-btn-container">
-                <button class="view-btn" onclick="toggleHearingDetails({{ hearing.id }})">View</button>
-            </div>
-        </div>
-        {% endfor %}
+        <!-- Hearings Table -->
+        <table class="hearings-table">
+            <thead>
+                <tr>
+                    <th style="text-align: center;">Plaintiff</th>
+                    <th style="text-align: center;">Case Type</th>
+                    <th style="text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="hearings-table-body">
+                <!-- Loop through each hearing's information -->
+                {% for hearing in hearings %}
+                <tr>
+                    <td style="text-align: center;">{{ hearing.case.plaintiff_name }}</td>
+                    <td style="text-align: center;">{{ hearing.case.case_type }}</td>
+                    <td style="text-align: center;">
+                        <button class="view-btn" onclick="toggleHearingDetails({{ hearing.id }})">View</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -43,20 +51,6 @@
                 <!-- Content will be populated dynamically -->
             </div>
 
-            <!-- Options for Updating Hearing Status -->
-            <div class="status-update-container">
-                <label for="hearing-status">Update Hearing Status:</label>
-                {% comment %} <div class="status-update-options">
-                    <select id="hearing-status" class="status-select">
-                        <option value="Scheduled">Scheduled</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Postponed">Postponed</option>
-                        <option value="Canceled">Canceled</option>
-                    </select>
-                    <button onclick="updateHearingStatus()" class="update-status-btn">Update Status</button>
-                </div> {% endcomment %}
-            </div>
-            
             <button onclick="closeHearingDetails()" class="close-btn">Close</button>
         </div>
     </div>
@@ -90,36 +84,22 @@ body {
     margin-bottom: 20px;
 }
 
-/* Hearing Summary Info (One Row) */
-.hearing-summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+/* Hearings Table */
+.hearings-table {
+    width: 100%;
+    border-collapse: collapse;
     margin-bottom: 20px;
 }
 
-.summary-item {
-    font-size: 1rem;
-    margin-right: 20px;
+.hearings-table th, .hearings-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
 }
 
-.view-btn-container {
-    text-align: right;
-}
-
-.view-btn {
-    background: linear-gradient(to right, #1e3c72, #2a5298);
+.hearings-table th {
+    background-color: #1e3c72;
     color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.view-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
 }
 
 /* Hearing Details Card (Initially Hidden) */
@@ -199,6 +179,22 @@ body {
 }
 
 .update-status-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* View Button */
+.view-btn {
+    background: linear-gradient(to right, #1e3c72, #2a5298);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.view-btn:hover {
     transform: scale(1.05);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }

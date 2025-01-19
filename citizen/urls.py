@@ -18,10 +18,4 @@ urlpatterns = [
     path('citizen-profile', citizen_profile, name='citizen_profile'),
     path('citizen-edit-profile', citizen_edit_profile, name='citizen_edit_profile'),
     path('logout', logout_view, name='logout'),
-  
-    
-   
-    
-    
-   
 ]

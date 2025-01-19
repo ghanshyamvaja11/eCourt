@@ -16,33 +16,40 @@
         <h2 class="form-title">Hearing Information</h2>
 
         <!-- Dynamic Hearing Data (Loop through each hearing's information) -->
-        {% for hearing in hearings %}
-        <div class="hearing-summary">
-            <div class="summary-item">
-                <strong>Case Number:</strong> {{ hearing.case.case_number }}
-            </div>
-            <div class="summary-item">
-                <strong>Case Type:</strong> {{ hearing.case.case_type }}
-            </div>
-            <div class="view-btn-container">
-                <button class="view-btn" 
-                        onclick="toggleHearingDetails(this)" 
-                        data-case-id="{{ hearing.id }}" 
-                        data-judge-name="{{ hearing.case.assigned_judge.user.full_name }}" 
-                        data-case-number="{{ hearing.case.case_number }}" 
-                        data-plaintiff="{{ hearing.case.plaintiff.user.full_name }}"
-                        data-defendant="{{ hearing.case.defendant.user.full_name }}"
-                        data-plaintiff-lawyer="{{ hearing.case.assigned_lawyer.user.full_name }}"
-                        data-defendant-lawyer="{{ hearing.case.defendant_lawyer.user.full_name }}"
-                        data-date="{{ hearing.date }}" 
-                        data-time="{{ hearing.time }}" 
-                        data-status="{{ hearing.status }}"
-                        data-outcome="{{ hearing.outcome }}">
-                    View
-                </button>
-            </div>
-        </div>
-        {% endfor %}
+        <table class="hearing-table">
+            <thead>
+                <tr>
+                    <th>Case Number</th>
+                    <th>Case Type</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hearing in hearings %}
+                <tr>
+                    <td>{{ hearing.case.case_number }}</td>
+                    <td>{{ hearing.case.case_type }}</td>
+                    <td style="text-align: center;">
+                        <button class="view-btn" 
+                                onclick="toggleHearingDetails(this)" 
+                                data-case-id="{{ hearing.id }}" 
+                                data-judge-name="{{ hearing.case.assigned_judge.user.full_name }}" 
+                                data-case-number="{{ hearing.case.case_number }}" 
+                                data-plaintiff="{{ hearing.case.plaintiff.user.full_name }}"
+                                data-defendant="{{ hearing.case.defendant.user.full_name }}"
+                                data-plaintiff-lawyer="{{ hearing.case.assigned_lawyer.user.full_name }}"
+                                data-defendant-lawyer="{{ hearing.case.defendant_lawyer.user.full_name }}"
+                                data-date="{{ hearing.date }}" 
+                                data-time="{{ hearing.time }}" 
+                                data-status="{{ hearing.status }}"
+                                data-outcome="{{ hearing.outcome }}">
+                            View
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -112,25 +119,27 @@ body {
     margin-bottom: 20px;
 }
 
-/* Hearing Summary Info (One Row) */
-.hearing-summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+/* Hearing Table */
+.hearing-table {
+    width: 100%;
+    border-collapse: collapse;
     margin-bottom: 20px;
 }
 
-.summary-item {
-    font-size: 1rem;
-    margin-right: 20px;
+.hearing-table th, .hearing-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
 }
 
-.view-btn-container {
-    text-align: right;
+.hearing-table th {
+    background-color: #1e3c72;
+    color: white;
 }
 
+/* View Button */
 .view-btn {
-    background: linear-gradient(to right, #1e3c72, #2a5298);
+    background-color: #1e3c72;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -293,10 +302,10 @@ function toggleHearingDetails(button) {
     hearingInfoDetails.innerHTML = `
         <div class="info-item"><strong>Judge:</strong> ${hearingDetails.judgeName}</div>
         <div class="info-item"><strong>Case:</strong> ${hearingDetails.caseNumber}</div>
-        <div class="info-item"><strong>plaintiff:</strong> ${hearingDetails.plaintiff}</div>
-        <div class="info-item"><strong>defendant:</strong> ${hearingDetails.defendant}</div>
-        <div class="info-item"><strong>plaintiff_lawyer:</strong> ${hearingDetails.plaintiff_lawyer}</div>
-        <div class="info-item"><strong>defendant_lawyer:</strong> ${hearingDetails.defendant_lawyer}</div>
+        <div class="info-item"><strong>Plaintiff:</strong> ${hearingDetails.plaintiff}</div>
+        <div class="info-item"><strong>Defendant:</strong> ${hearingDetails.defendant}</div>
+        <div class="info-item"><strong>Plaintiff Lawyer:</strong> ${hearingDetails.plaintiff_lawyer}</div>
+        <div class="info-item"><strong>Defendant Lawyer:</strong> ${hearingDetails.defendant_lawyer}</div>
         <div class="info-item"><strong>Date:</strong> ${hearingDetails.date}</div>
         <div class="info-item"><strong>Time:</strong> ${hearingDetails.time}</div>
         <div class="info-item"><strong>Status:</strong> ${hearingDetails.status}</div>

@@ -118,15 +118,48 @@ def submit_hearing_outcome(request):
                 hearing.outcome = outcome
                 hearing.save()
 
+                case = hearing.case
+
+                Notification.objects.create(
+                    user=case.plaintiff.user,
+                    message=f'Outcome submitted for hearing of case {case.case_number}: {outcome}.'
+                )
+                Notification.objects.create(
+                    user=case.defendant.user,
+                    message=f'Outcome submitted for hearing of case {case.case_number}: {outcome}.'
+                )
+                Notification.objects.create(
+                    user=case.assigned_lawyer.user,
+                    message=f'Outcome submitted for hearing of case {case.case_number}: {outcome}.'
+                )
+                Notification.objects.create(
+                    user=case.defendant_lawyer.user,
+                    message=f'Outcome submitted for hearing of case {case.case_number}: {outcome}.'
+                )
+
+                subject = 'Hearing Outcome Submitted'
+                message = (
+                    f"The outcome for the hearing of your case {case.case_number} has been submitted.\n\n"
+                    f"Outcome: {outcome}\n\n"
+                    f"Best regards,\n"
+                    f"The Court Team"
+                )
+                recipient_list = [
+                    case.plaintiff.user.email,
+                    case.defendant.user.email,
+                    case.assigned_lawyer.user.email,
+                    case.defendant_lawyer.user.email
+                ]
+
+                send_mail(subject, message, 'ecourtofficially@gmail.com', recipient_list)
+
                 messages.success(request, "Outcome submitted successfully.")
-                # Redirect to the judge's dashboard or another page
                 return redirect('judge_dashboard')
             except Hearing.DoesNotExist:
                 messages.error(request, "Hearing not found.")
         else:
             messages.error(request, "Invalid form submission.")
 
-    # Redirect to the judge's dashboard on failure
     return redirect('judge_dashboard')
 
 @login_required(login_url='/login/')
