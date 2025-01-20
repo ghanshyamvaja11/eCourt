@@ -7,6 +7,7 @@ from cases.models import *  # Assuming there is a Case model in the cases app
 from notifications.models import *  # Assuming there is a Notification model in the notifications app
 from django.core.mail import send_mail
 from django.contrib.auth import logout
+from datetime import datetime
 
 @login_required(login_url='/login/')
 def judge_dashboard(request):
@@ -326,7 +327,7 @@ def schedule_hearing(request):
     return render(request, 'schedule_hearing.html', {'cases': cases})
 
 @login_required(login_url='/login/')
-def notifications(request):
+def judge_notifications(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
@@ -342,8 +343,8 @@ def notifications(request):
             messages.error(request, 'Notification not found.')
 
     judge = Judge.objects.get(user=request.user)
-    notifications = Notification.objects.filter(user=judge.user).order_by('-timestamp')
-    return render(request, 'notification.html', {'notifications': notifications})
+    notifications = Notification.objects.filter(user=judge.user).order_by('-date_sent')
+    return render(request, 'judge_notifications.html', {'notifications': notifications})
 
 @login_required(login_url='/login/')
 def logout_view(request):
@@ -362,16 +363,19 @@ def verdicts(request):
     return render(request, 'verdicts.html', {'verdicts': verdicts})
 
 @login_required(login_url='/login/')
-def outcomes(request):
+def final_outcome(request):
     judge = Judge.objects.get(user=request.user)
     cases = Case.objects.filter(assigned_judge=judge)
 
     if request.method == 'POST':
-        case_id = request.POST.get('case_id')
+        case_number = request.POST.get('case_number')
         outcome_text = request.POST.get('outcome')
 
-        case = get_object_or_404(Case, id=case_id)
+        case = get_object_or_404(Case, case_number=case_number)
         case.status = 'CLOSED'
+        case.verdict = outcome_text
+        case.verdict_date = datetime.now().date()
+        case.verdict_time = datetime.now().time()
         case.save()
 
         Hearing.objects.filter(case=case).update(outcome=outcome_text)
@@ -394,6 +398,6 @@ def outcomes(request):
         )
 
         messages.success(request, 'Outcome recorded successfully.')
-        return redirect('outcomes')
+        return redirect('final_outcome')
 
     return render(request, 'outcomes.html', {'cases': cases})

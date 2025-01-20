@@ -200,7 +200,7 @@ def plaintiff_accept_case(request):
     case_id = request.GET.get('case_id')
     case = Case.objects.get(id=case_id)
     case.lawyer_accepted = True
-    case.status = 'ACTIVE'
+    case.status = 'PENDING'
     case.save()
 
     case_id = request.GET.get('case_id')
@@ -276,7 +276,7 @@ def defendant_accept_case(request):
     case_id = request.GET.get('case_id')
     case = Case.objects.get(id=case_id)
     case.defendant_lawyer_accepted = True
-    case.status = 'ACTIVE'
+    case.status = 'PENDING'
     case.save()
 
     case_id = request.GET.get('case_id')
@@ -453,3 +453,9 @@ def request_payment(request, case_id):
 def lawyer_payments(request):
     payments = Payment.objects.filter(lawyer_email=request.user.email)
     return render(request, 'lawyer_payments.html', {'payments': payments})
+
+@login_required(login_url='/login/')
+def lawyer_verdicts(request):
+    lawyer = Lawyer.objects.get(user=request.user)
+    verdicts = Case.objects.filter(assigned_lawyer=lawyer, status='CLOSED')
+    return render(request, 'lawyer_verdicts.html', {'verdicts': verdicts})

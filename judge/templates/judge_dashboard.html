@@ -1,3 +1,9 @@
+{% if request.session.role != "JUDGE" %}
+<script>
+    window.location.href = "{% url 'login' %}";
+</script>
+{% endif %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -160,6 +166,21 @@
             text-decoration: none;
             color: white;
         }
+        .welcome-message {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-message h2 {
+            font-size: 2rem;
+            color: #1e3c72;
+            margin: 0;
+            animation: fadeIn 1.5s ease-in-out;
+        }
     </style>
 </head>
 <body>
@@ -169,6 +190,10 @@
         <p>Manage cases, hearings, and outcomes efficiently</p>
     </div>
 
+    <div class="welcome-message">
+        <h2>Welcome, {{ request.user.username }}!</h2>
+    </div>
+    
     <!-- Inspirational Quote -->
     <div style="text-align: center; margin: 20px 0; font-size: 1.2rem; color: #1e3c72; font-style: italic;">
         "Justice delayed is justice denied." – William E. Gladstone
@@ -204,7 +229,7 @@
         </a>
 
         <!-- Outcome -->
-        <a href="{% url 'outcome' %}">
+        <a href="{% url 'final_outcome' %}">
             <div class="dashboard-card">
                 <div class="card-icon">✔️</div>
                 <h3>Outcomes</h3>

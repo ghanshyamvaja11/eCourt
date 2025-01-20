@@ -1,3 +1,9 @@
+{% if request.session.role != "JUDGE" %}
+<script>
+    window.location.href = "{% url 'login' %}";
+</script>
+{% endif %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -163,7 +169,7 @@
             <li><a href="{% url 'judge_assigned_cases' %}">Assigned Cases</a></li>
             <li><a href="{% url 'judge_hearings' %}">Hearings</a></li>
             <li><a href="{% url 'schedule_hearing' %}">Schedule Hearing</a></li>
-            <li><a href="{% url 'outcome' %}"> Outcome</a></li>
+            <li><a href="{% url 'final_outcome' %}"> Submit Final Outcome(verdict)</a></li>
             <li><a href="{% url 'verdicts' %}"> verdicts</a></li>
             <li><a href="{% url 'judge_notifications' %}">Notifications</a></li>
             <li><a href="{% url 'judge_profile' %}">Profile</a></li>

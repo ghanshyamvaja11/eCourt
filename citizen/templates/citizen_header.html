@@ -1,3 +1,9 @@
+{% if request.session.role != "CITIZEN" %}
+<script>
+    window.location.href = "{% url 'login' %}";
+</script>
+{% endif %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -155,6 +161,7 @@
     </style>
 </head>
 <body>
+
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <h2>Citizen Menu</h2>
@@ -164,6 +171,7 @@
             <li><a href="{% url 'my_cases' %}">My Cases</a></li>
             <li><a href="{% url 'against_cases' %}">Against Cases</a></li>
             <li><a href="{% url 'citizen_hearings' %}">Hearing</a></li>
+            <li><a href="{% url 'citizen_verdicts' %}">Verdicts</a></li>
             <li><a href="{% url 'citizen_notifications' %}">Notifications</a></li>
             <li><a href="{% url 'requested_payments' %}">Requested Payments</a></li>
             <li><a href="{% url 'citizen_profile' %}">Profile</a></li>

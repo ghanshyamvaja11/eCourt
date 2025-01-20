@@ -1,3 +1,9 @@
+{% if request.session.role != "ADMIN" %}
+<script>
+    window.location.href = "{% url 'login' %}";
+</script>
+{% endif %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -103,6 +109,21 @@
             font-size: 0.9rem;
             opacity: 0.8;
         }
+        .welcome-message {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-message h2 {
+            font-size: 2rem;
+            color: #1e3c72;
+            margin: 0;
+            animation: fadeIn 1.5s ease-in-out;
+        }
     </style>
 </head>
 <body>
@@ -111,6 +132,10 @@
         <p>Manage all the functionalities efficiently</p>
     </div>
 
+    <div class="welcome-message">
+        <h2>Welcome, {{ request.user.username }}!</h2>
+    </div>
+    
     <div class="dashboard-container">
         <!-- Pre-existing and newly added cards -->
         <div class="dashboard-card">
@@ -183,7 +208,24 @@
                 <p>Generate detailed reports</p>
             </div>
         </a>
-       
+        <!-- Contact Us Details Card -->
+        <a href="{% url 'contact_us_reply' %}">
+            <div class="dashboard-card">
+            <div class="card-icon">📧</div>
+            <h3>Contact Us</h3>
+            <p>Get in touch with support</p>
+            </div>
+        </a>
+
+        <!-- View Payments Card -->
+        <a href="{% url 'view_payments' %}">
+            <div class="dashboard-card">
+            <div class="card-icon">💳</div>
+            <h3>View Payments</h3>
+            <p>Check payment history</p>
+            </div>
+        </a>
+
         <a href="{% url 'profile' %}">
             <div class="dashboard-card">
                 <div class="card-icon">👤</div>

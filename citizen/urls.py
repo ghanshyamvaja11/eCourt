@@ -17,5 +17,6 @@ urlpatterns = [
     path('verify-payment', verify_payment, name='verify_payment'),
     path('citizen-profile', citizen_profile, name='citizen_profile'),
     path('citizen-edit-profile', citizen_edit_profile, name='citizen_edit_profile'),
+    path('citizen-verdicts', citizen_verdicts, name='citizen_verdicts'),
     path('logout', logout_view, name='logout'),
 ]

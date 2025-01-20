@@ -200,7 +200,6 @@ def login_view(request):
                 login(request, user)
                 request.session['username'] = username
                 request.session['role'] = user.user_type  # Add role to session
-                print(f"Logged in User: {username}")
 
                 # Redirect based on user type
                 if user.user_type == 'CITIZEN':

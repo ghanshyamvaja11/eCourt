@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
@@ -425,3 +425,9 @@ def verify_payment(request):
             return JsonResponse({'status': 'Failed', 'message': f'Error: {str(e)}'}, status=500)
 
     return JsonResponse({'status': 'Failed', 'message': 'Invalid request method'}, status=400)
+
+@login_required(login_url='/login/')
+def citizen_verdicts(request):
+    user = request.user
+    verdicts = Case.objects.filter(Q(plaintiff__user=user) | Q(defendant__user=user), status='CLOSED')
+    return render(request, 'citizen_verdicts.html', {'verdicts': verdicts})

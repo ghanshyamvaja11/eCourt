@@ -27,6 +27,9 @@ class Case(models.Model):
     lawyer_accepted = models.BooleanField(null=True)
     defendant_lawyer_accepted = models.BooleanField(null=True)
     case_filed_date = models.DateTimeField(auto_now_add=True)
+    verdict_date = models.DateField(null=True)
+    verdict_time = models.TimeField(null=True)
+    verdict = models.TextField(null=True)
 
     def __str__(self):
         return f"Case {self.case_number} - {self.case_title}"

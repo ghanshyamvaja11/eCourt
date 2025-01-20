@@ -22,6 +22,7 @@ urlpatterns = [
     path('logout', logout_view, name='logout'),
     path('analytics-dashboard', analytics_dashboard, name='analytics_dashboard'),
     path('reports-dashboard', reports_dashboard, name='reports_dashboard'),
+    path('contact-us-reply', contact_us_reply, name='contact_us_reply'),
     path('view-payments', view_payments, name='view_payments'),
 ]
 

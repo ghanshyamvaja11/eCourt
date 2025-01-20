@@ -36,7 +36,13 @@
                     <td style="text-align: center;">{{ case.case_title }}</td>
                     <td style="text-align: center;">{{ case.case_type }}</td>
                     <td style="text-align: center;">
+                        {% if case.status != 'CLOSED' and case.status != 'DISMISSED' %}
                         <button class="view-btn" onclick="toggleCaseDetails('{{ case.id }}')">View</button>
+                        {% elif case.status == 'CLOSED' %}
+                        <button class="status-btn closed" style="background-color: #9e9e9e;">CLOSED</button>
+                        {% else %}
+                        <button class="status-btn dismissed" style="background-color: #f44336;">DISMISSED</button>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
@@ -377,6 +383,13 @@ button:hover {
         };
 
         var caseInfo = caseData[caseId];
+        if(caseInfo.status == 'CLOSED') {
+            alert('This case is closed. You cannot perform any actions on it.');
+            return;
+        }else if(caseInfo.status == 'DISMISSED') {
+            alert('This case is dismissed. You cannot perform any actions on it.');
+            return;
+        }
         var caseDetailsCard = document.getElementById('case-info-details');
         caseDetailsCard.innerHTML = `
             <div class="info-item"><strong>Case Number:</strong> ${caseInfo.caseNumber}</div>

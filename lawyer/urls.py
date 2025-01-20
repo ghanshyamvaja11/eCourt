@@ -23,6 +23,7 @@ urlpatterns = [
          name='request_client_case_documents'),
     path('upload-document/', lawyer_upload_document, name='lawyer_upload_document'),
     path('lawyer-payments', lawyer_payments, name='lawyer_payments'),
+    path('lawyer-verdicts', lawyer_verdicts, name='lawyer_verdicts'),
     path('logout', logout_view, name='logout'),
     path('notifications', lawyer_notifications, name='lawyer_notifications'),
     path('request-payment/case/<int:case_id>/', request_payment, name='request_payment'),

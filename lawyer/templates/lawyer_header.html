@@ -1,3 +1,9 @@
+{% if request.session.role != "LAWYER" %}
+<script>
+    window.location.href = "{% url 'login' %}";
+</script>
+{% endif %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -218,6 +224,7 @@
             <li><a href="{% url 'plaintiff_case_requests' %}">Plaintiff Case Requests</a></li>
             <li><a href="{% url 'defendant_case_requests' %}">Defendant Case Requests</a></li>            
             <li><a href="{% url 'lawyer_hearings' %}">Hearings</a></li>
+             <li><a href="{% url 'lawyer_verdicts' %}">Verdicts</a></li>
             <li><a href="{% url 'lawyer_payments' %}">Requested Payments</a></li>
             <li><a href="{% url 'lawyer_notifications' %}">Notifications</a></li> <!-- Payment -->
             <li><a href="{% url 'lawyer_profile' %}">Profile</a></li>   

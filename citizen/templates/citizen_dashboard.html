@@ -1,3 +1,9 @@
+{% if request.session.role != "CITIZEN" %}
+<script>
+    window.location.href = "{% url 'login' %}";
+</script>
+{% endif %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -103,12 +109,31 @@
         a {
             text-decoration: none;
         }
+        .welcome-message {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-message h2 {
+            font-size: 2rem;
+            color: #1e3c72;
+            margin: 0;
+            animation: fadeIn 1.5s ease-in-out;
+        }
     </style>
 </head>
 <body>
     <div class="dashboard-header">
         <h1>Citizen Dashboard</h1>
         <p>Manage your cases, file new ones, and stay informed</p>
+    </div>
+
+    <div class="welcome-message">
+        <h2>Welcome, {{ request.user.username }}!</h2>
     </div>
 
     <div class="dashboard-container">
@@ -138,6 +163,15 @@
                 <div class="card-icon">📅</div>
                 <h3>Hearings</h3>
                 <p>Check the schedule of your hearings</p>
+            </div>
+        </a>
+
+         <!-- Verdict -->
+        <a href="{% url 'citizen_verdicts' %}">
+            <div class="dashboard-card">
+                <div class="card-icon">📝</div>
+                <h3>Verdicts</h3>
+                <p>Review and submit verdicts</p>
             </div>
         </a>
         <a href="{% url 'citizen_notifications' %}">

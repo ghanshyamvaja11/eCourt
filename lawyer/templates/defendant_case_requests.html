@@ -52,11 +52,11 @@
             <div class="button-container">
                 <form method="GET" action="{% url 'defendant_accept_case' %}" style="flex: 1; margin-right: 10px;">
                     <input type="hidden" name="case_id" id="accept-case-id">
-                    <button type="submit" class="approve-btn">Accept</button>
+                    <button type="submit" class="approve-btn" style="width: 50%;">Accept</button>
                 </form>
                 <form method="GET" action="{% url 'defendant_decline_case' %}" style="flex: 1;">
                     <input type="hidden" name="case_id" id="decline-case-id">
-                    <button type="submit" class="reject-btn">Decline</button>
+                    <button type="submit" class="reject-btn" style="width: 50%;">Decline</button>
                 </form>
             </div>
             <button onclick="closeCaseDetails()" class="close-btn">Close</button>
@@ -99,6 +99,14 @@ body {
     margin-bottom: 20px;
     border: 1px solid #ddd;
     border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-bar:focus {
+    outline: none;
+    border-color: #1e3c72;
+    box-shadow: 0 0 5px rgba(30, 60, 114, 0.5);
 }
 
 /* Cases Table */
