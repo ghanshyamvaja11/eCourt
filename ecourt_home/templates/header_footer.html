@@ -8,6 +8,7 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome for Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="/media/logo.png" type="image/png">
     <!-- Custom CSS -->
     <style>
         body {
@@ -208,28 +209,52 @@
                 <li class="nav-item">
                     <a class="nav-link" style="color:white" href="{% url 'faq' %}">FAQ</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'faq' %}">
-                        <img src="https://cdn-icons-png.flaticon.com/128/3368/3368819.png" 
-                        alt="Logout Icon" 
-                        style="width: 30px; height: 30px;  margin-right: 5px;">
+                {% if request.session.role == 'ADMIN' %}
+               <li class="nav-item">
+                    <a class="nav-link" href="{% url 'admin_dashboard' %}" title="Dashboard">
+                     <img src="https://cdn-icons-png.flaticon.com/128/3368/3368819.png"    alt="Dashboard Icon" style="width: 30px; height: 30px; margin-right: 5px;">
                     </a>
                 </li>
+                {% elif request.session.role == 'JUDGE' %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">
+                    <a class="nav-link" href="{% url 'judge_dashboard' %}" title="Dashboard">
+                     <img src="https://cdn-icons-png.flaticon.com/128/3368/3368819.png"    alt="Dashboard Icon" style="width: 30px; height: 30px; margin-right: 5px;">
+                    </a>
+                </li>
+                {% elif request.session.role == 'LAWYER' %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lawyer_dashboard' %}" title="Dashboard">
+                     <img src="https://cdn-icons-png.flaticon.com/128/3368/3368819.png"    alt="Dashboard Icon" style="width: 30px; height: 30px; margin-right: 5px;">
+                    </a>
+                </li>
+                {% elif request.session.role == 'CITIZEN' %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'citizen_dashboard' %}" title="Dashboard">
+                     <img src="https://cdn-icons-png.flaticon.com/128/3368/3368819.png"    alt="Dashboard Icon" style="width: 30px; height: 30px; margin-right: 5px;">
+                    </a>
+                </li>
+                {% else %}{% endif %}
+
+                {% if not request.session.role %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}" title="Login">
                         {% comment %} <img src=" /media/login_icon.png" alt="Login Icon" style="width: 40px; height: 40px; margin-right: 5px;"> {% endcomment %}
                         <img src="https://cdn-icons-png.flaticon.com/128/8712/8712101.png" 
-                        alt="Logout Icon" 
+                        alt="Login Icon" 
                         style="width: 30px; height: 30px; filter: brightness(0) invert(1); margin-right: 5px;">
                     </a>
                 </li>
+                {% endif %}
+
+                {% if request.session.role %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'faq' %}">
+                    <a class="nav-link" href="{% url 'logout' %}" title="Logout">
                         <img src="https://cdn-icons-png.flaticon.com/128/5509/5509651.png" 
                         alt="Logout Icon" 
                         style="width: 30px; height: 30px; filter: brightness(0) invert(1); margin-right: 5px;">
                     </a>
                 </li>
+                {% endif %}
             </ul>
         </div>
     </div>

@@ -36,7 +36,11 @@
                     <td style="text-align: center;">{{ case.case_title }}</td>
                     <td style="text-align: center;">{{ case.case_type }}</td>
                     <td style="text-align: center;">
+                        {% if case.lawyer_accepted is False %}
+                        <button class="view-btn" onclick="selectLawyer('{{ case.id }}')">select another lawyer</button>
+                        {% else %}
                         <button class="view-btn" onclick="toggleCaseDetails('{{ case.id }}')">View</button>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
@@ -59,7 +63,8 @@
             <!-- Buttons for View_Documents/Upload_Documents -->
             <div class="button-container">
                 <button onclick="viewDocuments()" class="approve-btn">View Documents</button>
-                <button onclick="uploadDocument()" class="reject-btn">Upload Document</button>
+                <button onclick="uploadDocument()" class="reject-btn" id="upload-doc-btn" disabled>Upload Document</button>
+                <button onclick="selectLawyer()" class="reject-btn" id="select-lawyer-btn" style="display: none;" hidden>Select Another Lawyer</button>
             </div>
             <button onclick="closeCaseDetails()" class="close-btn">Close</button>
         </div>
@@ -88,6 +93,32 @@
         <button onclick="closePopup('upload-document-popup')" class="close-btn">Close</button>
     </div>
 </div>
+
+<!-- Select Lawyer Popup -->
+<center><div id="select-lawyer-popup" class="popup">
+    <div style="widgth: 100%; height: 35%; margin-left: 50%;"></div>
+    <div class="popup-content">
+        <h2>Select Lawyer</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" id="case-id" name="case_id" />
+            <div class="input-container">
+                <label for="assigned-lawyer">Assigned Lawyer:</label>
+                <input type="text" id="assigned-lawyer" name="assigned_lawyer" list="lawyers" required />
+                <datalist id="lawyers">
+                    {% for lawyer in Lawyers %}
+                        <option value="{{ lawyer.user.full_name }}">{{ lawyer.user.email }}</option>
+                    {% endfor %}
+                </datalist>
+            </div>
+            <div class="submit-btn-container">
+                <button type="submit" name="action" value="select_lawyer" class="submit-btn">Select Lawyer</button>
+            </div>
+        </form>
+        <button onclick="closePopup('select-lawyer-popup')" class="close-btn">Close</button>
+    </div>
+</div></center>
+
 
 <style>
 /* General Styles */
@@ -346,71 +377,85 @@ button:hover {
         }
     }
 
-// Function to toggle the case details card and populate information dynamically
-function toggleCaseDetails(caseId) {
-    var caseData = {
-        {% for case in cases %}
-        "{{ case.id }}": {
-            "caseNumber": "{{ case.case_number }}",
-            "plaintiff": "{{ case.plaintiff.user.full_name }}",
-            "defendant": "{{ case.defendant.user.full_name }}",
-            "caseTitle": "{{ case.case_title }}",
-            "caseType": "{{ case.case_type }}",
-            "status": "{{ case.status }}",
-            "lawyer": {% if case.assigned_lawyer %}"{{ case.assigned_lawyer.user.full_name }}"{% else %}null{% endif %},
-            "lawyer_accepted": {% if case.lawyer_accepted is not None %}{{ case.lawyer_accepted|yesno:"true,false" }}{% else %}null{% endif %}
-        },
-        {% endfor %}
-    };
+    // Function to toggle the case details card and populate information dynamically
+    function toggleCaseDetails(caseId) {
+        var caseData = {
+            {% for case in cases %}
+            "{{ case.id }}": {
+                "caseNumber": "{{ case.case_number }}",
+                "plaintiff": "{{ case.plaintiff.user.full_name }}",
+                "defendant": "{{ case.defendant.user.full_name }}",
+                "caseTitle": "{{ case.case_title }}",
+                "caseType": "{{ case.case_type }}",
+                "status": "{{ case.status }}",
+                "lawyer": {% if case.assigned_lawyer %}"{{ case.assigned_lawyer.user.full_name }}"{% else %}null{% endif %},
+                "lawyer_accepted": {% if case.lawyer_accepted is not None %}{{ case.lawyer_accepted|yesno:"true,false" }}{% else %}null{% endif %},
+                "assigned_judge": {% if case.assigned_judge %}true{% else %}false{% endif %}
+            },
+            {% endfor %}
+        };
 
-    var caseInfo = caseData[caseId];
-    var caseDetailsCard = document.getElementById('case-info-details');
+        var caseInfo = caseData[caseId];
+        var caseDetailsCard = document.getElementById('case-info-details');
 
-    // Build the initial HTML content for common details
-    var detailsHTML = `
-        <div class="info-item"><strong>Case Number:</strong> ${caseInfo.caseNumber}</div>
-        <div class="info-item"><strong>Plaintiff:</strong> ${caseInfo.plaintiff}</div>
-        <div class="info-item"><strong>Defendant:</strong> ${caseInfo.defendant}</div>
-        <div class="info-item"><strong>Case Title:</strong> ${caseInfo.caseTitle}</div>
-        <div class="info-item"><strong>Case Type:</strong> ${caseInfo.caseType}</div>
-        <div class="info-item"><strong>Status:</strong> ${caseInfo.status}</div>
-    `;
+        // Build the initial HTML content for common details
+        var detailsHTML = `
+            <div class="info-item"><strong>Case Number:</strong> ${caseInfo.caseNumber}</div>
+            <div class="info-item"><strong>Plaintiff:</strong> ${caseInfo.plaintiff}</div>
+            <div class="info-item"><strong>Defendant:</strong> ${caseInfo.defendant}</div>
+            <div class="info-item"><strong>Case Title:</strong> ${caseInfo.caseTitle}</div>
+            <div class="info-item"><strong>Case Type:</strong> ${caseInfo.caseType}</div>
+            <div class="info-item"><strong>Status:</strong> ${caseInfo.status}</div>
+        `;
 
-    // Add lawyer details only if a lawyer is assigned
-    if (caseInfo.lawyer !== null) {
-        // Determine the acceptance status of the lawyer
-        var lawyerAcceptedMessage = '';
-        var lawyerAcceptedColor = '';
+        // Add lawyer details only if a lawyer is assigned
+        if (caseInfo.lawyer !== null) {
+            // Determine the acceptance status of the lawyer
+            var lawyerAcceptedMessage = '';
+            var lawyerAcceptedColor = '';
 
-        if (caseInfo.lawyer_accepted === true) {
-            lawyerAcceptedMessage = 'Accepted';
-            lawyerAcceptedColor = 'green';
-        } else if (caseInfo.lawyer_accepted === false) {
-            lawyerAcceptedMessage = 'Not Accepted';
-            lawyerAcceptedColor = 'red';
-        } else {
-            lawyerAcceptedMessage = 'Pending';
-            lawyerAcceptedColor = 'orange';
+            if (caseInfo.lawyer_accepted === true) {
+                lawyerAcceptedMessage = 'Accepted';
+                lawyerAcceptedColor = 'green';
+                document.getElementById('upload-doc-btn').disabled = false;
+                document.getElementById('select-lawyer-btn').style.display = 'none';
+            } else if (caseInfo.lawyer_accepted === false) {
+                lawyerAcceptedMessage = 'Not Accepted';
+                lawyerAcceptedColor = 'red';
+                document.getElementById('upload-doc-btn').disabled = true;
+                document.getElementById('select-lawyer-btn').style.display = 'block';
+            } else {
+                lawyerAcceptedMessage = 'Pending';
+                lawyerAcceptedColor = 'orange';
+                document.getElementById('upload-doc-btn').disabled = true;
+                document.getElementById('select-lawyer-btn').style.display = 'block';
+            }
+
+            // Append lawyer details and acceptance status
+            detailsHTML += `
+                <div class="info-item"><strong>Lawyer:</strong> ${caseInfo.lawyer}</div>
+                <div class="info-item"><strong>Lawyer Acceptance Status:</strong> 
+                    <span style="color: ${lawyerAcceptedColor};">
+                        ${lawyerAcceptedMessage}
+                    </span>
+                </div>
+            `;
         }
 
-        // Append lawyer details and acceptance status
-        detailsHTML += `
-            <div class="info-item"><strong>Lawyer:</strong> ${caseInfo.lawyer}</div>
-            <div class="info-item"><strong>Lawyer Acceptance Status:</strong> 
-                <span style="color: ${lawyerAcceptedColor};">
-                    ${lawyerAcceptedMessage}
-                </span>
-            </div>
-        `;
+        // Update the case details card with the final HTML content
+        caseDetailsCard.innerHTML = detailsHTML;
+
+        // Display the case details card and set the selected case ID
+        document.getElementById('case-details-card').style.display = 'flex';
+        document.getElementById('case-id').value = caseId;
+
+        // Hide the select lawyer button if a judge is assigned
+        if (caseInfo.assigned_judge || caseInfo.lawyer_accepted === true) {
+            document.getElementById('select-lawyer-btn').style.display = 'none';
+        } else {
+            document.getElementById('select-lawyer-btn').style.display = 'block';
+        }
     }
-
-    // Update the case details card with the final HTML content
-    caseDetailsCard.innerHTML = detailsHTML;
-
-    // Display the case details card and set the selected case ID
-    document.getElementById('case-details-card').style.display = 'flex';
-    document.getElementById('case-id').value = caseId;
-}
 
     // Function to close the case details card
     function closeCaseDetails() {
@@ -427,6 +472,41 @@ function toggleCaseDetails(caseId) {
     function uploadDocument() {
         document.getElementById('upload-document-popup').style.display = 'flex';
     }
+    
+     // Function to open the Select Lawyer Popup and pass the case ID in the query
+    function selectLawyer(caseId) {
+        // Construct the URL with the case ID as a query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('case_id', caseId); // Add case_id to the query parameters
+
+        // Set the updated query string in the URL
+        window.history.pushState({}, '', `${window.location.pathname}?${urlParams}`);
+
+        // Set the case ID to the hidden input field
+        document.getElementById('case-id').value = caseId;
+        
+        // Show the popup by changing its display style to block
+        document.getElementById('select-lawyer-popup').style.display = 'block';
+    }
+
+    // Function to get the case ID from the query parameter and set it in the popup
+    function getCaseIdFromQuery() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('case_id');
+    }
+
+    // Function to close the popup
+    function closePopup(popupId) {
+        document.getElementById(popupId).style.display = 'none';
+    }
+
+    // On page load, check for the case_id in the query string and set it if exists
+    window.onload = function() {
+        const caseId = getCaseIdFromQuery();
+        if (caseId) {
+            document.getElementById('case-id').value = caseId;
+        }
+    };
 
     // Function to close a popup
     function closePopup(popupId) {

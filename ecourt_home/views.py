@@ -55,6 +55,38 @@ def terms_and_conditions(request):
 def privacy_policy(request):
     return render(request, 'privacy_policy.html')
 
+def dashboard(request):
+    if request.session.get('role') == 'ADMIN':
+        return redirect('admin_dashboard')
+    elif request.session.get('role') == 'JUDGE':
+        return redirect('judge_dashboard')
+    elif request.session.get('role') == 'LAWYER':
+        return redirect('lawyer_dashboard')
+    elif request.session.get('role') == 'CITIZEN':
+        return redirect('citizen_dashboard')
+    else :
+        return redirect('index')
+   
+
+def logout(request):
+    role = request.session.get('role')
+
+    if role == 'ADMIN':
+        auth_logout(request)
+        return redirect('admin_login')  # Redirect to admin login page
+
+    elif role == 'JUDGE':
+        auth_logout(request)
+        return redirect('judge_login')  # Redirect to judge login page
+
+    elif role == 'LAWYER':
+        auth_logout(request)
+        return redirect('lawyer_login')  # Redirect to lawyer login page
+
+    return render(request,'login.html')  # Redirect to the general login pag
+    
+
+
 def signup(request):
     # Clear all previous messages
     storage = messages.get_messages(request)

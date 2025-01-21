@@ -96,9 +96,27 @@ def my_cases(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
     storage.used = True
-
-    citizen = Citizen.objects.get(user=request.user)
-    cases = Case.objects.filter(plaintiff=citizen)
+    if request.GET.get('case_id'):
+        if request.method == 'POST':
+            lawyer_name = request.POST.get('assigned_lawyer')
+            case_id = request.GET.get('case_id')
+            try:
+                case = Case.objects.get(id=case_id)
+                lawyer = Lawyer.objects.get(user__full_name=lawyer_name)
+                case.assigned_lawyer = lawyer
+                case.lawyer_accepted = None  # Reset the acceptance status
+                case.save()
+                messages.success(request, 'Lawyer selected successfully.')
+            except Case.DoesNotExist:
+                messages.error(request, 'Case not found.')
+            except Lawyer.DoesNotExist:
+                messages.error(request, 'Lawyer not found.')
+            return redirect('my_cases')
+    else:
+        citizen = Citizen.objects.get(user=request.user)
+        cases = Case.objects.filter(plaintiff=citizen)
+        Users = User.objects.filter(user_type='LAWYER', is_active=1)
+        Lawyers = Lawyer.objects.filter(user__in=Users)
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -108,7 +126,6 @@ def my_cases(request):
             document_type = request.POST.get('document_type')
             file = request.FILES.get('file')
             case = Case.objects.get(id=case_id)
-            print(document_type, file, case)
 
             Document.objects.create(
                 case=case,
@@ -121,15 +138,7 @@ def my_cases(request):
             messages.success(request, 'Document uploaded successfully.')
             return redirect('my_cases')
 
-    return render(request, 'my_cases.html', {'cases': cases})
-
-@login_required(login_url='/login/')
-def citizen_efilling(request):
-    # Clear all previous messages
-    storage = messages.get_messages(request)
-    storage.used = True
-
-    return render(request, 'citizen_efilling.html')
+    return render(request, 'my_cases.html', {'cases': cases, 'Lawyers': Lawyers})
 
 @login_required(login_url='/login/')
 def citizen_profile(request):
@@ -260,9 +269,6 @@ def against_cases(request):
 
     # Step 4: Query lawyers excluding those already assigned.
     available_lawyers = Lawyer.objects.exclude(id__in=excluded_lawyer_ids)
-
-    print(f"Excluded Lawyer IDs: {excluded_lawyer_ids}")
-    print(f"Available Lawyers: {available_lawyers}")
 
     return render(request, 'against_cases.html', {'cases': cases, 'Lawyers': available_lawyers})
 
@@ -431,3 +437,21 @@ def citizen_verdicts(request):
     user = request.user
     verdicts = Case.objects.filter(Q(plaintiff__user=user) | Q(defendant__user=user), status='CLOSED')
     return render(request, 'citizen_verdicts.html', {'verdicts': verdicts})
+
+def select_lawyer(request):
+    case_id = request.session.get('case_id')
+    if request.method == 'POST':
+        lawyer_name = request.POST.get('assigned_lawyer')
+        try:
+            case = Case.objects.get(id=case_id)
+            lawyer = Lawyer.objects.get(user__full_name=lawyer_name)
+            case.assigned_lawyer = lawyer
+            case.lawyer_accepted = None  # Reset the acceptance status
+            case.save()
+            messages.success(request, 'Lawyer selected successfully.')
+        except Case.DoesNotExist:
+            messages.error(request, 'Case not found.')
+        except Lawyer.DoesNotExist:
+            messages.error(request, 'Lawyer not found.')
+        return redirect('my_cases')
+    return redirect('my_cases')

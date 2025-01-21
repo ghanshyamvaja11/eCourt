@@ -19,4 +19,5 @@ urlpatterns = [
     path('citizen-edit-profile', citizen_edit_profile, name='citizen_edit_profile'),
     path('citizen-verdicts', citizen_verdicts, name='citizen_verdicts'),
     path('logout', logout_view, name='logout'),
+    path('select_lawyer/', select_lawyer, name='select_lawyer'),
 ]

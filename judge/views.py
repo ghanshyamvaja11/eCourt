@@ -117,6 +117,7 @@ def submit_hearing_outcome(request):
             try:
                 hearing = Hearing.objects.get(id=hearing_id)
                 hearing.outcome = outcome
+                hearing.status = 'Completed'
                 hearing.save()
 
                 case = hearing.case
@@ -396,6 +397,22 @@ def final_outcome(request):
             user=case.defendant_lawyer.user,
             message=f'Outcome recorded for case {case.case_number}.'
         )
+
+        subject = 'Final Outcome Recorded'
+        message = (
+            f"The final outcome for your case {case.case_number} has been recorded.\n\n"
+            f"Outcome: {outcome_text}\n\n"
+            f"Best regards,\n"
+            f"The Court Team"
+        )
+        recipient_list = [
+            case.plaintiff.user.email,
+            case.defendant.user.email,
+            case.assigned_lawyer.user.email,
+            case.defendant_lawyer.user.email
+        ]
+
+        send_mail(subject, message, 'ecourtofficially@gmail.com', recipient_list)
 
         messages.success(request, 'Outcome recorded successfully.')
         return redirect('final_outcome')
