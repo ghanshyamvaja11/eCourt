@@ -15,23 +15,41 @@
     <div class="form-section">
         <h2 class="form-title">Hearing Information</h2>
 
+        <!-- Search Bar -->
+        <input type="text" id="search-bar" class="search-bar" placeholder="Search hearings by case number or date" onkeyup="filterHearings()">
+
         <!-- Hearings Table -->
-        <table class="hearings-table">
+        <table class="hearing-table">
             <thead>
                 <tr>
-                    <th style="text-align: center;">Plaintiff</th>
-                    <th style="text-align: center;">Case Type</th>
-                    <th style="text-align: center;">Action</th>
+                    <th>Case Number</th>
+                    <th>Case Type</th>
+                    <th>Date</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody id="hearings-table-body">
-                <!-- Loop through each hearing's information -->
                 {% for hearing in hearings %}
                 <tr>
-                    <td style="text-align: center;">{{ hearing.case.plaintiff_name }}</td>
-                    <td style="text-align: center;">{{ hearing.case.case_type }}</td>
+                    <td>{{ hearing.case.case_number }}</td>
+                    <td>{{ hearing.case.case_type }}</td>
+                    <td>{{ hearing.date }}</td>
                     <td style="text-align: center;">
-                        <button class="view-btn" onclick="toggleHearingDetails({{ hearing.id }})">View</button>
+                        <button class="view-btn" 
+                                onclick="toggleHearingDetails(this)" 
+                                data-case-id="{{ hearing.id }}" 
+                                data-judge-name="{{ hearing.case.assigned_judge.user.full_name }}" 
+                                data-case-number="{{ hearing.case.case_number }}" 
+                                data-plaintiff="{{ hearing.case.plaintiff.user.full_name }}"
+                                data-defendant="{{ hearing.case.defendant.user.full_name }}"
+                                data-plaintiff-lawyer="{{ hearing.case.assigned_lawyer.user.full_name }}"
+                                data-defendant-lawyer="{{ hearing.case.defendant_lawyer.user.full_name }}"
+                                data-date="{{ hearing.date }}" 
+                                data-time="{{ hearing.time }}" 
+                                data-status="{{ hearing.status }}"
+                                data-outcome="{{ hearing.outcome }}">
+                            View
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -53,6 +71,17 @@
 
             <button onclick="closeHearingDetails()" class="close-btn">Close</button>
         </div>
+    </div>
+</div>
+
+<!-- Outcome Popup (Hidden Initially) -->
+<div id="outcome-popup" class="outcome-popup">
+    <div class="outcome-popup-content">
+        <h2>Outcome</h2>
+        <div id="outcome-text">
+            <!-- Outcome text will be populated dynamically -->
+        </div>
+        <button onclick="closeOutcomePopup()" class="close-btn">Close</button>
     </div>
 </div>
 
@@ -84,22 +113,48 @@ body {
     margin-bottom: 20px;
 }
 
-/* Hearings Table */
-.hearings-table {
+/* Search Bar */
+.search-bar {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Hearing Table */
+.hearing-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
 }
 
-.hearings-table th, .hearings-table td {
+.hearing-table th, .hearing-table td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 10px;
+    text-align: left;
 }
 
-.hearings-table th {
-    background-color: #1e3c72;
-    color: white;
+.hearing-table th {
+   background-color: #f2f2f2;
+    color: #333;
     text-align: center;
+}
+
+/* View Button */
+.view-btn {
+    background: linear-gradient(to right, #1e3c72, #2a5298);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.view-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Hearing Details Card (Initially Hidden) */
@@ -141,64 +196,6 @@ body {
     margin-bottom: 10px;
 }
 
-/* Status Update Container */
-.status-update-container {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-}
-
-/* Status Update Options (Row Layout for Dropdown & Button) */
-.status-update-options {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-}
-
-/* Status Select */
-.status-select {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    width: 200px;
-    font-size: 1rem;
-}
-
-/* Update Status Button */
-.update-status-btn {
-    background: linear-gradient(to right, #1e3c72, #2a5298);
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.update-status-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* View Button */
-.view-btn {
-    background: linear-gradient(to right, #1e3c72, #2a5298);
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.view-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-}
-
 /* Close Button */
 .close-btn {
     background: #e74c3c;
@@ -216,75 +213,99 @@ body {
     background: #c0392b;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .formcontainer {
-        padding: 20px;
-    }
-
-    .info-item {
-        flex: 1 1 calc(50% - 20px); /* Stacks two items per row on smaller screens */
-    }
-
-    .view-btn {
-        width: 100%;
-        margin-top: 10px;
-    }
-
-    .button-container {
-        flex-direction: column;
-    }
-
-    button {
-        width: 100%;
-        margin-top: 10px;
-    }
+/* Outcome Popup */
+.outcome-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
 }
 
-@media (max-width: 480px) {
-    .form-title {
-        font-size: 1.5rem;
-    }
-
-    button {
-        font-size: 0.9rem;
-        padding: 12px;
-    }
-
-    .info-item {
-        flex: 1 1 100%; /* Stacks all items vertically on very small screens */
-    }
+.outcome-popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 80%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
 }
 </style>
 
 <script>
-    // Function to toggle the hearing details card and populate information dynamically
-    function toggleHearingDetails(hearingId) {
-        fetch(`/get_hearing_details/${hearingId}/`)
-        .then(response => response.json())
-        .then(hearing => {
-            var hearingDetailsCard = document.getElementById('hearing-info-details');
-            hearingDetailsCard.innerHTML = ` 
-                <div class="info-item"><strong>Judge:</strong> ${hearing.judge}</div>
-                <div class="info-item"><strong>Location:</strong> ${hearing.location}</div>
-                <div class="info-item"><strong>Date:</strong> ${hearing.date}</div>
-                <div class="info-item"><strong>Time:</strong> ${hearing.time}</div>
-                <div class="info-item"><strong>Status:</strong> ${hearing.status}</div>
-                <div class="info-item"><strong>Outcome:</strong> ${hearing.outcome}</div>
-            `;
-            document.getElementById('hearing-details-card').style.display = 'flex';
-        });
-    }
+function filterHearings() {
+    var input, filter, table, tr, td, i, j, txtValue;
+    input = document.getElementById('search-bar');
+    filter = input.value.toUpperCase();
+    table = document.getElementById('hearings-table-body');
+    tr = table.getElementsByTagName('tr');
 
-    // Function to close the hearing details card
-    function closeHearingDetails() {
-        document.getElementById('hearing-details-card').style.display = 'none';
+    for (i = 0; i < tr.length; i++) {
+        tr[i].style.display = 'none';
+        td = tr[i].getElementsByTagName('td');
+        for (j = 0; j < td.length; j++) {
+            if (td[j]) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = '';
+                    break;
+                }
+            }
+        }
     }
+}
 
-    // Function to update the hearing status
-    function updateHearingStatus() {
-        var status = document.getElementById('hearing-status').value;
-        alert("Hearing status updated to: " + status);
-    }
+function toggleHearingDetails(button) {
+    const hearingDetails = {
+        caseId: button.getAttribute('data-case-id'),
+        judgeName: button.getAttribute('data-judge-name'),
+        caseNumber: button.getAttribute('data-case-number'),
+        plaintiff: button.getAttribute('data-plaintiff'),
+        defendant: button.getAttribute('data-defendant'),
+        plaintiff_lawyer: button.getAttribute('data-plaintiff-lawyer'),
+        defendant_lawyer: button.getAttribute('data-defendant-lawyer'),
+        date: button.getAttribute('data-date'),
+        time: button.getAttribute('data-time'),
+        status: button.getAttribute('data-status'),
+        outcome: button.getAttribute('data-outcome')
+    };
+
+    // Populate the hearing info card
+    const hearingInfoDetails = document.getElementById("hearing-info-details");
+    hearingInfoDetails.innerHTML = `
+        <div class="info-item"><strong>Judge:</strong> ${hearingDetails.judgeName}</div>
+        <div class="info-item"><strong>Case:</strong> ${hearingDetails.caseNumber}</div>
+        <div class="info-item"><strong>Plaintiff:</strong> ${hearingDetails.plaintiff}</div>
+        <div class="info-item"><strong>Defendant:</strong> ${hearingDetails.defendant}</div>
+        <div class="info-item"><strong>Plaintiff Lawyer:</strong> ${hearingDetails.plaintiff_lawyer}</div>
+        <div class="info-item"><strong>Defendant Lawyer:</strong> ${hearingDetails.defendant_lawyer}</div>
+        <div class="info-item"><strong>Date:</strong> ${hearingDetails.date}</div>
+        <div class="info-item"><strong>Time:</strong> ${hearingDetails.time}</div>
+        <div class="info-item"><strong>Status:</strong> ${hearingDetails.status}</div>
+        <div class="info-item"><button class="view-btn" onclick="showOutcomePopup('${hearingDetails.outcome}')">View Outcome</button></div>
+    `;
+
+    // Show the hearing details card
+    document.getElementById("hearing-details-card").style.display = 'flex';
+}
+
+function closeHearingDetails() {
+    document.getElementById("hearing-details-card").style.display = 'none';
+}
+
+function showOutcomePopup(outcome) {
+    document.getElementById("outcome-text").innerText = outcome;
+    document.getElementById("outcome-popup").style.display = 'flex';
+}
+
+function closeOutcomePopup() {
+    document.getElementById("outcome-popup").style.display = 'none';
+}
 </script>
 {% endblock %}

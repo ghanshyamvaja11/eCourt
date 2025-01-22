@@ -53,9 +53,8 @@ INSTALLED_APPS = [
     'lawyer',
     'citizen',
     'cases',
-    'efiling',
-    'documents',
     'notifications',
+    'payment'
 ]
 
 # settings.py

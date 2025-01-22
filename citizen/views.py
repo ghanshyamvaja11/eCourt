@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.contrib.auth import logout
 from users.models import *  # Import all models from users app
 from cases.models import *  # Ensure Document model is imported
+from payment.models import *
 from notifications.models import Notification  # Assuming there is a Notification model in the notifications app
 import random
 from django.views.decorators.csrf import csrf_exempt
@@ -87,6 +88,32 @@ def file_cases(request):
                 user_type = 'citizen'
             )
 
+        subject = f"Case Filed Successfully - {case.case_title}"
+        message = f"""
+        Dear {citizen.user.first_name},
+
+        Your case has been successfully filed with the following details:
+
+        Case Number: {case.case_number}
+        Case Title: {case.case_title}
+        Case Type: {case.case_type}
+        Defendant: {case.defendant}
+        Status: {case.status}
+
+        You can log in to the eCourt portal to view more details and updates.
+
+        Thank you,
+        eCourt Team
+            """
+        recipient_email = defendant.user.email
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [recipient_email],
+            fail_silently=False,
+        )
+
         messages.success(request, 'Case filed successfully.')
         return redirect('my_cases')
     return render(request, 'file_case.html', {'defendants': defendants, 'Lawyers': Lawyers})
@@ -103,6 +130,9 @@ def my_cases(request):
             try:
                 case = Case.objects.get(id=case_id)
                 lawyer = Lawyer.objects.get(user__full_name=lawyer_name)
+                if lawyer.id == case.assigned_lawyer.id:
+                    error = 'this lawyer selected by defendant.'
+                    return render(request, 'my_cases.html', {'error': error})
                 case.assigned_lawyer = lawyer
                 case.lawyer_accepted = None  # Reset the acceptance status
                 case.save()
@@ -356,17 +386,15 @@ def create_order(request):
                 logger.error(
                     "Failed to retrieve order_id from Razorpay response")
                 return JsonResponse({'error': 'Failed to create Razorpay order. Try again.'}, status=500)
-
-            # Save payment details to the database
-            payment = Payment.objects.get(id=payment_id)
-            payment.order_id = order_id
-            payment.save()
+            else:
+                # Save payment details to the database
+                payment = Payment.objects.get(id=payment_id)
+                payment.order_id = order_id
+                payment.save()
 
             request.session['payment_id'] = payment_id
-
-            logger.info(f"Payment created successfully: {payment}")
-
-            # Include user email in response
+            print(order_id)
+            
             return JsonResponse({'order_id': order_id, 'amount': amount, 'email': user_email})
         except Exception as e:
             logger.error(f"Error creating Razorpay order: {str(e)}")
@@ -423,6 +451,28 @@ def verify_payment(request):
             except:
                 # Handle the case where no matching Payment record is found
                 print("Payment record not found for the provided order_id.")
+
+            username = User.objects.get(email = payment.citizen_email)
+
+            subject = 'Payment Successful'
+            message = f"""
+            Dear {username},
+
+            We are pleased to inform you that your payment has been successfully processed.
+
+            Payment Details:
+            - Amount Paid: ${payment.amount:.2f}
+            - Payment ID: {payment.payment_id}
+
+            Thank you for using our services. If you have any questions, feel free to contact us.
+
+            Best regards,
+            eCourt Team
+            """
+            from_email = settings.DEFAULT_FROM_EMAIL
+            recipient_list = [user_email]
+
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
 
             return JsonResponse({'status': 'success', 'message': 'Payment Verified'}, status=200)
         except json.JSONDecodeError:

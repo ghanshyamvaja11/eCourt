@@ -12,11 +12,23 @@ import random
 from django.conf import settings
 from django.http import HttpResponseNotFound, HttpResponseBadRequest
 from administrator.models import *
+from cases.models import *
+import re
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 def header_footer(request):
     return render(request, 'header_footer.html')
 def index(request):
-    return render(request, 'index.html')
+    context = {
+        'total_users': User.objects.count(),
+        'total_cases': Case.objects.count(),
+        'total_documents': Document.objects.count(),
+        'total_payments': Payment.objects.count(),
+        'total_verdicts': Case.objects.filter(verdict__isnull=False).count(),
+        'total_hearings': Hearing.objects.count(),
+    }
+    return render(request, 'index.html', context)
 
 def aboutus(request):
     return render(request, 'about_us.html')
@@ -69,20 +81,6 @@ def dashboard(request):
    
 
 def logout(request):
-    role = request.session.get('role')
-
-    if role == 'ADMIN':
-        auth_logout(request)
-        return redirect('admin_login')  # Redirect to admin login page
-
-    elif role == 'JUDGE':
-        auth_logout(request)
-        return redirect('judge_login')  # Redirect to judge login page
-
-    elif role == 'LAWYER':
-        auth_logout(request)
-        return redirect('lawyer_login')  # Redirect to lawyer login page
-
     return render(request,'login.html')  # Redirect to the general login pag
     
 
@@ -116,8 +114,37 @@ def signup(request):
 
         if User.objects.filter(username=username).exists():
             errors.append("Username already exists.")
-        if User.objects.filter(email=email).exists():
-            errors.append("Email is already registered.")
+         # Validate email format
+        try:
+            validate_email(email)  # Django's built-in email validator
+        except ValidationError:
+            errors.append("Invalid email format.")
+        else:
+            # Check if email already exists
+            if User.objects.filter(email=email).exists():
+                errors.append("Email is already registered.")
+
+        # Validate contact number format
+        if not re.fullmatch(r'^\d{10}$', contact_number):
+            errors.append("Contact number must be exactly 10 digits.")
+        #password validation
+        if len(password) < 8:
+            errors.append("Password must be at least 8 characters.")
+        if not re.search(r'[A-Z]', password):
+            errors.append("Must contain an uppercase letter.")
+        if not re.search(r'[a-z]', password):
+            errors.append("Must contain a lowercase letter.")
+        if not re.search(r'\d', password):
+            errors.append("Must contain a digit.")
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            errors.append("Must contain a special character.")
+        if re.search(r'\s', password):
+            errors.append("Must not contain spaces.")
+
+        # Check if contact number already exists
+        if User.objects.filter(contact_number=contact_number).exists():
+            errors.append("Contact number is already registered.")
+
         # Role-specific validations
         if role == 'LAWYER':
             if not all([License_number, Law_firm]):
@@ -125,23 +152,22 @@ def signup(request):
         elif role == 'CITIZEN':
             if not National_id_type or not National_id_number:
                 errors.append("National ID type and number are required for citizens.")
-            elif National_id_type not in ['AADHAR', 'PASSPORT', 'VOTER ID CARD', 'DRIVING LICENSE']:
+            elif National_id_type not in ['AADHAAR', 'PASSPORT', 'VOTER_ID', 'DRIVING_LICENSE']:
                 errors.append("National ID type must be Aadhar, Passport, Voter ID Card, or Driving License.")
             else:
                 # National ID Type-Specific Validations
-                if National_id_type == 'AADHAR':
+                if National_id_type == 'AADHAAR':
                     if not National_id_number.isdigit() or len(National_id_number) != 12:
                         errors.append("Aadhar number must be a 12-digit numeric value.")
                 elif National_id_type == 'PASSPORT':
                     if len(National_id_number) != 8 or not (National_id_number[0].isalpha() and National_id_number[1:].isdigit()):
                         errors.append("Passport number must be 8 characters, starting with a letter followed by 7 digits.")
-                elif National_id_type == 'VOTER ID CARD':
+                elif National_id_type == 'VOTER_ID':
                     if len(National_id_number) != 10 or not (National_id_number[:3].isalpha() and National_id_number[3:].isdigit()):
                         errors.append("Voter ID Card number must be 10 characters, starting with 3 letters followed by 7 digits.")
-                elif National_id_type == 'DRIVING LICENSE':
+                elif National_id_type == 'DRIVING_LICENSE':
                     if len(National_id_number) < 8 or len(National_id_number) > 16 or not any(char.isdigit() for char in National_id_number) or not any(char.isalpha() for char in National_id_number):
                         errors.append("Driving License number must be between 8-16 characters and contain both letters and numbers.")
-
         # If there are any errors, display them all and redirect to signup
         if errors:
             for error in errors:
@@ -152,7 +178,7 @@ def signup(request):
         try:
             with transaction.atomic():
                 # Create base User
-                if role != 'lawyer':
+                if role != 'LAWYER':
                     is_active = 1
                 else:
                     is_active = 0
@@ -354,6 +380,26 @@ def change_password(request):
     if request.method == 'POST':
         email = request.session.get('temp_email')
         new_password = request.POST.get('new_password')
+        # password validation
+        errors = []
+        if len(password) < 8:
+            errors.append("Password must be at least 8 characters.")
+        if not re.search(r'[A-Z]', password):
+            errors.append("Must contain an uppercase letter.")
+        if not re.search(r'[a-z]', password):
+            errors.append("Must contain a lowercase letter.")
+        if not re.search(r'\d', password):
+            errors.append("Must contain a digit.")
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            errors.append("Must contain a special character.")
+        if re.search(r'\s', password):
+            errors.append("Must not contain spaces.")
+        
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return redirect('change_password')
+                
         user = User.objects.filter(email=email).first()
         if user:
             user.set_password(new_password)

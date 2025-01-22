@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from users.models import *
 from cases.models import *
 from .models import *
+from payment.models import *
 from .models import ContactUs
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseBadRequest
@@ -19,6 +20,9 @@ from django.db.models import Count, F
 from io import BytesIO
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
+import re
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 @login_required(login_url='/login/')
@@ -163,6 +167,52 @@ def add_judge(request):
         password = request.POST['password']
         address = request.POST['address']
         court = request.POST['court']
+
+        # Validation
+        errors = []
+
+        # General validations
+        if not all([username, full_name, email, password, address, court]):
+            errors.append("All fields are required.")
+
+        if User.objects.filter(username=username).exists():
+            errors.append("Username already exists.")
+         # Validate email format
+        try:
+            validate_email(email)  # Django's built-in email validator
+        except ValidationError:
+            errors.append("Invalid email format.")
+        else:
+            # Check if email already exists
+            if User.objects.filter(email=email).exists():
+                errors.append("Email is already registered.")
+
+        # Validate contact number format
+        if not re.fullmatch(r'^\d{10}$', contact_number):
+            errors.append("Contact number must be exactly 10 digits.")
+       
+        # password validation
+        if len(password) < 8:
+            errors.append("Password must be at least 8 characters.")
+        if not re.search(r'[A-Z]', password):
+            errors.append("Must contain an uppercase letter.")
+        if not re.search(r'[a-z]', password):
+            errors.append("Must contain a lowercase letter.")
+        if not re.search(r'\d', password):
+            errors.append("Must contain a digit.")
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            errors.append("Must contain a special character.")
+        if re.search(r'\s', password):
+            errors.append("Must not contain spaces.")
+        # Check if contact number already exists
+        if User.objects.filter(contact_number=contact_number).exists():
+            errors.append("Contact number is already registered.")
+
+        # If there are any errors, display them all and redirect to signup
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return redirect('add_judge')
 
         user = User.objects.create_user(username=username, password=password, email=email, full_name=full_name, contact_number=contact_number, address=address, user_type='JUDGE')
         Judge.objects.create(user=user, court=court)

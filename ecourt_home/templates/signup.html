@@ -214,8 +214,8 @@
                     
                     <select id="register_as" name="register_as" required>
                         <option value="">Register As</option>
-                        <option value="lawyer">Lawyer</option>
-                        <option value="citizen">Citizen</option>
+                        <option value="LAWYER">Lawyer</option>
+                        <option value="CITIZEN">Citizen</option>
                     </select>
 
                     <!-- Lawyer-Specific Fields -->
@@ -228,10 +228,10 @@
                     <div id="citizenFields" class="conditional-fields">
                         <select name="National_id_type">
                             <option value="">Select National ID Type</option>
-                            <option value="passport">Passport</option>
-                            <option value="aadhaar">Aadhaar</option>
-                            <option value="voter_id">Voter ID</option>
-                            <option value="driver_license">Driver's License</option>
+                            <option value="PASSPORT">Passport</option>
+                            <option value="AADHAAR">Aadhaar</option>
+                            <option value="VOTER_ID">Voter ID</option>
+                            <option value="DRIVING_LICENSE">Driver's License</option>
                         </select>
                         <input type="text" name="National_id_number" placeholder="National ID Number">
                     </div>
@@ -253,8 +253,8 @@
 
             registerAs.addEventListener('change', () => {
                 const role = registerAs.value;
-                lawyerFields.style.display = role === 'lawyer' ? 'block' : 'none';
-                citizenFields.style.display = role === 'citizen' ? 'block' : 'none';
+                lawyerFields.style.display = role === 'LAWYER' ? 'block' : 'none';
+                citizenFields.style.display = role === 'CITIZEN' ? 'block' : 'none';
             });
         });
 

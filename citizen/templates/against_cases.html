@@ -41,9 +41,7 @@
             <div id="case-info-details" class="case-info"></div>
             <div class="button-container">
                 <button onclick="viewDocuments()" class="approve-btn">View Documents</button>
-                {% if request.session.lawyer_selected == '' %}
-                <button onclick="selectLawyer()" class="reject-btn">Select Lawyer</button>
-                {% endif %}
+                <button onclick="selectLawyer()" class="reject-btn" id="select_lawyer">Select Lawyer</button>
             </div>
             <button onclick="closeCaseDetails()" class="close-btn">Close</button>
         </div>
@@ -116,8 +114,9 @@ body {
 }
 
 .cases-table th {
-    background-color: #f2f2f2;
+   background-color: #f2f2f2;
     color: #333;
+    text-align: center;
 }
 
 /* Case Details Card (Initially Hidden) */
@@ -326,16 +325,32 @@ function toggleCaseDetails(caseId) {
     // Determine the status of the lawyer acceptance
     var lawyerAcceptedMessage = '';
     var lawyerAcceptedColor = '';
+    var selectLawyerButton = document.getElementById('select_lawyer'); // Make sure the button is selected correctly
 
-    if (caseInfo.defendant_lawyer_accepted === true) {
+    if (caseInfo.defendant_lawyer_accepted == true) {
         lawyerAcceptedMessage = 'Accepted';
         lawyerAcceptedColor = 'green';
-    } else if (caseInfo.defendant_lawyer_accepted === false) {
+        if (selectLawyerButton) {
+            selectLawyerButton.style.display = 'none'; // Hide the button
+        }
+    } else if (caseInfo.defendant_lawyer_accepted == false) {
         lawyerAcceptedMessage = 'Not Accepted';
         lawyerAcceptedColor = 'red';
+        if (selectLawyerButton) {
+            selectLawyerButton.style.display = 'visible'; // Show the button
+        }
+    } else if (caseInfo.defendant_lawyer == null) {
+        lawyerAcceptedMessage = 'Pending';
+        lawyerAcceptedColor = 'orange';
+        if (selectLawyerButton) {
+            selectLawyerButton.style.display = 'visible'; // Show the button
+        }
     } else {
         lawyerAcceptedMessage = 'Pending';
         lawyerAcceptedColor = 'orange';
+        if (selectLawyerButton) {
+            selectLawyerButton.style.display = 'none'; // Hide the button
+        }
     }
 
     // Build the HTML content

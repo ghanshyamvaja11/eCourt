@@ -18,6 +18,10 @@
         <!-- Search Bar -->
         <input type="text" id="search-bar" class="search-bar" placeholder="Search cases...based on case title or case type" onkeyup="filterCases()">
 
+        {% if error %}
+        <center><span style="color: red;">{{error}}</span></center>
+        {% endif %}
+
         <!-- Cases Table -->
         <table class="cases-table">
             <thead>
@@ -62,9 +66,11 @@
 
             <!-- Buttons for View_Documents/Upload_Documents -->
             <div class="button-container">
-                <button onclick="viewDocuments()" class="approve-btn">View Documents</button>
+                <button onclick="viewDocuments()" class="approve-btn" id="view-doc-btn">View Documents</button>
                 <button onclick="uploadDocument()" class="reject-btn" id="upload-doc-btn" disabled>Upload Document</button>
-                <button onclick="selectLawyer()" class="reject-btn" id="select-lawyer-btn" style="display: none;" hidden>Select Another Lawyer</button>
+                <div style="display: none;">
+                <<button onclick="selectLawyer()" class="reject-btn" id="select-lawyer-btn" style="display: none;" hidden>Select Another Lawyer</button>
+                </div>
             </div>
             <button onclick="closeCaseDetails()" class="close-btn">Close</button>
         </div>
@@ -173,6 +179,7 @@ body {
 .cases-table th {
     background-color: #f2f2f2;
     color: #333;
+    text-align: center;
 }
 
 /* Case Details Card (Initially Hidden) */
@@ -413,6 +420,9 @@ button:hover {
             // Determine the acceptance status of the lawyer
             var lawyerAcceptedMessage = '';
             var lawyerAcceptedColor = '';
+            if(caseInfo.status != 'ACTIVE' && caseInfo.status != 'PENDING' && caseInfo.assigned_lawyer != true){
+                document.getElementById('upload-doc-btn').style.display = 'none';
+            }
 
             if (caseInfo.lawyer_accepted === true) {
                 lawyerAcceptedMessage = 'Accepted';
@@ -423,11 +433,13 @@ button:hover {
                 lawyerAcceptedMessage = 'Not Accepted';
                 lawyerAcceptedColor = 'red';
                 document.getElementById('upload-doc-btn').disabled = true;
+                document.getElementById('upload-doc-btn').style.display = 'none';
                 document.getElementById('select-lawyer-btn').style.display = 'block';
             } else {
                 lawyerAcceptedMessage = 'Pending';
                 lawyerAcceptedColor = 'orange';
                 document.getElementById('upload-doc-btn').disabled = true;
+                document.getElementById('upload-doc-btn').style.display = 'none';
                 document.getElementById('select-lawyer-btn').style.display = 'block';
             }
 
@@ -450,7 +462,7 @@ button:hover {
         document.getElementById('case-id').value = caseId;
 
         // Hide the select lawyer button if a judge is assigned
-        if (caseInfo.assigned_judge || caseInfo.lawyer_accepted === true) {
+        if (caseInfo.assigned_judge || caseInfo.assigned_lawyer || caseInfo.lawyer_accepted === true) {
             document.getElementById('select-lawyer-btn').style.display = 'none';
         } else {
             document.getElementById('select-lawyer-btn').style.display = 'block';

@@ -113,6 +113,56 @@
         .feature-card p {
             color: #555;
         }
+
+        <!-- Counter Section CSS -->
+<style>
+    .counter-section {
+        background-color: #f9f9f9;
+        padding: 60px 0;
+        border-radius: 15px;
+        margin: 2% 5%;
+        text-align: center;
+    }
+
+    .counter-box {
+        margin: 20px 0;
+        padding: 30px;
+        border-radius: 10px;
+        background-color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .counter-box:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .counter-box h3 {
+        margin: 10px 0;
+        font-size: 2.5rem;
+        color: #003366;
+        font-weight: bold;
+    }
+
+    .counter-box p {
+        font-size: 1.2rem;
+        color: #555;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        font-weight: bold;
+        color: #004080;
+    }
+
+    .section-description {
+        font-size: 1.2rem;
+        color: #777;
+        margin-bottom: 40px;
+    }
+
         /* How It Works Section */
         .how-it-works {
             background-color: #f9f9f9;
@@ -419,6 +469,64 @@
     </div>
 </section>
 
+<!-- Counter Section -->
+<section id="counter" class="counter-section fade-in">
+    <div class="container">
+        <h2 class="section-title">Platform Achievements</h2>
+        <div class="row text-center">
+            <!-- Counter 1: Total Users -->
+            <div class="col-md-4">
+                <div class="counter-box">
+                    <i class="fas fa-users fa-3x" style="color: #004080;"></i>
+                    <h3 class="counter" data-count="{{ total_users }}">0</h3>
+                    <p>Total Users</p>
+                </div>
+            </div>
+            <!-- Counter 2: Total Cases -->
+            <div class="col-md-4">
+                <div class="counter-box">
+                    <i class="fas fa-briefcase fa-3x" style="color: #004080;"></i>
+                    <h3 class="counter" data-count="{{ total_cases }}">0</h3>
+                    <p>Total Cases</p>
+                </div>
+            </div>
+            <!-- Counter 3: Total Documents -->
+            <div class="col-md-4">
+                <div class="counter-box">
+                    <i class="fas fa-file-alt fa-3x" style="color: #004080;"></i>
+                    <h3 class="counter" data-count="{{ total_documents }}">0</h3>
+                    <p>Total Documents Uploaded</p>
+                </div>
+            </div>
+        </div>
+        <div class="row text-center">
+            <!-- Counter 4: Total Payments -->
+            <div class="col-md-4">
+                <div class="counter-box">
+                    <i class="fas fa-credit-card fa-3x" style="color: #004080;"></i>
+                    <h3 class="counter" data-count="{{ total_payments }}">0</h3>
+                    <p>Total Payments Processed</p>
+                </div>
+            </div>
+            <!-- Counter 5: Total Verdicts -->
+            <div class="col-md-4">
+                <div class="counter-box">
+                    <i class="fas fa-gavel fa-3x" style="color: #004080;"></i>
+                    <h3 class="counter" data-count="{{ total_verdicts }}">0</h3>
+                    <p>Total Verdicts Given</p>
+                </div>
+            </div>
+            <!-- Counter 6: Total Hearings -->
+            <div class="col-md-4">
+                <div class="counter-box">
+                    <i class="fas fa-calendar-alt fa-3x" style="color: #004080;"></i>
+                    <h3 class="counter" data-count="{{ total_hearings }}">0</h3>
+                    <p>Total Hearings Conducted</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <!-- How It Works Section -->
  <br>
 <h2 class="section-title">How It Works</h2>
@@ -607,7 +715,30 @@
              parent.classList.toggle('active');
          });
      });
- 
+
+      // Counter Animation Logic
+    document.addEventListener("DOMContentLoaded", () => {
+        const counters = document.querySelectorAll('.counter');
+        const speed = 200; // Animation speed in ms
+
+        counters.forEach(counter => {
+            const updateCount = () => {
+                const target = +counter.getAttribute('data-count');
+                const count = +counter.innerText;
+
+                const increment = target / speed;
+
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(updateCount, 10);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+            updateCount();
+        });
+    });
+
 </script>
 
 </body>

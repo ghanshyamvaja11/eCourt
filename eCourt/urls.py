@@ -11,8 +11,6 @@ urlpatterns = [
     path('citizen/', include('citizen.urls')),
     path('users/', include('users.urls')),
     path('cases/', include('cases.urls')),
-    path('efiling/', include('efiling.urls')),
-    path('documents/', include('documents.urls')),
     path('notifications/', include('notifications.urls')),
 ]
 

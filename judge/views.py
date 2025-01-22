@@ -276,7 +276,7 @@ def judge_edit_profile(request):
 @login_required(login_url='/login/')
 def schedule_hearing(request):
     judge = Judge.objects.get(user=request.user)
-    cases = Case.objects.filter(assigned_judge=judge)
+    cases = Case.objects.filter(assigned_judge=judge, status='ACTIVE')
 
     if request.method == 'POST':
         case_id = request.POST.get('case_id')

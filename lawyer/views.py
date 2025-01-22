@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 import random
 from users.models import *  # Import all models from users app
 from cases.models import *  # Assuming there is a Case model in the cases app
+from payment.models import *
 from notifications.models import Notification
 from administrator.models import * # Assuming there is
 from django.db.models import Q
@@ -410,7 +411,7 @@ def request_payment(request, case_id):
         if request.method == 'POST':
             amount = request.POST.get('amount')
             description = request.POST.get('description')
-            Payment.objects.create(case=plaintiff_case, lawyer_email=request.user.email,
+            Payment.objects.create(case=plaintiff_case, lawyer_email=request.user.email, citizen_email = plaintiff_case.plaintiff.user.email,
                                    amount=amount, description=description, requested_at=datetime.datetime.now())
             Notification.objects.create(
                 user=plaintiff_case.plaintiff.user,
@@ -430,7 +431,7 @@ def request_payment(request, case_id):
                 amount = request.POST.get('amount')
                 description = request.POST.get('description')
                 request_date_time = request.POST.get('current_datetime')
-                Payment.objects.create(case=defendant_case, lawyer_email=request.user.email,
+                Payment.objects.create(case=defendant_case, lawyer_email=request.user.email, citizen_email=defendant_case.defendant.user.email,
                                        amount=amount, description=description, requested_at=datetime.datetime.now())
 
                 Notification.objects.create(
@@ -457,5 +458,8 @@ def lawyer_payments(request):
 @login_required(login_url='/login/')
 def lawyer_verdicts(request):
     lawyer = Lawyer.objects.get(user=request.user)
-    verdicts = Case.objects.filter(assigned_lawyer=lawyer, status='CLOSED')
+    plaintiff_cases = Case.objects.filter(assigned_lawyer=lawyer, status='CLOSED')
+    defendant_cases = Case.objects.filter(
+        defendant_lawyer=lawyer, status='CLOSED')
+    verdicts = plaintiff_cases | defendant_cases
     return render(request, 'lawyer_verdicts.html', {'verdicts': verdicts})

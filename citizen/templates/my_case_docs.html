@@ -12,6 +12,7 @@
             {% if documents %}
                 {% for document in documents %}
                 <div class="document-item">
+                    <div><strong>Uploaded By:</strong> {{ document.uploaded_by.username }}({{document.uploaded_by.user_type}})</div>
                     <div><strong>Type:</strong> {{ document.document_type }}</div>
                     <div><strong>Name:</strong> {{ document.file.name }}</div>
                     <a href="{{ document.file.url }}" target="_blank" class="view-btn">View</a>

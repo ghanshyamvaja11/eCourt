@@ -38,8 +38,9 @@
     }
 
     .case-table th {
-        background-color: #f2f2f2;
-        color: #333;
+       background-color: #f2f2f2;
+    color: #333;
+    text-align: center;
     }
 
     .view-btn {
@@ -148,6 +149,34 @@
         background-color: #f44336; /* Red */
     }
 
+    @media (min-width: 768px) {
+    .info-item {
+        flex: 1 1 calc(50% - 20px);
+    }
+
+    .btns {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .info-item {
+        flex: 1 1 calc(50% - 20px);
+    }
+
+    button {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .info-item {
+        flex: 1 1 100%;
+    }
+}
+
     /* Search Bar Styles */
     .search-bar {
         width: 100%;
@@ -244,8 +273,8 @@
                 </select>
             </div>
             <div class="button-container">
-                <button type="submit" class="view-btn" id="update-status-btn">Update</button>
-                <button type="button" onclick="viewDocuments()" class="view-btn">View Documents</button>
+                <button type="submit" class="view-btn btns" id="update-status-btn">Update</button>
+                <button type="button" onclick="viewDocuments()" class="view-btn btns">View Documents</button>
             </div>
         </form>
         <button onclick="closeCaseDetails()" class="close-btn">Close</button>

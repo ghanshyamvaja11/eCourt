@@ -88,6 +88,7 @@ body {
 .payments-table th {
     background-color: #f2f2f2;
     color: #333;
+    text-align: center;
 }
 
 .button-container {
@@ -163,9 +164,9 @@ function startPayment(paymentId, amount) {
                 });
             },
             prefill: {
-                name: "{{ user.full_name }}",
-                email: "{{ user.email }}",
-                contact: "{{ user.contact_number }}"
+                name: "{{ request.user.full_name }}",
+                email: "{{ request.user.email }}",
+                contact: "{{ request.user.contact_number }}"
             },
             theme: {
                 color: "#1e3c72"
