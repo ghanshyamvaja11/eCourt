@@ -12,6 +12,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('cases/', include('cases.urls')),
     path('notifications/', include('notifications.urls')),
+    path('payment/', include('payment.urls'))
 ]
 
 handler404 = 'ecourt_home.views.error_404_view'

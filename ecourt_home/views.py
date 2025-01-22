@@ -13,6 +13,7 @@ from django.conf import settings
 from django.http import HttpResponseNotFound, HttpResponseBadRequest
 from administrator.models import *
 from cases.models import *
+from payment.models import *
 import re
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
