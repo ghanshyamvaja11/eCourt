@@ -22,6 +22,15 @@
         <h2 class="form-title">Edit Your Profile</h2>
         <p style="text-align: center; margin-bottom: 30px; color: #333;">Please make sure your information is up-to-date for smooth operations within the eCourt system.</p>
 
+        <!-- Error and Success Messages -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <form action="{% url 'citizen_edit_profile' %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <!-- Input Fields -->
@@ -63,7 +72,7 @@
             <!-- Profile Picture Section -->
             <div class="input-container">
                 <label for="profile_picture">Profile Picture:</label>
-                <input type="file" name="profile_image" id="profile_picture" accept="image/*" onchange="previewNewProfilePicture(event)">
+                <input type="file" name="profile_picture" id="profile_picture" accept="image/*" onchange="previewNewProfilePicture(event)">
             </div>
 
             <div class="profile-picture-section">
@@ -204,6 +213,33 @@ button:hover {
     background: linear-gradient(to right, #2a5298, #1e3c72);
     transform: scale(1.05);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Messages Styles */
+.messages {
+    margin: 20px auto;
+    max-width: 900px;
+    padding: 10px;
+}
+
+.message {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.message.success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
 }
 
 /* Responsive Design */

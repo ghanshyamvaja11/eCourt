@@ -1,6 +1,7 @@
 {% extends 'judge_header.html' %}
 
 {% block content %}
+
 <div class="dashboard-header">
     <h1>Edit Profile</h1>
 </div>
@@ -21,18 +22,26 @@
         <h2 class="form-title">Edit Your Profile</h2>
         <p style="text-align: center; margin-bottom: 30px; color: #333;">Please make sure your information is up-to-date for smooth operations within the eCourt system.</p>
 
+        <!-- Error and Success Messages -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <form action="{% url 'judge_edit_profile' %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-
             <!-- Input Fields -->
             <div class="input-container">
                 <label for="username">Username:</label>
-                <input type="text" id="username" placeholder="Username" value="{{ user.username }}" readonly>
+                <input type="text" id="username" name="username" placeholder="Username" value="{{ user.username }}" required>
             </div>
 
             <div class="input-container">
                 <label for="full_name">Full Name:</label>
-                <input type="text" id="full_name" name="full_name" placeholder="Full Name" value="{{ user.full_name }}" readonly required>
+                <input type="text" id="full_name" name="full_name" placeholder="Full Name" value="{{ user.full_name }}" readonly>
             </div>
 
             <div class="input-container">
@@ -51,20 +60,24 @@
             </div>
 
             <div class="input-container">
-                <label for="profile_image">Profile Image:</label>
-                <input type="file" id="profile_image" name="profile_image" accept="image/*" onchange="previewNewProfilePicture(event)">
+                <label for="court">Court:</label>
+                <input type="text" id="court" name="court" placeholder="Court" value="{{ judge.court }}" required>
+            </div>
+
+            <!-- Profile Picture Section -->
+            <div class="input-container">
+                <label for="profile_picture">Profile Picture:</label>
+                <input type="file" name="profile_picture" id="profile_picture" accept="image/*" onchange="previewNewProfilePicture(event)">
             </div>
 
             <div class="profile-picture-section">
-                {% if user.profile_picture %}
                 <div class="profile-picture-container">
-                    <label>Current Profile Picture:</label>
-                    <img src="{{ user.profile_picture.url }}" alt="Current Profile Picture" class="profile-picture">
+                    <label for="profile_picture">Current Profile Picture:</label>
+                    <img src="/media/{{ user.profile_picture | default:'/media/placeholder.png' }}" alt="Current Profile Picture" class="profile-picture">
                 </div>
-                {% endif %}
                 <div class="profile-picture-container">
-                    <label>New Profile Picture:</label>
-                    <img id="newProfilePicturePreview" name="profile_picture" src="#" alt="New Profile Picture Preview" class="profile-picture" style="display: none;">
+                    <label for="new_profile_picture">New Profile Picture:</label>
+                    <img id="newProfilePicturePreview" src="#" alt="New Profile Picture Preview" class="profile-picture" style="display: none;">
                 </div>
             </div>
 
@@ -136,24 +149,6 @@ body {
     font-size: 2rem;
 }
 
-/* Input Fields */
-.input-container {
-    margin-bottom: 15px;
-}
-
-input, textarea {
-    width: 100%;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-    box-sizing: border-box;
-}
-
-textarea {
-    resize: none;
-}
-
 /* Profile Picture Section */
 .profile-picture-section {
     display: flex;
@@ -171,6 +166,24 @@ textarea {
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #ccc;
+}
+
+/* Input Fields */
+.input-container {
+    margin-bottom: 15px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: none;
 }
 
 /* Button Styles */
@@ -195,6 +208,33 @@ button:hover {
     background: linear-gradient(to right, #2a5298, #1e3c72);
     transform: scale(1.05);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Messages Styles */
+.messages {
+    margin: 20px auto;
+    max-width: 900px;
+    padding: 10px;
+}
+
+.message {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.message.success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
 }
 
 /* Responsive Design */
@@ -247,4 +287,5 @@ function previewNewProfilePicture(event) {
     reader.readAsDataURL(event.target.files[0]);
 }
 </script>
+
 {% endblock %}

@@ -241,7 +241,6 @@ def judge_edit_profile(request):
     judge = Judge.objects.get(user=request.user)
     user = User.objects.get(id=judge.user.id)
     if request.method == 'POST':
-        user.full_name = request.POST.get('full_name')
         user.email = request.POST.get('email')
         user.contact_number = request.POST.get('contact_number')
         user.address = request.POST.get('address')

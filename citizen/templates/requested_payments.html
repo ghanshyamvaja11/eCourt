@@ -8,10 +8,14 @@
 <div class="formcontainer">
     <div class="form-section">
         <h2 class="form-title">Pending Payment Requests</h2>
-        <table class="payments-table">
+
+        <!-- Search Bar -->
+        <input type="text" id="search-bar" class="search-bar" placeholder="Search payments...based on case number or description" onkeyup="filterPayments()">
+
+        <table class="payments-table" id="payments-table">
             <thead>
                 <tr>
-                    <th>Case ID</th>
+                    <th>Case Number</th>
                     <th>Amount</th>
                     <th>Description</th>
                     <th>Action</th>
@@ -20,7 +24,7 @@
             <tbody>
                 {% for payment in payments %}
                 <tr>
-                    <td>{{ payment.case.id }}</td>
+                    <td>{{ payment.case.case_number }}</td>
                     <td>{{ payment.amount }}</td>
                     <td>{{ payment.description }}</td>
                     <td>
@@ -73,6 +77,17 @@ body {
     margin-bottom: 20px;
 }
 
+/* Search Bar */
+.search-bar {
+    width: 100%;
+    padding: 8px;  /* Reduced padding for smaller height */
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .payments-table {
     width: 100%;
     border-collapse: collapse;
@@ -113,6 +128,28 @@ button:hover {
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+function filterPayments() {
+    var input, filter, table, tr, td, i, j, txtValue;
+    input = document.getElementById('search-bar');
+    filter = input.value.toUpperCase();
+    table = document.getElementById('payments-table');
+    tr = table.getElementsByTagName('tr');
+
+    for (i = 1; i < tr.length; i++) { // Start from 1 to skip the header row
+        tr[i].style.display = 'none';
+        td = tr[i].getElementsByTagName('td');
+        for (j = 0; j < td.length; j++) {
+            if (td[j]) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = '';
+                    break;
+                }
+            }
+        }
+    }
+}
+
 function startPayment(paymentId, amount) {
     fetch("{% url 'create_order' %}", {
         method: 'POST',

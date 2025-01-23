@@ -12,7 +12,10 @@
     <div class="form-section">
         <h2 class="form-title">Cases Against Me</h2>
 
-        <table class="cases-table">
+         <!-- Search Bar -->
+        <input type="text" id="search-bar" class="search-bar" placeholder="Search cases...based on case title or case type" onkeyup="filterCases()">
+
+        <table class="cases-table" id="cases-table">
             <thead>
                 <tr>
                     <th style="text-align: center;">Case Number</th>
@@ -44,13 +47,38 @@
             <div id="case-info-details" class="case-info"></div>
             <div class="button-container">
                 <button onclick="viewDocuments()" class="approve-btn">View Documents</button>
-                <button onclick="selectLawyer()" class="reject-btn" id="select_lawyer">Select Lawyer</button>
+                <button onclick="uploadDocument()" class="reject-btn" id="upload-doc-btn" disabled>Upload Document</button>
+                <button onclick="selectLawyer()" class="reject-btn" id="select_lawyer" style="display: none;">Select Lawyer</button>
             </div>
-            <button onclick="closeCaseDetails()" class="close-btn">Close</button>
+                <button onclick="closeCaseDetails()" class="close-btn">Close</button>
         </div>
     </div>
 </div>
 
+<!-- Upload Document Popup -->
+<div id="upload-document-popup" class="popup">
+    <div class="popup-content">
+        <h2>Upload Document</h2>
+        <form action="{% url 'against_cases' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" id="case-id" name="case_id" />
+            <div class="input-container">
+                <label for="document-type">Document Type:</label>
+                <input type="text" id="document-type" name="document_type" required />
+            </div>
+            <div class="input-container">
+                <label for="file">File:</label>
+                <input type="file" id="file" name="file" required />
+            </div>
+            <div class="submit-btn-container">
+                <button type="submit" name="action" value="upload_document" class="submit-btn">Upload</button>
+            </div>
+        </form>
+        <button onclick="closePopup('upload-document-popup')" class="close-btn">Close</button>
+    </div>
+</div>
+
+<!-- Select Lawyer Popup -->
 <div id="select-lawyer-popup" class="popup">
     <div class="popup-content">
         <h2>Select Lawyer</h2>
@@ -100,6 +128,15 @@ body {
     text-align: center;
     color: #1e3c72;
     margin-bottom: 20px;
+}
+
+/* Search Bar */
+.search-bar {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 /* Cases Table */
@@ -300,6 +337,29 @@ button:hover {
 </style>
 
 <script>
+// Function to filter cases based on search input
+function filterCases() {
+    var input, filter, table, tr, td, i, j, txtValue;
+    input = document.getElementById('search-bar');
+    filter = input.value.toUpperCase();
+    table = document.getElementById('cases-table');
+    tr = table.getElementsByTagName('tr');
+
+    for (i = 1; i < tr.length; i++) { // Start from 1 to skip the header row
+        tr[i].style.display = 'none';
+        td = tr[i].getElementsByTagName('td');
+        for (j = 0; j < td.length; j++) {
+            if (td[j]) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = '';
+                    break;
+                }
+            }
+        }
+    }
+}
+
 // Function to toggle the case details card and populate information dynamically
 function toggleCaseDetails(caseId) {
     var caseData = {
@@ -312,48 +372,54 @@ function toggleCaseDetails(caseId) {
             "caseType": "{{ case.case_type }}",
             "status": "{{ case.status }}",
             "lawyer": {% if case.defendant_lawyer %}"{{ case.defendant_lawyer.user.full_name }}"{% else %}null{% endif %},
-            "defendant_lawyer_accepted": {% if case.defendant_lawyer_accepted is not None %}
-                {{ case.defendant_lawyer_accepted|yesno:"true,false" }}
-            {% else %}
-                null
-            {% endif %}
+            "defendant_lawyer_accepted": {% if case.defendant_lawyer_accepted is not None %}{{ case.defendant_lawyer_accepted|yesno:"true,false" }}{% else %}null{% endif %}
         },
         {% endfor %}
     };
 
     var caseInfo = caseData[caseId];
     var caseDetailsCard = document.getElementById('case-info-details');
+    var selectLawyerButton = document.getElementById('select-lawyer');
+    var uploadDocButton = document.getElementById('upload-doc-btn');
 
-    // Determine the status of the lawyer acceptance
+    // Lawyer acceptance status
     var lawyerAcceptedMessage = '';
     var lawyerAcceptedColor = '';
-    var selectLawyerButton = document.getElementById('select_lawyer'); // Make sure the button is selected correctly
 
-    if (caseInfo.defendant_lawyer_accepted == true) {
+    if (caseInfo.defendant_lawyer_accepted === true) {
         lawyerAcceptedMessage = 'Accepted';
         lawyerAcceptedColor = 'green';
-        if (selectLawyerButton) {
-            selectLawyerButton.style.display = 'none'; // Hide the button
-        }
-    } else if (caseInfo.defendant_lawyer_accepted == false) {
+        if (selectLawyerButton) selectLawyerButton.style.display = 'none';
+    } else if (caseInfo.defendant_lawyer_accepted === false) {
         lawyerAcceptedMessage = 'Not Accepted';
         lawyerAcceptedColor = 'red';
-        if (selectLawyerButton) {
-            selectLawyerButton.style.display = 'block'; // Show the button
-        }
-    } else if (caseInfo.lawyer == null) {
-        if (selectLawyerButton) {
-            selectLawyerButton.style.display = 'block'; // Hide the button
-        }
-    } else if(caseInfo.lawyer != null) {
+        if (selectLawyerButton) selectLawyerButton.style.display = 'block';
+    } else if (caseInfo.lawyer === null) {
+        if (selectLawyerButton) selectLawyerButton.style.display = 'block';
+    } else {
         lawyerAcceptedMessage = 'Pending';
         lawyerAcceptedColor = 'orange';
-        if (selectLawyerButton) {
-            selectLawyerButton.style.display = 'none'; // Show the button
+        if (selectLawyerButton) selectLawyerButton.style.display = 'none';
+    }
+
+    // Handle upload document button visibility
+    if (caseInfo.lawyer !== null) {
+        if (caseInfo.status !== 'ACTIVE' && caseInfo.status !== 'PENDING' && !caseInfo.defendant_lawyer_accepted) {
+            if (uploadDocButton) uploadDocButton.style.display = 'none';
+        } else if (caseInfo.defendant_lawyer_accepted === true) {
+            if (uploadDocButton) {
+                uploadDocButton.disabled = false;
+                uploadDocButton.style.display = 'block';
+            }
+        } else {
+            if (uploadDocButton) {
+                uploadDocButton.disabled = true;
+                uploadDocButton.style.display = 'none';
+            }
         }
     }
 
-    // Build the HTML content
+    // Build the HTML content for the case details card
     var detailsHTML = `
         <div class="info-item"><strong>Case Number:</strong> ${caseInfo.caseNumber}</div>
         <div class="info-item"><strong>Plaintiff:</strong> ${caseInfo.plaintiff}</div>
@@ -363,14 +429,11 @@ function toggleCaseDetails(caseId) {
         <div class="info-item"><strong>Status:</strong> ${caseInfo.status}</div>
     `;
 
-    // Add lawyer details only if lawyer exists
     if (caseInfo.lawyer !== null) {
         detailsHTML += `
             <div class="info-item"><strong>Lawyer:</strong> ${caseInfo.lawyer}</div>
             <div class="info-item"><strong>Lawyer Acceptance Status:</strong> 
-                <span style="color: ${lawyerAcceptedColor};">
-                    ${lawyerAcceptedMessage}
-                </span>
+                <span style="color: ${lawyerAcceptedColor};">${lawyerAcceptedMessage}</span>
             </div>
         `;
     }
@@ -392,6 +455,11 @@ function closeCaseDetails() {
 function viewDocuments() {
     var caseId = document.getElementById('case-id').value;
     window.location.href = "{% url 'case_documents' %}?case_id=" + caseId;
+}
+
+// Function to upload a document
+function uploadDocument() {
+    document.getElementById('upload-document-popup').style.display = 'flex';
 }
 
 // Function to select a lawyer

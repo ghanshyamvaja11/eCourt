@@ -35,6 +35,12 @@ def header(request):
     return render(request, 'citizen_header.html')
 
 @login_required(login_url='/login/')
+def lawyers_list(request):
+    # Retrieve all lawyers from the database
+    lawyers = Lawyer.objects.all()
+    return render(request, 'registered_lawyers.html', {'lawyers': lawyers})
+
+@login_required(login_url='/login/')
 def file_cases(request):
     # Clear all previous messages
     storage = messages.get_messages(request)
@@ -107,7 +113,7 @@ def file_cases(request):
         Thank you,
         eCourt Team
             """
-        recipient_email = defendant.user.email
+        recipient_email = plaintiff.user.email
         send_mail(
             subject,
             message,
@@ -298,7 +304,24 @@ def against_cases(request):
             except User.DoesNotExist:
                 messages.error(request, 'Assigned lawyer not found.')
             return redirect('against_cases')
-            
+        
+        if action == 'upload_document':
+            document_type = request.POST.get('document_type')
+            file = request.FILES.get('file')
+            case = Case.objects.get(id=case_id)
+
+            Document.objects.create(
+                case=case,
+                document_type=document_type,
+                file=file,
+                uploaded_by=request.user,
+                user_type='CITIZEN'
+            )
+
+            messages.success(request, 'Document uploaded successfully.')
+            # Check the current URL path and redirect accordingly
+            return redirect('against_cases')
+
     citizen = Citizen.objects.get(user=request.user)
 
     # Step 1: Get all cases where the citizen is the defendant.
@@ -350,7 +373,7 @@ def requested_payments(request):
     if cases.exists():  # Check if there are any cases
         if cases.count() == 1:
             # If there is exactly one case
-            payments = Payment.objects.filter(citizen_email=request.user.email)
+            payments = Payment.objects.get(citizen_email=request.user.email)
         else:
             # If there are multiple cases
             payments = Payment.objects.filter(citizen_email=request.user.email)
@@ -458,7 +481,9 @@ def verify_payment(request):
                 # Handle the case where no matching Payment record is found
                 print("Payment record not found for the provided order_id.")
 
-            user = User.objects.get(email = payment.citizen_email)
+            payment = Payment.objects.get(order_id=razorpay_order_id)
+
+            user = request.user
 
             subject = 'Payment Successful'
             message = f"""
@@ -467,8 +492,10 @@ def verify_payment(request):
             We are pleased to inform you that your payment has been successfully processed.
 
             Payment Details:
-            - Amount Paid: ${payment.amount:.2f}
+            - Case Number = {payment.case.case_number}
+            - Amount Paid: ₹{payment.amount:.2f}
             - Payment ID: {payment.payment_id}
+            - Paid At: {payment.paid_at}
 
             Thank you for using our services. If you have any questions, feel free to contact us.
 
@@ -476,7 +503,7 @@ def verify_payment(request):
             eCourt Team
             """
             from_email = settings.DEFAULT_FROM_EMAIL
-            recipient_list = [user.citizen_email]
+            recipient_list = [user.email]
 
             send_mail(subject, message, from_email, recipient_list, fail_silently=False)
 

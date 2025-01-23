@@ -287,33 +287,42 @@ def profile(request):
 @login_required(login_url='/login/')
 def edit_profile(request):
     user = request.user
-    # if request.method == 'POST' and user.user_type == 'ADMIN':
+
     if request.method == 'POST':
+        # This line is unnecessary, you can remove it as username is readonly and not changing
         user.username = user.username
-        user.full_name = request.POST['full_name']
-        user.email = request.POST['email']
-        user.contact_number = request.POST['contact_number']
-        user.address = request.POST['address']
-        if request.FILES.get('profile_image'):
-            user.profile_picture = request.FILES['profile_image']
-        
+
+        user.email = request.POST.get('email', user.email)
+        user.contact_number = request.POST.get(
+            'contact_number', user.contact_number)
+
+        profile_image = request.FILES.get('profile_picture')
+        if profile_image:
+            user.profile_picture = profile_image
+
         # Add validations
-        if not user.full_name:
-            messages.error(request, 'Name is required')
-            return redirect('edit_profile')
         if not user.email:
             messages.error(request, 'Email is required')
             return redirect('edit_profile')
+        else:
+            try:
+                validate_email(user.email)  # Validate email format
+            except ValidationError:
+                messages.error(request, 'Invalid email address')
+                return redirect('edit_profile')
+
         if not user.contact_number:
-            messages.error(request, 'Phone number is required')
+            messages.error(request, 'Contact number is required')
             return redirect('edit_profile')
-        if not user.address:
-            messages.error(request, 'addrress is required')
+        elif not user.contact_number.isdigit() or len(user.contact_number) != 10:  # Adjust length as per requirement
+            messages.error(
+                request, 'Invalid phone number. It should be 10 digits long.')
             return redirect('edit_profile')
 
         user.save()
         messages.success(request, 'Profile updated successfully.')
-        return redirect('profile')
+        return redirect('edit_profile')
+
     return render(request, 'edit_profile.html', {'user': user})
 
 @login_required(login_url='/login/')

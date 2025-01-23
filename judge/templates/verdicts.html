@@ -16,8 +16,11 @@
     <div class="form-section">
         <h2 class="form-title">Verdict Information</h2>
 
+        <!-- Search Bar -->
+        <input type="text" id="search-bar" class="search-bar" placeholder="Search verdicts...based on case number or case type" onkeyup="filterVerdicts()">
+
         <!-- Verdicts Table -->
-        <table class="verdict-table">
+        <table class="verdict-table" id="verdict-table">
             <thead>
                 <tr>
                     <th>Case Number</th>
@@ -106,6 +109,15 @@ body {
     text-align: center;
     color: #1e3c72;
     margin-bottom: 20px;
+}
+
+/* Search Bar */
+.search-bar {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 /* Verdict Table */
@@ -225,6 +237,28 @@ body {
 </style>
 
 <script>
+window.filterVerdicts = function() {
+    var input, filter, table, tr, td, i, j, txtValue;
+    input = document.getElementById('search-bar');
+    filter = input.value.toUpperCase();
+    table = document.getElementById('verdict-table');
+    tr = table.getElementsByTagName('tr');
+
+    for (i = 1; i < tr.length; i++) { // Start from 1 to skip the header row
+        tr[i].style.display = 'none';
+        td = tr[i].getElementsByTagName('td');
+        for (j = 0; j < td.length; j++) {
+            if (td[j]) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = '';
+                    break;
+                }
+            }
+        }
+    }
+}
+
 window.toggleVerdictDetails = function(button) {
     const verdictDetails = {
         caseId: button.getAttribute('data-case-id'),

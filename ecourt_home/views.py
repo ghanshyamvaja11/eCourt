@@ -125,6 +125,11 @@ def signup(request):
             if User.objects.filter(email=email).exists():
                 errors.append("Email is already registered.")
 
+        if profile_picture:
+            pass
+        else:
+            errors.append("Upload a profile picture.")
+
         # Validate contact number format
         if not re.fullmatch(r'^\d{10}$', contact_number):
             errors.append("Contact number must be exactly 10 digits.")

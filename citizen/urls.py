@@ -4,6 +4,7 @@ from .views import *
 urlpatterns = [
     path('citizen-dashboard', citizen_dashboard, name='citizen_dashboard'),
     path('citizen-header', header, name='header'),
+    path('lawyers/', lawyers_list, name='lawyers_list'),
     path('file-cases', file_cases, name='file_cases'),
     path('my-cases', my_cases, name='my_cases'),
     path('against-cases', against_cases, name='against_cases'),

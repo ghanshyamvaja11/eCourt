@@ -205,6 +205,7 @@ def plaintiff_case_requests(request):
 
     return render(request, 'plaintiff_case_requests.html', {'cases': cases})
 
+
 @login_required(login_url='/login/')
 def plaintiff_accept_case(request):
     # Clear all previous messages
@@ -224,6 +225,7 @@ def plaintiff_accept_case(request):
         case.assigned_judge = judge
         case.save()
 
+    # Send email to the plaintiff
     send_mail(
         'Case Accepted',
         f'Your case {case.case_number} has been accepted by the lawyer.',
@@ -231,6 +233,16 @@ def plaintiff_accept_case(request):
         [case.plaintiff.user.email],
         fail_silently=False,
     )
+
+    # Send email to the defendant
+    send_mail(
+        'Case Accepted by Plaintiff\'s Lawyer',
+        f'The case {case.case_number} has been accepted by the plaintiff\'s lawyer.',
+        'ecourtofficially@gmail.com',
+        [case.defendant.user.email],
+        fail_silently=False,
+    )
+
     messages.success(request, 'Case accepted successfully.')
     return redirect('plaintiff_case_requests')
 
@@ -430,14 +442,36 @@ def request_payment(request, case_id):
                 user=plaintiff_case.plaintiff.user,
                 message=f'You have a new payment request for case {plaintiff_case.case_number}.'
             )
-            # Send email to client
+
+            Payment.objects.get(case=plaintiff_case)
+
+            # Send the email with all the payment details embedded
             send_mail(
-                'Payment Request',
-                f'You have a new payment request for case {plaintiff_case.case_number}.',
-                'ecourtofficially@gmail.com',
-                [plaintiff_case.plaintiff.user.email],
+                subject='Payment Request Details',
+                message=f"""
+            Hello {plaintiff_case.plaintiff.user.full_name},
+
+            You have received a new payment request for the following case:
+
+            - Case Number: {payment.case.case_number}
+            - Case Title: {payment.case.case_title}
+            - Requested Amount: ₹{payment.amount:.2f}
+            - Requested At: {payment.requested_at}
+
+            Please log in to your account on eCourt to review the request and make the payment if necessary.
+
+            Login to your account and navigate to the "Requested Payments" section to complete this process.
+
+            Thank you for your prompt attention.
+
+            Best regards,
+            eCourt Team
+            """,
+                from_email='ecourtofficially@gmail.com',
+                recipient_list=[defendant_case.defendant.user.email],
                 fail_silently=False,
             )
+            return redirect('lawyer_payments')
     else:
         if defendant_case:
             if request.method == 'POST':
@@ -451,16 +485,34 @@ def request_payment(request, case_id):
                 user=defendant_case.defendant.user,
                 message=f'You have a new payment request for case {defendant_case.case_number}.'
             )
-                
-                # Send email to client
+                Payment.objects.get(case=defendant_case)
+                # Send the email with all the content embedded
                 send_mail(
-                    'Payment Request',
-                    f'You have a new payment request for case {defendant_case.case_number}.',
-                    'ecourtofficially@gmail.com',
-                    [defendant_case.defendant.user.email],
+                    subject='New Payment Request Notification',
+                    message=f"""
+                Hello {defendant_case.defendant.user.full_name},
+
+                You have received a new payment request for the following case:
+
+                - Case Number: {payment.case.case_number}
+                - Case Title: {payment.case.case_title}
+                - Requested Amount: ₹{payment.amount:.2f}
+                - Requested At: {payment.requested_at}
+
+                Please log in to your account on eCourt to review the request and make the payment if necessary.
+
+                Login to your account and navigate to the "Requested Payments" section to complete this process.
+    
+                Thank you for your prompt attention.
+    
+                Best regards,
+                eCourt Team
+                """,
+                    from_email='ecourtofficially@gmail.com',
+                    recipient_list=[defendant_case.defendant.user.email],
                     fail_silently=False,
                 )
-                return redirect('lawyer_dashboard')
+                return redirect('lawyer_payments')
     return render(request, 'request_payment.html', {'case': cases})
 
 @login_required(login_url='/login/')

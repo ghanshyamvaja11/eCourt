@@ -16,29 +16,33 @@
         <h2 class="form-title">Payments</h2>
 
         <!-- Search Bar -->
-        <input type="text" id="search-bar" class="search-bar" placeholder="Search payments...based on order ID or email" onkeyup="filterPayments()">
+        <input type="text" id="search-bar" class="search-bar" placeholder="Search payments...based on order ID, case number, lawyer email or citizen email" onkeyup="filterPayments()">
 
         <!-- Payments Table -->
         <table class="payments-table">
             <thead>
                 <tr>
                     <th style="text-align: center;">Order ID</th>
-                    <th style="text-align: center;">Email</th>
+                    <th style="text-align: center;">Case Number</th>
                     <th style="text-align: center;">Amount</th>
+                    <th style="text-align: center;">Requested By (Lawyer)</th>
+                    <th style="text-align: center;">Paid By (Citizen)</th>
                     <th style="text-align: center;">Status</th>
-                    <th style="text-align: center;">Requested At</th>
-                    <th style="text-align: center;">Paid At</th>
+                    {% comment %} <th style="text-align: center;">Requested At</th>
+                    <th style="text-align: center;">Paid At</th> {% endcomment %}
                 </tr>
             </thead>
             <tbody id="payments-table-body">
                 {% for payment in payments %}
                 <tr>
                     <td style="text-align: center;">{{ payment.order_id }}</td>
-                    <td style="text-align: center;">{{ payment.email }}</td>
+                    <td style="text-align: center;">{{ payment.case.case_number }}</td>
                     <td style="text-align: center;">{{ payment.amount }}</td>
+                    <td style="text-align: center;">{{ payment.lawyer_email }}</td>
+                    <td style="text-align: center;">{{ payment.citizen_email }}</td>
                     <td style="text-align: center;">{{ payment.status }}</td>
-                    <td style="text-align: center;">{{ payment.requested_at }}</td>
-                    <td style="text-align: center;">{{ payment.paid_at }}</td>
+                    {% comment %} <td style="text-align: center;">{{ payment.requested_at }}</td>
+                    <td style="text-align: center;">{{ payment.paid_at }}</td> {% endcomment %}
                 </tr>
                 {% endfor %}
             </tbody>

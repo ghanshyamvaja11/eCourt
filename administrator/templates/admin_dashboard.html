@@ -22,12 +22,13 @@
             text-decoration: none;
         }
 
+        /* Header Section */
         .dashboard-header {
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
             text-align: center;
-            padding: 40px 20px;
-            margin-bottom: 20px;
+            padding: 2px 14px;
+            margin-bottom: 15px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             position: relative;
         }
@@ -45,6 +46,16 @@
             animation: fadeIn 2s ease-in-out;
         }
 
+        .dashboard-header .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #ffd700;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            animation: logoFadeIn 2s ease-in-out;
+        }
+
         @keyframes fadeIn {
             0% {
                 opacity: 0;
@@ -54,6 +65,44 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        @keyframes logoFadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Logout Button */
+        .logout-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 2;
+        }
+
+        .logout-button {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background: #e60000;
+        }
+
+        .logout-button:active {
+            background: #cc0000;
         }
 
         .dashboard-container {
@@ -128,7 +177,15 @@
     </style>
 </head>
 <body>
+    <!-- Header Section -->
     <div class="dashboard-header">
+        <img src="/media/logo.png" alt="Logo" class="logo">
+        <div class="logout-container">
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button class="logout-button">Logout</button>
+            </form>
+        </div>
         <h1>Admin Dashboard</h1>
         <p>Manage all the functionalities efficiently</p>
     </div>
