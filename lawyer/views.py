@@ -12,6 +12,9 @@ from notifications.models import Notification
 from administrator.models import * # Assuming there is
 from django.db.models import Q
 import datetime
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
 @login_required(login_url='/login/')
 def lawyer_dashboard(request):
     return render(request, 'lawyer_dashboard.html')
@@ -87,27 +90,37 @@ def lawyer_edit_profile(request):
     lawyer = Lawyer.objects.get(user=request.user)
     user = User.objects.get(id=lawyer.user.id)
     if request.method == 'POST':
-        name = request.POST.get('name', lawyer.user.full_name)
         email = request.POST.get('email', user.email)
         phone = request.POST.get('phone', lawyer.user.contact_number)
         license_number = request.POST.get('license_number', lawyer.license_number)
         law_firm = request.POST.get('law_firm', lawyer.law_firm)
         
         # Add validations
-        if not name:
-            messages.error(request, 'Name is required')
-            return redirect('lawyer_profile')
         if not email:
             messages.error(request, 'Email is required')
             return redirect('lawyer_profile')
+        else:
+            try:
+                validate_email(email)  # Validate email format
+            except ValidationError:
+                messages.error(request, 'Invalid email address')
+                return redirect('lawyer_edit_profile')
+
         if not phone:
             messages.error(request, 'Phone number is required')
-            return redirect('lawyer_profile')
+            return redirect('lawyer_edit_profile')
+        elif not phone.isdigit() or len(phone) != 10:  # Adjust length as per requirement
+            messages.error(request, 'Invalid phone number. It should be 10 digits long')
+            return redirect('lawyer_edit_profile')
+
         if not license_number:
             messages.error(request, 'License number is required')
-            return redirect('lawyer_profile')
+            return redirect('lawyer_edit_profile')
+
+        if not law_firm:
+            messages.error(request, 'Law firm is required')
+            return redirect('lawyer_edit_profile')
         
-        user.full_name = name
         user.email = email
         user.contact_number = phone
         lawyer.license_number = license_number

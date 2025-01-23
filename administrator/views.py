@@ -300,16 +300,16 @@ def edit_profile(request):
         # Add validations
         if not user.full_name:
             messages.error(request, 'Name is required')
-            return redirect('profile')
+            return redirect('edit_profile')
         if not user.email:
             messages.error(request, 'Email is required')
-            return redirect('profile')
+            return redirect('edit_profile')
         if not user.contact_number:
             messages.error(request, 'Phone number is required')
-            return redirect('profile')
+            return redirect('edit_profile')
         if not user.address:
             messages.error(request, 'addrress is required')
-            return redirect('profile')
+            return redirect('edit_profile')
 
         user.save()
         messages.success(request, 'Profile updated successfully.')

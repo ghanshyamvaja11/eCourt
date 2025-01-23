@@ -18,6 +18,8 @@ import json
 import logging
 from django.db.models import Q
 import datetime
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 # Razorpay Client Setup
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
@@ -128,12 +130,13 @@ def my_cases(request):
             lawyer_name = request.POST.get('assigned_lawyer')
             case_id = request.GET.get('case_id')
             try:
+                plaintiff_lawyer = User.objects.get(full_name=lawyer_name)
+                plaintiff_lawyer = Lawyer.objects.get(user=plaintiff_lawyer)
                 case = Case.objects.get(id=case_id)
-                lawyer = Lawyer.objects.get(user__full_name=lawyer_name)
-                if lawyer.id == case.assigned_lawyer.id:
-                    error = 'this lawyer selected by defendant.'
-                    return render(request, 'my_cases.html', {'error': error})
-                case.assigned_lawyer = lawyer
+                if case.assigned_lawyer == plaintiff_lawyer:
+                    error = 'this lawyer selected by plaintiff.'
+                    return render(request, 'against_cases.html', {'error': error})
+                case.assigned_lawyer = plaintiff_lawyer
                 case.lawyer_accepted = None  # Reset the acceptance status
                 case.save()
                 messages.success(request, 'Lawyer selected successfully.')
@@ -190,27 +193,37 @@ def citizen_edit_profile(request):
     citizen = Citizen.objects.get(user=user)
 
     if request.method == 'POST':
-        user.username = user.username
-        user.full_name = request.POST['full_name']
         user.email = request.POST['email']
         user.contact_number = request.POST['contact_number']
         user.address = request.POST['address']
         if request.FILES.get('profile_image'):
             user.profile_picture = request.FILES['profile_image']
-
-        # Add validations
-        if not user.full_name:
-            messages.error(request, 'Name is required')
-            return redirect('citizen_profile')
+        
         if not user.email:
             messages.error(request, 'Email is required')
             return redirect('citizen_profile')
+        else:
+            try:
+                validate_email(user.email)  # Validate email format
+            except ValidationError:
+                messages.error(request, 'Invalid email address')
+                return redirect('citizen_profile')
+
         if not user.contact_number:
             messages.error(request, 'Phone number is required')
             return redirect('citizen_profile')
-        if not user.address:
-            messages.error(request, 'addrress is required')
+        
+        elif not user.contact_number.isdigit() or len(user.contact_number) != 10:  # Adjust length as per requirement
+            messages.error(request, 'Invalid phone number. It should be 10 digits long')
             return redirect('citizen_profile')
+
+        if not user.address:
+            messages.error(request, 'Address is required')
+            return redirect('citizen_profile')
+
+        # Proceed if all validations pass
+        messages.success(request, 'Profile updated successfully!')
+
 
         user.save()
         messages.success(request, 'Profile updated successfully.')
@@ -268,13 +281,16 @@ def against_cases(request):
     if request.method == 'POST':
         action = request.POST.get('action')
         case_id = request.POST.get('case_id')
-
+    
         if action == 'select_lawyer':
             defendant_lawyer = request.POST.get('defendant_lawyer')
             try:
-                defendant_lawyer = User.objects.get(
-                    full_name=defendant_lawyer).lawyer
+                defendant_lawyer = User.objects.get(full_name=defendant_lawyer)
+                defendant_lawyer = Lawyer.objects.get(user=defendant_lawyer)
                 case = Case.objects.get(id=case_id)
+                if case.defendant_lawyer == defendant_lawyer:
+                    error = 'this lawyer selected by defendant.'
+                    return render(request, 'against_cases.html', {'error': error})
                 case.defendant_lawyer = defendant_lawyer
                 case.save()
                 request.session['lawyer_selected'] = True
@@ -288,19 +304,9 @@ def against_cases(request):
     # Step 1: Get all cases where the citizen is the defendant.
     cases = Case.objects.filter(defendant=citizen)
 
-    # Step 2: Get all lawyers assigned to these cases for both defendant and plaintiff.
-    assigned_defendant_lawyers = cases.values_list(
-        'defendant_lawyer_id', flat=True)
-    assigned_plaintiff_lawyers = cases.values_list('assigned_lawyer_id', flat=True)
+    lawyers = Lawyer.objects.all()
 
-    # Step 3: Combine the lists of defendant and plaintiff lawyers and exclude `None` values.
-    excluded_lawyer_ids = set(filter(None, assigned_defendant_lawyers)) | set(
-        filter(None, assigned_plaintiff_lawyers))
-
-    # Step 4: Query lawyers excluding those already assigned.
-    available_lawyers = Lawyer.objects.exclude(id__in=excluded_lawyer_ids)
-
-    return render(request, 'against_cases.html', {'cases': cases, 'Lawyers': available_lawyers})
+    return render(request, 'against_cases.html', {'cases': cases, 'Lawyers': lawyers})
 
 @login_required(login_url='/login/')
 def hearings(request):
@@ -452,11 +458,11 @@ def verify_payment(request):
                 # Handle the case where no matching Payment record is found
                 print("Payment record not found for the provided order_id.")
 
-            username = User.objects.get(email = payment.citizen_email)
+            user = User.objects.get(email = payment.citizen_email)
 
             subject = 'Payment Successful'
             message = f"""
-            Dear {username},
+            Dear {user.username},
 
             We are pleased to inform you that your payment has been successfully processed.
 
@@ -470,7 +476,7 @@ def verify_payment(request):
             eCourt Team
             """
             from_email = settings.DEFAULT_FROM_EMAIL
-            recipient_list = [user_email]
+            recipient_list = [user.citizen_email]
 
             send_mail(subject, message, from_email, recipient_list, fail_silently=False)
 

@@ -114,8 +114,6 @@
             color: #555;
         }
 
-        <!-- Counter Section CSS -->
-<style>
     .counter-section {
         background-color: #f9f9f9;
         padding: 60px 0;
@@ -138,7 +136,7 @@
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     }
 
-    .counter-box h3 {
+    h2 {
         margin: 10px 0;
         font-size: 2.5rem;
         color: #003366;
@@ -470,9 +468,11 @@
 </section>
 
 <!-- Counter Section -->
+ <br>
+<h2 class="section-title">Platform Achievements</h2>
 <section id="counter" class="counter-section fade-in">
     <div class="container">
-        <h2 class="section-title">Platform Achievements</h2>
+
         <div class="row text-center">
             <!-- Counter 1: Total Users -->
             <div class="col-md-4">
@@ -526,9 +526,8 @@
             </div>
         </div>
     </div>
-
+</section>
 <!-- How It Works Section -->
- <br>
 <h2 class="section-title">How It Works</h2>
 <section id="how-it-works" class="how-it-works">
     <div class="container">
@@ -730,7 +729,7 @@
 
                 if (count < target) {
                     counter.innerText = Math.ceil(count + increment);
-                    setTimeout(updateCount, 10);
+                    setTimeout(updateCount, 100);
                 } else {
                     counter.innerText = target;
                 }

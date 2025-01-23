@@ -8,6 +8,8 @@ from notifications.models import *  # Assuming there is a Notification model in 
 from django.core.mail import send_mail
 from django.contrib.auth import logout
 from datetime import datetime
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 @login_required(login_url='/login/')
 def judge_dashboard(request):
@@ -243,24 +245,37 @@ def judge_edit_profile(request):
         user.email = request.POST.get('email')
         user.contact_number = request.POST.get('contact_number')
         user.address = request.POST.get('address')
-        # judge.court = request.POST.get('court')
+        judge.court = request.POST.get('court')
         
         # Add validations
         if not user.full_name:
             messages.error(request, 'Name is required')
-            return redirect('judge_profile')
+            return redirect('judge_edit_profile')
+
         if not user.email:
             messages.error(request, 'Email is required')
-            return redirect('judge_profile')
+            return redirect('judge_edit_profile')
+        else:
+            try:
+                validate_email(user.email)  # Validate email format
+            except ValidationError:
+                messages.error(request, 'Invalid email address')
+                return redirect('judge_edit_profile')
+
         if not user.contact_number:
             messages.error(request, 'Phone number is required')
-            return redirect('judge_profile')
+            return redirect('judge_edit_profile')
+        elif not user.contact_number.isdigit() or len(user.contact_number) != 10:  # Adjust length if needed
+            messages.error(request, 'Invalid phone number. It should be 10 digits long')
+            return redirect('judge_edit_profile')
+
         if not user.address:
-            messages.error(request, 'addrress is required')
-            return redirect('judge_profile')
-        # if not judge.court:
-            # messages.error(request, 'Court is required')
-            # return redirect('judge_profile')
+            messages.error(request, 'Address is required')
+            return redirect('judge_edit_profile')
+
+        if not judge.court:
+            messages.error(request, 'Court is required')
+            return redirect('judge_edit_profile')
         
          # Check for and save profile picture
         if request.FILES.get('profile_image'):

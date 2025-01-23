@@ -5,6 +5,9 @@
     <h1>Cases Against Me</h1>
 </div>
 
+{% if error %}
+<center><span style="color: red;">{{ error }}</span></center>
+{% endif %}
 <div class="formcontainer">
     <div class="form-section">
         <h2 class="form-title">Cases Against Me</h2>
@@ -48,7 +51,6 @@
     </div>
 </div>
 
-{% if request.session.lawyer_selected == '' %}
 <div id="select-lawyer-popup" class="popup">
     <div class="popup-content">
         <h2>Select Lawyer</h2>
@@ -71,7 +73,7 @@
         <button onclick="closePopup('select-lawyer-popup')" class="close-btn">Close</button>
     </div>
 </div>
-{% endif %}
+
 <style>
 /* General Styles */
 body {
@@ -337,19 +339,17 @@ function toggleCaseDetails(caseId) {
         lawyerAcceptedMessage = 'Not Accepted';
         lawyerAcceptedColor = 'red';
         if (selectLawyerButton) {
-            selectLawyerButton.style.display = 'visible'; // Show the button
+            selectLawyerButton.style.display = 'block'; // Show the button
         }
-    } else if (caseInfo.defendant_lawyer == null) {
+    } else if (caseInfo.lawyer == null) {
+        if (selectLawyerButton) {
+            selectLawyerButton.style.display = 'block'; // Hide the button
+        }
+    } else if(caseInfo.lawyer != null) {
         lawyerAcceptedMessage = 'Pending';
         lawyerAcceptedColor = 'orange';
         if (selectLawyerButton) {
-            selectLawyerButton.style.display = 'visible'; // Show the button
-        }
-    } else {
-        lawyerAcceptedMessage = 'Pending';
-        lawyerAcceptedColor = 'orange';
-        if (selectLawyerButton) {
-            selectLawyerButton.style.display = 'none'; // Hide the button
+            selectLawyerButton.style.display = 'none'; // Show the button
         }
     }
 
