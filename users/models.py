@@ -6,7 +6,7 @@ class User(AbstractUser):
         max_length=20,
         choices=[('ADMIN', 'Admin'), ('LAWYER', 'Lawyer'),
                  ('JUDGE', 'Judge'), ('CITIZEN', 'Citizen')],
-        default='CITIZEN'
+        default='ADMIN'
     )
     full_name = models.CharField(max_length=100)
     contact_number = models.CharField(max_length=15, blank=True, null=True)

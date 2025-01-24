@@ -435,15 +435,19 @@ def request_payment(request, case_id):
     if plaintiff_case:
         if request.method == 'POST':
             amount = request.POST.get('amount')
+            # Ensure that amount is a float
+            try:
+                amount = float(amount)
+            except ValueError:
+                amount = 0.0  # Set to 0 if conversion fails, or handle it appropriately
             description = request.POST.get('description')
+            date_time = datetime.datetime.now()
             Payment.objects.create(case=plaintiff_case, lawyer_email=request.user.email, citizen_email = plaintiff_case.plaintiff.user.email,
-                                   amount=amount, description=description, requested_at=datetime.datetime.now())
+                                   amount=amount, description=description, requested_at=date_time)
             Notification.objects.create(
                 user=plaintiff_case.plaintiff.user,
                 message=f'You have a new payment request for case {plaintiff_case.case_number}.'
             )
-
-            Payment.objects.get(case=plaintiff_case)
 
             # Send the email with all the payment details embedded
             send_mail(
@@ -453,10 +457,11 @@ def request_payment(request, case_id):
 
             You have received a new payment request for the following case:
 
-            - Case Number: {payment.case.case_number}
-            - Case Title: {payment.case.case_title}
-            - Requested Amount: ₹{payment.amount:.2f}
-            - Requested At: {payment.requested_at}
+            - Case Number: {plaintiff_case.case_number}
+            - Case Title: {plaintiff_case.case_title}
+            - Requested Amount: ₹{amount:.2f}
+            - Description: {description}
+            - Requested At: {date_time}
 
             Please log in to your account on eCourt to review the request and make the payment if necessary.
 
@@ -468,7 +473,7 @@ def request_payment(request, case_id):
             eCourt Team
             """,
                 from_email='ecourtofficially@gmail.com',
-                recipient_list=[defendant_case.defendant.user.email],
+                recipient_list=[plaintiff_case.plaintiff.user.email],
                 fail_silently=False,
             )
             return redirect('lawyer_payments')
@@ -476,10 +481,16 @@ def request_payment(request, case_id):
         if defendant_case:
             if request.method == 'POST':
                 amount = request.POST.get('amount')
+                # Ensure that amount is a float
+                try:
+                    amount = float(amount)
+                except ValueError:
+                    amount = 0.0  # Set to 0 if conversion fails, or handle it appropriately
                 description = request.POST.get('description')
                 request_date_time = request.POST.get('current_datetime')
+                date_time = datetime.datetime.now()
                 Payment.objects.create(case=defendant_case, lawyer_email=request.user.email, citizen_email=defendant_case.defendant.user.email,
-                                       amount=amount, description=description, requested_at=datetime.datetime.now())
+                                       amount=amount, description=description, requested_at=date_time)
 
                 Notification.objects.create(
                 user=defendant_case.defendant.user,
@@ -494,10 +505,11 @@ def request_payment(request, case_id):
 
                 You have received a new payment request for the following case:
 
-                - Case Number: {payment.case.case_number}
-                - Case Title: {payment.case.case_title}
-                - Requested Amount: ₹{payment.amount:.2f}
-                - Requested At: {payment.requested_at}
+                - Case Number: {defendant_case.case_number}
+                - Case Title: {defendant_case.case_title}
+                - Requested Amount: ₹{amount:.2f}
+                - Description: {description}
+                - Requested At: {date_time}
 
                 Please log in to your account on eCourt to review the request and make the payment if necessary.
 
