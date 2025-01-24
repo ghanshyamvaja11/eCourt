@@ -245,11 +245,11 @@ button[type='button'] {
                 <input type="text" placeholder="Enter Username" name="username" required>
                 <input type="password" placeholder="Enter Password" name="password" required>
                 <button type="submit" class="btn">Sign In</button>
-                <a href="/login-with-otp/"><button type="button" class="btn">Login with OTP</button></a>
+                <a href="{% url 'login_with_otp' %} "><button type="button" class="btn">Login with OTP</button></a>
             </form>
             <div class="links">
-                <a href="/forgot-password/">Forgot Password?</a>
-                <a href="/signup/">Sign Up</a>
+                <a href="{% url 'forgot_password' %}">Forgot Password?</a>
+                <a href="{% url 'signup' %}">Sign Up</a>
             </div>
         </div>
 

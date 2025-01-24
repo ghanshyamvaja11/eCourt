@@ -59,7 +59,10 @@ def contactus(request):
                 fail_silently=False,
             )
             messages.success(request, "Your message has been sent successfully.")
-            return redirect('contactus')
+            if '/contactus' not in request.path:
+                return redirect('/#contact')
+            else:
+                return redirect('contactus')
     return render(request, 'contact_us.html')
 
 def terms_and_conditions(request):
@@ -83,8 +86,6 @@ def dashboard(request):
 
 def logout(request):
     return render(request,'login.html')  # Redirect to the general login pag
-    
-
 
 def signup(request):
     # Clear all previous messages
@@ -328,7 +329,14 @@ def verify_login_otp(request):
             request.session['role'] = user.user_type  # Add role to session
             del request.session['otp']
             messages.success(request, 'Logged in successfully.')
-            return redirect('index')
+            if user.user_type == 'CITIZEN':
+                return redirect('citizen_dashboard')
+            elif user.user_type == 'LAWYER':
+                return redirect('lawyer_dashboard')
+            elif user.user_type == 'JUDGE':
+                return redirect('judge_dashboard')
+            else:
+                return redirect('admin_dashboard')
         else:
             messages.error(request, 'Invalid OTP.')
             return render(request, 'verify_login_otp.html')
@@ -385,7 +393,8 @@ def change_password(request):
 
     if request.method == 'POST':
         email = request.session.get('temp_email')
-        new_password = request.POST.get('new_password')
+        password = request.POST.get('new_password')
+        
         # password validation
         errors = []
         if len(password) < 8:
@@ -408,7 +417,7 @@ def change_password(request):
                 
         user = User.objects.filter(email=email).first()
         if user:
-            user.set_password(new_password)
+            user.set_password(password)
             user.save()
             del request.session['temp_email']
             messages.success(request, 'Password changed successfully.')

@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     'citizen',
     'cases',
     'notifications',
-    'payment'
+    'payment',
+    'clear_cache'
 ]
 
 # settings.py
