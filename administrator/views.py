@@ -254,7 +254,7 @@ def lawyer_approve(request):
         'ecourtofficially@gmail.com'
     )
 
-    return redirect('lawyer-approve-reject')
+    return redirect('lawyer_approve_reject')
 
 
 @login_required(login_url='/login/')
@@ -277,7 +277,7 @@ def lawyer_reject(request):
         'ecourtofficially@gmail.com'
     )
 
-    return redirect('lawyer-approve-reject')
+    return redirect('lawyer_approve_reject')
 
 @login_required(login_url='/login/')
 def profile(request):

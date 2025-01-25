@@ -113,7 +113,7 @@ def file_cases(request):
         Thank you,
         eCourt Team
             """
-        recipient_email = plaintiff.user.email
+        recipient_email = request.user.email
         send_mail(
             subject,
             message,
