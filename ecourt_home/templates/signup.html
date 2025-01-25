@@ -221,6 +221,14 @@
                 <p class="quote">"Bringing justice to the digital age - Register now to access eCourt services"</p>
 
                 <!-- Error Messages -->
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="message {{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <!-- Error Messages -->
                 {% if errors %}
                     <div class="messages">
                         {% for message in messages %}
