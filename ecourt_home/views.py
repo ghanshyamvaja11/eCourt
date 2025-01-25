@@ -455,3 +455,6 @@ def error_404_view(request, exception=None):
 
 def error_400_view(request, exception=None):
     return render(request, '400.html', status=404)
+
+def refund_cancellation(request):
+    return render(request, 'refund_cancellation.html')

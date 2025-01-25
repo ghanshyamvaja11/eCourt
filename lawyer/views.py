@@ -443,7 +443,7 @@ def request_payment(request, case_id):
                 message=f'You have a new payment request for case {plaintiff_case.case_number}.'
             )
 
-            Payment.objects.get(case=plaintiff_case)
+            Payment.objects.filter(case=plaintiff_case)
 
             # Send the email with all the payment details embedded
             send_mail(

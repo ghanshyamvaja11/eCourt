@@ -20,6 +20,7 @@ urlpatterns = [
     path('forgot-password/change-password', change_password, name='change_password'),
     path('page-not-found', error_404_view, name='error_404_view'),
     path('header-footer', header_footer, name='header_footer'),
+    path('refund-cancellation/', refund_cancellation, name='refund_cancellation'),
 ]
 
 handler400 = 'ecourt_home.views.error_404_view'
