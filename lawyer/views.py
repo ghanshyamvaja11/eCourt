@@ -14,6 +14,7 @@ from django.db.models import Q
 import datetime
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+import re
 
 @login_required(login_url='/login/')
 def lawyer_dashboard(request):
