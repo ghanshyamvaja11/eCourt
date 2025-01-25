@@ -27,4 +27,5 @@ urlpatterns = [
     path('logout', logout_view, name='logout'),
     path('notifications', lawyer_notifications, name='lawyer_notifications'),
     path('request-payment/case/<int:case_id>/', request_payment, name='request_payment'),
+    path('bank-details', lawyer_bank_details, name='lawyer_bank_details'),
 ]

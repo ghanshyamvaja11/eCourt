@@ -35,6 +35,10 @@ class Lawyer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     license_number = models.CharField(max_length=50, unique=True)
     law_firm = models.CharField(max_length=100, blank=True, null=True)
+    bank_name = models.CharField(max_length=100, blank=True, null=True)
+    bank_account_number = models.CharField(max_length=20, blank=True, null=True)
+    ifsc_code = models.CharField(max_length=15, blank=True, null=True)
+    branch_name = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"Lawyer - {self.user.username}"

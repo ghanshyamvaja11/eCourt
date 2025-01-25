@@ -540,3 +540,45 @@ def lawyer_verdicts(request):
         defendant_lawyer=lawyer, status='CLOSED')
     verdicts = plaintiff_cases | defendant_cases
     return render(request, 'lawyer_verdicts.html', {'verdicts': verdicts})
+
+@login_required(login_url='/login/')
+def lawyer_bank_details(request):
+    lawyer = Lawyer.objects.get(user=request.user)
+    if request.method == 'POST':
+        bank_name = request.POST.get('bank_name')
+        account_number = request.POST.get('account_number')
+        ifsc_code = request.POST.get('ifsc_code')
+        branch_name = request.POST.get('branch_name')
+
+        # Add validations
+        if not bank_name:
+            messages.error(request, 'Bank name is required')
+            return redirect('lawyer_bank_details')
+        if not account_number:
+            messages.error(request, 'Account number is required')
+            return redirect('lawyer_bank_details')
+        if not ifsc_code:
+            messages.error(request, 'IFSC code is required')
+            return redirect('lawyer_bank_details')
+        if not branch_name:
+            messages.error(request, 'Branch name is required')
+            return redirect('lawyer_bank_details')
+
+        if not account_number.isdigit():
+            messages.error(request, 'Account number should contain only digits')
+            return redirect('lawyer_bank_details')
+
+        if not re.match(r'^[A-Za-z]{4}\d{7}$', ifsc_code):
+            messages.error(request, 'Invalid IFSC code format')
+            return redirect('lawyer_bank_details')
+
+        lawyer.bank_name = bank_name
+        lawyer.bank_account_number = account_number
+        lawyer.ifsc_code = ifsc_code
+        lawyer.branch_name = branch_name
+        lawyer.save()
+
+        messages.success(request, 'Bank details updated successfully')
+        return redirect('lawyer_bank_details')
+
+    return render(request, 'lawyer_bank_details.html', {'lawyer': lawyer})

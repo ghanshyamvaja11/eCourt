@@ -287,7 +287,7 @@ def against_cases(request):
     if request.method == 'POST':
         action = request.POST.get('action')
         case_id = request.POST.get('case_id')
-    
+            
         if action == 'select_lawyer':
             defendant_lawyer = request.POST.get('defendant_lawyer')
             try:
