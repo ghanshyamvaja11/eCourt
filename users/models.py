@@ -10,7 +10,7 @@ class User(AbstractUser):
     )
     full_name = models.CharField(max_length=100)
     contact_number = models.CharField(max_length=15, blank=True, null=True)
-    contact_type = models.CharField(max_length=10)
+    # contact_type = models.CharField(max_length=10)
     address = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
 
