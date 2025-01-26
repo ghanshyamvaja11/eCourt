@@ -20,6 +20,7 @@ from django.db.models import Q
 import datetime
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.utils.timezone import localtime
 
 # Razorpay Client Setup
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
@@ -450,10 +451,10 @@ def verify_payment(request):
                 razorpay_client.utility.verify_payment_signature(params_dict)
             except razorpay.errors.SignatureVerificationError:
                 return JsonResponse({'status': 'Failed', 'message': 'Payment verification failed. Invalid signature.'}, status=400)
-
+            
+            date_time = datetime.datetime.now()
             # Update payment status in the database
             try:
-                date_time = datetime.datetime.now()
                 payment = Payment.objects.get(order_id=razorpay_order_id)
                 payment.payment_id = razorpay_payment_id
                 payment.signature = razorpay_signature
@@ -490,7 +491,7 @@ def verify_payment(request):
             - Case Number = {payment.case.case_number}
             - Amount Paid: ₹{payment.amount:.2f}
             - Payment ID: {payment.payment_id}
-            - Paid At: {payment.paid_at}
+            - Paid At:hello {localtime(payment.paid_at)}
 
             Thank you for using our services. If you have any questions, feel free to contact us.
 

@@ -276,12 +276,13 @@ def judge_edit_profile(request):
             messages.error(request, 'Court is required')
             return redirect('judge_edit_profile')
         
-         # Check for and save profile picture
-        if request.FILES.get('profile_image'):
-            profile_picture = request.FILES['profile_image']
+        # Check for and save profile picture
+        if request.FILES.get('profile_picture'):
+            profile_picture = request.FILES['profile_picture']
             user.profile_picture = profile_picture
 
         user.save()
+        judge.save()
         messages.success(request, 'Profile updated successfully')
         return redirect('judge_profile')
         
