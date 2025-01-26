@@ -453,13 +453,14 @@ def verify_payment(request):
 
             # Update payment status in the database
             try:
+                date_time = datetime.datetime.now()
                 payment = Payment.objects.get(order_id=razorpay_order_id)
                 payment.payment_id = razorpay_payment_id
                 payment.signature = razorpay_signature
                 payment.status = 'Completed'
                 payment.refund_amount = 0
                 payment.citizen_email = request.user.email
-                payment.paid_at = datetime.datetime.now()
+                payment.paid_at = date_time
                 payment.save()
 
             except Payment.DoesNotExist:
