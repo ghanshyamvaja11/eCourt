@@ -374,7 +374,7 @@ def requested_payments(request):
             # Retrieve payments based on the number of cases
             if cases.count() == 1:
                 payments = Payment.objects.filter(
-                    citizen_email__iexact=request.user.email).first()
+                    citizen_email__iexact=request.user.email)
                 payments = [payments] if payments else []
             else:
                 payments = Payment.objects.filter(
