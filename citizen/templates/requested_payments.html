@@ -22,6 +22,7 @@
                 </tr>
             </thead>
             <tbody>
+                {% if payments %}
                 {% for payment in payments %}
                 <tr>
                     <td>{{ payment.case.case_number }}</td>
@@ -36,6 +37,7 @@
                     </td>
                 </tr>
                 {% endfor %}
+                {% endif %}
             </tbody>
         </table>
     </div>
