@@ -371,13 +371,7 @@ def requested_payments(request):
 
     if cases.exists():
         try:
-            # Retrieve payments based on the number of cases
-            if cases.count() == 1:
-                payments = Payment.objects.filter(
-                    citizen_email__iexact=request.user.email)
-                payments = [payments] if payments else []
-            else:
-                payments = Payment.objects.filter(
+            payments = Payment.objects.filter(
                     citizen_email__iexact=request.user.email)
         except Payment.DoesNotExist:
             payments = []  # No payments found
