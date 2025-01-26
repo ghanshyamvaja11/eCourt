@@ -350,47 +350,47 @@ def logout_view(request):
     messages.success(request, 'You have been logged out successfully.')
     return redirect('login')
 
+
 def requested_payments(request):
     # Clear all previous messages
-    storage = messages.get_messages(request)
-    storage.used = True
+    messages.get_messages(request).used = True
 
-    RAZORPAY_KEY_ID = settings.RAZORPAY_KEY_ID
+    RAZORPAY_KEY_ID = getattr(settings, 'RAZORPAY_KEY_ID', None)
+    if not RAZORPAY_KEY_ID:
+        return HttpResponse("Razorpay Key ID is missing in the settings.", status=500)
 
     # Fetch the citizen object for the current user
     try:
         citizen = Citizen.objects.get(user=request.user)
     except Citizen.DoesNotExist:
-        return HttpResponse("Citizen not found", status=404)  # Return an error response if no citizen is found
+        return HttpResponse("Citizen not found", status=404)
 
-    # Fetch cases where the citizen is a plaintiff or a defendant
-    plaintiff_cases = Case.objects.filter(plaintiff=citizen)
-    defendant_cases = Case.objects.filter(defendant=citizen)
+    # Fetch all cases where the citizen is a plaintiff or a defendant
+    cases = Case.objects.filter(
+        plaintiff=citizen) | Case.objects.filter(defendant=citizen)
 
-    # Combine the querysets
-    cases = plaintiff_cases | defendant_cases
-
-    if cases.exists():  # Check if there are any cases
-        if cases.count() == 1:
-            # If there is exactly one case
-            payments = Payment.objects.get(citizen_email=request.user.email)
-        else:
-            # If there are multiple cases
-            payments = Payment.objects.filter(citizen_email=request.user.email)
+    if cases.exists():
+        try:
+            # Retrieve payments based on the number of cases
+            if cases.count() == 1:
+                payments = Payment.objects.filter(
+                    citizen_email__iexact=request.user.email).first()
+                payments = [payments] if payments else []
+            else:
+                payments = Payment.objects.filter(
+                    citizen_email__iexact=request.user.email)
+        except Payment.DoesNotExist:
+            payments = []  # No payments found
     else:
-        payments = Payment.objects.none()  # No cases found
+        payments = []  # No cases found
 
-    # Render the template with payments or a message if no payments exist
-    if payments:
-        return render(request, 'requested_payments.html', {
-            'payments': payments,
-            'RAZORPAY_KEY_ID': RAZORPAY_KEY_ID,
-        })
-    else:
-        return render(request, 'requested_payments.html', {
-            'message': 'No payments found.',
-            'RAZORPAY_KEY_ID': RAZORPAY_KEY_ID,
-        })
+    # Render the template
+    context = {
+        'RAZORPAY_KEY_ID': RAZORPAY_KEY_ID,
+        'payments': payments,
+        'message': 'No payments found.' if not payments else '',
+    }
+    return render(request, 'requested_payments.html', context)
 
 def create_order(request):
     if request.method == "POST":
