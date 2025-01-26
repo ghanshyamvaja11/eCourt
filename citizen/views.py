@@ -381,7 +381,7 @@ def requested_payments(request):
         payments = Payment.objects.none()  # No cases found
 
     # Render the template with payments or a message if no payments exist
-    if payments.exists():
+    if payments:
         return render(request, 'requested_payments.html', {
             'payments': payments,
             'RAZORPAY_KEY_ID': RAZORPAY_KEY_ID,
