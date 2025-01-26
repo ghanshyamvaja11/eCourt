@@ -497,7 +497,7 @@ def request_payment(request, case_id):
                 user=defendant_case.defendant.user,
                 message=f'You have a new payment request for case {defendant_case.case_number}.'
             )
-                # Send the email with all the content embedded
+                            # Send the email with all the content embedded
                 send_mail(
                     subject='New Payment Request Notification',
                     message=f"""
@@ -525,7 +525,7 @@ def request_payment(request, case_id):
                     fail_silently=False,
                 )
                 return redirect('lawyer_payments')
-    return render(request, 'html', {'case': cases})
+    return render(request, 'request_payment.html', {'case': cases})
 
 @login_required(login_url='/login/')
 def lawyer_payments(request):
