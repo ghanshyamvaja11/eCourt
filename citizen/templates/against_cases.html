@@ -46,7 +46,7 @@
             <h2 class="form-title">Case Information</h2>
             <div id="case-info-details" class="case-info"></div>
             <div class="button-container">
-                <button onclick="viewDocuments()" class="approve-btn">View Documents</button>
+                <button onclick="viewDocuments()" class="approve-btn" id="view-doc-btn">View Documents</button>
                 <button onclick="uploadDocument()" class="reject-btn" id="upload-doc-btn" style="display: none;" hidden>Upload Document</button>
                 <button onclick="selectLawyer()" class="reject-btn" id="select_lawyer" style="display: none;">Select Lawyer</button>
             </div>
@@ -447,11 +447,6 @@ function toggleCaseDetails(caseId) {
 
     // Display the case details card and set the selected case ID
     document.getElementById('case-details-card').style.display = 'flex';
-    /*document.getElementById('case-id').value = caseId;
-    document.getElementById('case-id-lawyer').value = caseId;  // Set case-id for select lawyer form
-    document.getElementById('case-id-upload').value = caseId;  // Set case-id for upload document form
-     var elementValue = document.getElementById('case-id').value;
-     alert(elementValue)*/
 }
 
 // Function to close the case details card
@@ -461,7 +456,7 @@ function closeCaseDetails() {
 
 // Function to view documents
 function viewDocuments() {
-    var caseId = document.getElementById('case-id').value;
+    var caseId = document.getElementById('case-id-lawyer').value;
     window.location.href = "{% url 'case_documents' %}?case_id=" + caseId;
 }
 

@@ -203,8 +203,8 @@ def citizen_edit_profile(request):
         user.email = request.POST['email']
         user.contact_number = request.POST['contact_number']
         user.address = request.POST['address']
-        if request.FILES.get('profile_image'):
-            user.profile_picture = request.FILES['profile_image']
+        if request.FILES.get('profile_picture'):
+            user.profile_picture = request.FILES['profile_picture']
         
         if not user.email:
             messages.error(request, 'Email is required')
@@ -491,7 +491,7 @@ def verify_payment(request):
             - Case Number = {payment.case.case_number}
             - Amount Paid: ₹{payment.amount:.2f}
             - Payment ID: {payment.payment_id}
-            - Paid At:hello {localtime(payment.paid_at)}
+            - Paid At: {localtime(payment.paid_at)}
 
             Thank you for using our services. If you have any questions, feel free to contact us.
 
