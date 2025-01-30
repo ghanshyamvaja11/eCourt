@@ -644,3 +644,22 @@ def view_payments(request):
     Failed = Payment.objects.filter(status='Failed')
     payments = Completed | Failed
     return render(request, 'view_payments.html', {'payments': payments})
+
+@login_required(login_url='/login/')
+def proceed_payment(request, payment_id):
+    payment = get_object_or_404(Payment, id=payment_id)
+    payment.proceed = True
+    payment.save()
+
+    # Send confirmation email to the lawyer
+    lawyer = Lawyer.objects.get(user__email=payment.lawyer_email)
+    send_mail(
+        'Payment Proceeded',
+        f'Dear {lawyer.user.full_name},\n\nYour payment for case {payment.case.case_number} has been proceeded successfully.\n\nBest regards,\neCourt Team',
+        'ecourtofficially@gmail.com',
+        [payment.lawyer_email],
+        fail_silently=False,
+    )
+
+    messages.success(request, 'Payment proceeded successfully.')
+    return redirect('view_payments')

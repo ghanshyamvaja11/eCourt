@@ -405,6 +405,8 @@ def request_payment(request, case_id):
     # Fetch the lawyer object for the current user
     try:
         lawyer = Lawyer.objects.get(user=request.user)
+        if lawyer.bank_name is None or lawyer.bank_account_number is None or lawyer.ifsc_code is None and lawyer.branch_name is None or lawyer.bank_name == '' or lawyer.bank_account_number == '' or lawyer.ifsc_code == '' and lawyer.branch_name == '':
+            return redirect('lawyer_bank_details')
     except Lawyer.DoesNotExist:
         lawyer = None  # Handle the absence of a lawyer
 

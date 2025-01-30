@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="dashboard-header">
-    <h1>View Payments</h1>
+    <h1>View and Process Payments</h1>
 </div>
 
 <!-- Inspirational Quote -->
@@ -13,7 +13,7 @@
 <div class="formcontainer">
     <!-- Payment Summary -->
     <div class="form-section">
-        <h2 class="form-title">Payments</h2>
+        <h2 class="form-title">Payments(Issued to lawyer and remaining to Issue)</h2>
 
         <!-- Search Bar -->
         <input type="text" id="search-bar" class="search-bar" placeholder="Search payments...based on order ID, case number, lawyer email or citizen email" onkeyup="filterPayments()">
@@ -25,11 +25,8 @@
                     <th style="text-align: center;">Order ID</th>
                     <th style="text-align: center;">Case Number</th>
                     <th style="text-align: center;">Amount</th>
-                    <th style="text-align: center;">Requested By (Lawyer)</th>
-                    <th style="text-align: center;">Paid By (Citizen)</th>
                     <th style="text-align: center;">Status</th>
-                    {% comment %} <th style="text-align: center;">Requested At</th>
-                    <th style="text-align: center;">Paid At</th> {% endcomment %}
+                    <th style="text-align: center;">Proceed</th>
                 </tr>
             </thead>
             <tbody id="payments-table-body">
@@ -38,11 +35,18 @@
                     <td style="text-align: center;">{{ payment.order_id }}</td>
                     <td style="text-align: center;">{{ payment.case.case_number }}</td>
                     <td style="text-align: center;">{{ payment.amount }}</td>
-                    <td style="text-align: center;">{{ payment.lawyer_email }}</td>
-                    <td style="text-align: center;">{{ payment.citizen_email }}</td>
+                
                     <td style="text-align: center;">{{ payment.status }}</td>
-                    {% comment %} <td style="text-align: center;">{{ payment.requested_at }}</td>
-                    <td style="text-align: center;">{{ payment.paid_at }}</td> {% endcomment %}
+                    <td style="text-align: center;">
+                        {% if not payment.proceed %}
+                        <form method="POST" action="{% url 'proceed_payment' payment.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="proceed-btn">Proceed to lawyer</button>
+                        </form>
+                        {% else %}
+                        <span style="color: green;">Proceeded</span>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -104,6 +108,24 @@ body {
     background-color: #f2f2f2;
     color: #333;
     text-align: center;
+}
+
+/* Proceed Button */
+.proceed-btn {
+    background: linear-gradient(to right, #1e3c72, #2a5298);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.proceed-btn:hover {
+    background: linear-gradient(to right, #2a5298, #1e3c72);
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsive Design */

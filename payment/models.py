@@ -20,6 +20,7 @@ class Payment(models.Model):
         auto_now=False, auto_now_add=False, null=True)
     paid_at = models.DateTimeField(
         auto_now=False, auto_now_add=False, null=True)
+    proceed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Payment - {self.order_id} for {self.email}"

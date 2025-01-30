@@ -24,6 +24,7 @@ urlpatterns = [
     path('reports-dashboard', reports_dashboard, name='reports_dashboard'),
     path('contact-us-reply', contact_us_reply, name='contact_us_reply'),
     path('view-payments', view_payments, name='view_payments'),
+    path('proceed-payment/<int:payment_id>/', proceed_payment, name='proceed_payment'),
 ]
 
 handler404 = 'ecourt_home.views.error_404_view'
